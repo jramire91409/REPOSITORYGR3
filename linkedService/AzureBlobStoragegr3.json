@@ -1,0 +1,13 @@
+{
+	"name": "AzureBlobStoragegr3",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "Espacio de almacenamiento con archivos gr3",
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": "DefaultEndpointsProtocol=https;AccountName=storagegr3;EndpointSuffix=core.windows.net;",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEZGNEIzQzk0LUU0NTktNDVGRC05QUNBLTQ2NzY1QjdEMkMwOV82Nzg5NzMxMy00NmY4LTRhMzItOTcxMi0xNjNjYzJiZTFkMGEiDQp9"
+		}
+	}
+}
