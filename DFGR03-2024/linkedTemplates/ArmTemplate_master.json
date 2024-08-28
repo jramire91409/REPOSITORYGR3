@@ -1,0 +1,105 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nombre de instancia de Data Factory",
+			"defaultValue": "DFGR03-2024"
+		},
+		"AzureBlobStoragegr3_connectionString": {
+			"type": "secureString",
+			"metadata": "Cadena protegida para \"connectionString\"de \"AzureBlobStoragegr3\""
+		},
+		"GoogleCloudStorage_Jason_GR3_secretAccessKey": {
+			"type": "secureString",
+			"metadata": "Cadena protegida para \"secretAccessKey\"de \"GoogleCloudStorage_Jason_GR3\""
+		},
+		"Microsoft3651_servicePrincipalKey": {
+			"type": "secureString",
+			"metadata": "Cadena protegida para \"servicePrincipalKey\"de \"Microsoft3651\""
+		},
+		"Servr_azure_gr3_2024_password": {
+			"type": "secureString",
+			"metadata": "Cadena protegida para \"password\"de \"Servr_azure_gr3_2024\""
+		},
+		"GoogleCloudStorage_Jason_GR3_properties_typeProperties_accessKeyId": {
+			"type": "string",
+			"defaultValue": "Mati2024*"
+		},
+		"Microsoft3651_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "jramire91409"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "gr3-2024s.database.windows.net"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "GR3_2024"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "Administrador"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI de la cuenta de almacenamiento que contiene las plantillas de ARM vinculadas."
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Token de SAS para la cuenta de almacenamiento que contiene las plantillas de ARM vinculadas"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "DFGR03-2024_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStoragegr3_connectionString": {
+						"value": "[parameters('AzureBlobStoragegr3_connectionString')]"
+					},
+					"GoogleCloudStorage_Jason_GR3_secretAccessKey": {
+						"value": "[parameters('GoogleCloudStorage_Jason_GR3_secretAccessKey')]"
+					},
+					"Microsoft3651_servicePrincipalKey": {
+						"value": "[parameters('Microsoft3651_servicePrincipalKey')]"
+					},
+					"Servr_azure_gr3_2024_password": {
+						"value": "[parameters('Servr_azure_gr3_2024_password')]"
+					},
+					"GoogleCloudStorage_Jason_GR3_properties_typeProperties_accessKeyId": {
+						"value": "[parameters('GoogleCloudStorage_Jason_GR3_properties_typeProperties_accessKeyId')]"
+					},
+					"Microsoft3651_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('Microsoft3651_properties_typeProperties_servicePrincipalId')]"
+					},
+					"Servr_azure_gr3_2024_properties_typeProperties_server": {
+						"value": "[parameters('Servr_azure_gr3_2024_properties_typeProperties_server')]"
+					},
+					"Servr_azure_gr3_2024_properties_typeProperties_database": {
+						"value": "[parameters('Servr_azure_gr3_2024_properties_typeProperties_database')]"
+					},
+					"Servr_azure_gr3_2024_properties_typeProperties_userName": {
+						"value": "[parameters('Servr_azure_gr3_2024_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

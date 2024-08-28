@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "DFGR03-2024"
+		},
+		"AzureBlobStoragegr3_connectionString": {
+			"value": ""
+		},
+		"GoogleCloudStorage_Jason_GR3_secretAccessKey": {
+			"value": ""
+		},
+		"Microsoft3651_servicePrincipalKey": {
+			"value": ""
+		},
+		"Servr_azure_gr3_2024_password": {
+			"value": ""
+		},
+		"GoogleCloudStorage_Jason_GR3_properties_typeProperties_accessKeyId": {
+			"value": "Mati2024*"
+		},
+		"Microsoft3651_properties_typeProperties_servicePrincipalId": {
+			"value": "jramire91409"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_server": {
+			"value": "gr3-2024s.database.windows.net"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_database": {
+			"value": "GR3_2024"
+		},
+		"Servr_azure_gr3_2024_properties_typeProperties_userName": {
+			"value": "Administrador"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
