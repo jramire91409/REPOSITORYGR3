@@ -40,6 +40,10 @@
 				"name": "category_desc",
 				"type": "varchar"
 			}
-		]
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecom_DATOS_DE_PRODUCTO"
+		}
 	}
 }

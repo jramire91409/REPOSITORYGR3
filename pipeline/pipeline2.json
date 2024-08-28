@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
+				"name": "STG_ECOM_DATIOS_DE_P_BRAND",
 				"description": "Llenado de la stage de brand ecomm desde archivo excel",
 				"type": "Copy",
 				"state": "Inactive",
@@ -69,12 +69,12 @@
 				]
 			},
 			{
-				"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND_copy1",
+				"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
 				"description": "Llenado de la stage de brand ecomm desde archivo excel",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
+						"activity": "STG_ECOM_DATIOS_DE_P_BRAND",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -134,7 +134,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DATOS_DE_PRODUCTO_BRAND_XLSX",
+						"referenceName": "DATOS_DE_PRODUCTO_BEAUTY_CAT_XLSX",
 						"type": "DatasetReference"
 					}
 				],
