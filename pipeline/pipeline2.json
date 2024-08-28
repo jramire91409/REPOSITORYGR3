@@ -28,6 +28,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO_brand",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
@@ -101,13 +102,8 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"Beauty_cat"
-							]
-						},
+						"preCopyScript": "truncate table stage.Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat",
+						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
