@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "STAGE_ECOM_DATOS_DE_PRODUCTO",
-						"type": "DatasetReference"
-					},
 					"name": "SECSALIDA1"
 				}
 			],
@@ -41,9 +37,7 @@
 				"          category_desc as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> SECSALIDA1",
+				"     validateSchema: false) ~> SECSALIDA1",
 				"SECSALIDA1 alterRow(updateIf(true()),",
 				"     upsertIf(true())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",

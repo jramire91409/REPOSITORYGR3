@@ -1,0 +1,49 @@
+{
+	"name": "STAGE_ECOMM_DATOS_DE_PRODUCTO",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "product_id",
+				"type": "varchar"
+			},
+			{
+				"name": "category_id",
+				"type": "varchar"
+			},
+			{
+				"name": "Column3",
+				"type": "varchar"
+			},
+			{
+				"name": "category_code",
+				"type": "varchar"
+			},
+			{
+				"name": "beauty_category",
+				"type": "varchar"
+			},
+			{
+				"name": "brand",
+				"type": "varchar"
+			},
+			{
+				"name": "product_desc",
+				"type": "varchar"
+			},
+			{
+				"name": "category_desc",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecom_DATOS_DE_PRODUCTO"
+		}
+	}
+}

@@ -26,13 +26,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"writeBehavior": "upsert",
-						"upsertSettings": {
-							"useTempDB": true,
-							"keys": [
-								"ID_PRODUCT"
-							]
-						},
+						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
@@ -151,7 +145,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "STAGE_ECOM_DATOS_DE_PRODUCTO",
+						"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO",
 						"type": "DatasetReference"
 					}
 				]
