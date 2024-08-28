@@ -1,0 +1,9 @@
+{
+	"name": "DFGR03-2024",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "53938c06-0536-4c1a-9e8f-9abe896b1300",
+		"tenantId": "c06fb559-1b68-4b84-a14f-47d0d837a5ab"
+	}
+}

@@ -1,0 +1,41 @@
+{
+	"name": "DIM_PRODUCT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_CATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "BEAUTY_CATEGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_BRAND",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_PRODUCT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

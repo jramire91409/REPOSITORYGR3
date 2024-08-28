@@ -1,0 +1,69 @@
+{
+	"name": "df_DIM_F_PRODUCT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "STAGE_ECOM_DATOS_DE_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "SECSALIDA1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DIM_PRODUCT",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     par as string",
+				"}",
+				"source(output(",
+				"          product_id as string,",
+				"          category_id as string,",
+				"          Column3 as string,",
+				"          category_code as string,",
+				"          beauty_category as string,",
+				"          brand as string,",
+				"          product_desc as string,",
+				"          category_desc as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SECSALIDA1",
+				"SECSALIDA1 alterRow(updateIf(true()),",
+				"     upsertIf(true())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          BEAUTY_CATEGORY as string,",
+				"          ID_BRAND as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['product_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TARGET1"
+			]
+		}
+	}
+}

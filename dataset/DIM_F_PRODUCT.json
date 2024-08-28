@@ -1,0 +1,31 @@
+{
+	"name": "DIM_F_PRODUCT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_SUBCATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_F_PRODUCT"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
