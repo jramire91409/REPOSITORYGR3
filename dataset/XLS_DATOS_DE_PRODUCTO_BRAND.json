@@ -1,5 +1,5 @@
 {
-	"name": "DATOS_DE_PRODUCTO_BRAND_XLSX",
+	"name": "XLS_DATOS_DE_PRODUCTO_BRAND",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStoragegr3",

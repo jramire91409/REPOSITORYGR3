@@ -57,13 +57,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DATOS_DE_PRODUCTO_BRAND_XLSX",
+						"referenceName": "XLS_DATOS_DE_PRODUCTO_BRAND",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
+						"referenceName": "T_STAGE_ECOMM_DATOS_DE_P_BRAND",
 						"type": "DatasetReference"
 					}
 				]
@@ -134,13 +134,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DATOS_DE_PRODUCTO_BEAUTY_CAT_XLSX",
+						"referenceName": "XLS_DATOS_DE_PRODUCTO_BEAUTY_CAT",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
+						"referenceName": "T_STAGE_ECOMM_DATOS_DE_P_BRAND",
 						"type": "DatasetReference"
 					}
 				]

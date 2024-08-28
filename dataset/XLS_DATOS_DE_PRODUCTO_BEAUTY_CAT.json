@@ -1,5 +1,5 @@
 {
-	"name": "DATOS_DE_PRODUCTO_BEAUTY_CAT_XLSX",
+	"name": "XLS_DATOS_DE_PRODUCTO_BEAUTY_CAT",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStoragegr3",

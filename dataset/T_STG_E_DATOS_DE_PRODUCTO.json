@@ -1,5 +1,5 @@
 {
-	"name": "STG_E_DATOS_DE_PRODUCTO",
+	"name": "T_STG_E_DATOS_DE_PRODUCTO",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",

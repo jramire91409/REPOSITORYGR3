@@ -1,5 +1,5 @@
 {
-	"name": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
+	"name": "T_STAGE_ECOMM_DATOS_DE_P_BRAND",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
