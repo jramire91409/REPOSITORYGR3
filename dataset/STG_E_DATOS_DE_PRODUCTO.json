@@ -1,5 +1,5 @@
 {
-	"name": "STAGE_ECOMM_DATOS_DE_PRODUCTO",
+	"name": "STG_E_DATOS_DE_PRODUCTO",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
@@ -40,10 +40,6 @@
 				"name": "category_desc",
 				"type": "varchar"
 			}
-		],
-		"typeProperties": {
-			"schema": "stage",
-			"table": "Stage_ecom_DATOS_DE_PRODUCTO"
-		}
+		]
 	}
 }
