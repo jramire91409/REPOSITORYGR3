@@ -1,0 +1,21 @@
+{
+	"name": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Column1",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecom_DATOS_DE_PRODUCTO_brand"
+		}
+	}
+}

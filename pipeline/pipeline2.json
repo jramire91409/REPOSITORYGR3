@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "STAGE_ECOM_DATOS_DE_PRODUCTO",
-				"description": "Datos de producto desde el archivo \"datos de producto.xlsx\"",
+				"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
+				"description": "Llenado de la stage de brand ecomm desde archivo excel",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -35,96 +35,12 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "product_id",
+									"name": "airnails",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "product_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "category_id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "category_id",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "COLUMNA1",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Column3",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "category_code",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "category_code",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "beauty_category",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "beauty_category",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "brand",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "brand",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "product_desc",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "product_desc",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"source": {
-									"name": "category_desc",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "category_desc",
+									"name": "Column1",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -139,13 +55,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DATOS_DE_PRODUCTO_XLSX",
+						"referenceName": "DATOS_DE_PRODUCTO_BRAND_XLSX",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO",
+						"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
 						"type": "DatasetReference"
 					}
 				]
