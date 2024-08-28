@@ -55,8 +55,8 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "STAGE_ECOM_DATOS_DE_PRODUCTO",
-						"description": "Datos de producto desde el archivo \"datos de producto.xlsx\"",
+						"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
+						"description": "Llenado de la stage de brand ecomm desde archivo excel",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -78,13 +78,7 @@
 							},
 							"sink": {
 								"type": "SqlServerSink",
-								"writeBehavior": "upsert",
-								"upsertSettings": {
-									"useTempDB": true,
-									"keys": [
-										"ID_PRODUCT"
-									]
-								},
+								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false
 							},
 							"enableStaging": false,
@@ -93,62 +87,14 @@
 								"mappings": [
 									{
 										"source": {
-											"name": "product_id",
+											"name": "airnails",
 											"type": "String",
 											"physicalType": "String"
 										},
 										"sink": {
-											"name": "ID_PRODUCT",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "category_id",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "ID_CATEGORY",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "product_desc",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "DESCRIPTION",
+											"name": "Column1",
 											"type": "String",
 											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "beauty_category",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "BEAUTY_CATEGORY",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "brand",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "ID_BRAND",
-											"type": "Int32",
-											"physicalType": "int"
 										}
 									}
 								],
@@ -161,14 +107,14 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "DATOS_DE_PRODUCTO_XLSX",
+								"referenceName": "DATOS_DE_PRODUCTO_BRAND_XLSX",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
 						],
 						"outputs": [
 							{
-								"referenceName": "DIM_PRODUCT",
+								"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -181,8 +127,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DATOS_DE_PRODUCTO_XLSX')]",
-				"[concat(variables('factoryId'), '/datasets/DIM_PRODUCT')]"
+				"[concat(variables('factoryId'), '/datasets/DATOS_DE_PRODUCTO_BRAND_XLSX')]",
+				"[concat(variables('factoryId'), '/datasets/STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND')]"
 			]
 		},
 		{
@@ -326,60 +272,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/STAGE_ECOM_DATOS_DE_PRODUCTO')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "product_id",
-						"type": "varchar"
-					},
-					{
-						"name": "category_id",
-						"type": "varchar"
-					},
-					{
-						"name": "Column3",
-						"type": "varchar"
-					},
-					{
-						"name": "category_code",
-						"type": "varchar"
-					},
-					{
-						"name": "beauty_category",
-						"type": "varchar"
-					},
-					{
-						"name": "brand",
-						"type": "varchar"
-					},
-					{
-						"name": "product_desc",
-						"type": "varchar"
-					},
-					{
-						"name": "category_desc",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Stage_ecom_DATOS_DE_PRODUCTO"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureBlobStoragegr3')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -454,78 +346,115 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_DIM_F_PRODUCT')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/STAGE_ECOMM_DATOS_DE_PRODUCTO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "product_id",
+						"type": "varchar"
+					},
+					{
+						"name": "category_id",
+						"type": "varchar"
+					},
+					{
+						"name": "Column3",
+						"type": "varchar"
+					},
+					{
+						"name": "category_code",
+						"type": "varchar"
+					},
+					{
+						"name": "beauty_category",
+						"type": "varchar"
+					},
+					{
+						"name": "brand",
+						"type": "varchar"
+					},
+					{
+						"name": "product_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "category_desc",
+						"type": "varchar"
+					}
+				],
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "STAGE_ECOM_DATOS_DE_PRODUCTO",
-								"type": "DatasetReference"
-							},
-							"name": "SECSALIDA1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "DIM_PRODUCT",
-								"type": "DatasetReference"
-							},
-							"name": "TARGET1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Modificarfila1"
-						}
-					],
-					"scriptLines": [
-						"parameters{",
-						"     par as string",
-						"}",
-						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> SECSALIDA1",
-						"SECSALIDA1 alterRow(updateIf(true()),",
-						"     upsertIf(true())) ~> Modificarfila1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_PRODUCT as integer,",
-						"          ID_CATEGORY as integer,",
-						"          DESCRIPTION as string,",
-						"          BEAUTY_CATEGORY as string,",
-						"          ID_BRAND as integer",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:true,",
-						"     upsertable:true,",
-						"     keys:['product_id'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> TARGET1"
-					]
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/STAGE_ECOM_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/DIM_PRODUCT')]"
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DATOS_DE_PRODUCTO_BRAND_XLSX')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "BRAND",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "DATOS DE PRODUCTO.xlsx",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "airnails",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Column1",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO_brand"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		}
 	]
