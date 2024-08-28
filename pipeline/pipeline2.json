@@ -70,7 +70,7 @@
 			},
 			{
 				"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
-				"description": "Llenado de la stage de brand ecomm desde archivo excel",
+				"description": "Llenado de la stage de BEAUTY CAT ecomm desde archivo excel",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -114,12 +114,12 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "airnails",
+									"name": "BEAUTY_CAT",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Column1",
+									"name": "Beauty_cat",
 									"type": "String",
 									"physicalType": "varchar"
 								}
