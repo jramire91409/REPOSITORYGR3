@@ -6,6 +6,8 @@
 				"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
 				"description": "Llenado de la stage de brand ecomm desde archivo excel",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -70,8 +72,6 @@
 				"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND_copy1",
 				"description": "Llenado de la stage de brand ecomm desde archivo excel",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
