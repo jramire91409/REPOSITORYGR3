@@ -72,6 +72,8 @@
 				"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
 				"description": "Llenado de la stage de BEAUTY CAT ecomm desde archivo excel",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "STG_ECOM_DATIOS_DE_P_BRAND",
@@ -141,6 +143,162 @@
 				"outputs": [
 					{
 						"referenceName": "T_STG_ECOM_DATOS_DE_P_BEAUTY_CAT",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "STG_ECOM_DATIOS_DE_PRODUCTO",
+				"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "product_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "COLUMNA1",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Column3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "beauty_category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "beauty_category",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "brand",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "product_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_desc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "XLS_DATOS_DE_PRODUCTO",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
 						"type": "DatasetReference"
 					}
 				]
