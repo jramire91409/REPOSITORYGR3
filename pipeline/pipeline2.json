@@ -64,7 +64,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STG_ECOMM_DATOS_DE_P_BRAND",
+						"referenceName": "T_STG_E_DATOS_DE_P_BRAND",
 						"type": "DatasetReference"
 					}
 				]
@@ -138,7 +138,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STG_ECOM_DATOS_DE_P_BEAUTY_CAT",
+						"referenceName": "T_STG_E_DATOS_DE_P_BEAUTY_CAT",
 						"type": "DatasetReference"
 					}
 				]
@@ -322,8 +322,41 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "XLS_DATOS_DE_PRODUCTO_CATEGORY",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "T_STG_E_DATOS_DE_P_CATEGORY",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []

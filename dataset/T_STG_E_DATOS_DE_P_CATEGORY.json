@@ -1,5 +1,5 @@
 {
-	"name": "T_STG_E_DATOS_DE_P_BEAUTY_CAT",
+	"name": "T_STG_E_DATOS_DE_P_CATEGORY",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
@@ -9,13 +9,21 @@
 		"type": "SqlServerTable",
 		"schema": [
 			{
-				"name": "Beauty_cat",
+				"name": "category_id",
+				"type": "varchar"
+			},
+			{
+				"name": "category_code",
+				"type": "varchar"
+			},
+			{
+				"name": "category_desc",
 				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "stage",
-			"table": "Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat"
+			"table": "Stage_ecom_DATOS_DE_PRODUCTO_category"
 		}
 	}
 }
