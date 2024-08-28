@@ -1,0 +1,55 @@
+{
+	"name": "DATOS_DE_PRODUCTO_XLSX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStoragegr3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Hoja1",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "DATOS DE PRODUCTO.xlsx",
+				"folderPath": "ECOMMERCE",
+				"container": "contenedor-gr3"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "product_id",
+				"type": "String"
+			},
+			{
+				"name": "category_id",
+				"type": "String"
+			},
+			{
+				"name": "COLUMNA1",
+				"type": "String"
+			},
+			{
+				"name": "category_code",
+				"type": "String"
+			},
+			{
+				"name": "beauty_category",
+				"type": "String"
+			},
+			{
+				"name": "brand",
+				"type": "String"
+			},
+			{
+				"name": "product_desc",
+				"type": "String"
+			},
+			{
+				"name": "category_desc",
+				"type": "String"
+			}
+		]
+	}
+}
