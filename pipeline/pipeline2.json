@@ -46,9 +46,9 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ID_PRODUCT",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "product_id",
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
@@ -58,19 +58,31 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ID_CATEGORY",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "category_id",
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
 								"source": {
-									"name": "product_desc",
+									"name": "COLUMNA1",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "DESCRIPTION",
+									"name": "Column3",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_code",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -82,7 +94,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "BEAUTY_CATEGORY",
+									"name": "beauty_category",
 									"type": "String",
 									"physicalType": "varchar"
 								}
@@ -94,9 +106,33 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "ID_BRAND",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "brand",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "product_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_desc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							}
 						],
@@ -115,7 +151,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DIM_PRODUCT",
+						"referenceName": "STAGE_ECOM_DATOS_DE_PRODUCTO",
 						"type": "DatasetReference"
 					}
 				]
