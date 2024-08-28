@@ -147,6 +147,8 @@
 				"name": "STG_ECOM_DATIOS_DE_PRODUCTO",
 				"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
@@ -298,6 +300,30 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "STG_ECOM_DATIOS_DE_P_CATEGORY",
+				"description": "Llenado de la stage de CATEGORY ecomm desde archivo excel",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "STG_ECOM_DATIOS_DE_PRODUCTO",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
 			}
 		],
 		"annotations": []
