@@ -1,0 +1,153 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nombre de instancia de Data Factory"
+		},
+		"AzureBlobStoragegr3": {
+			"type": "string"
+		},
+		"Servr_azure_gr3_2024": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "STG_ECOM_DATIOS_DE_PRODUCTO_BRAND",
+						"description": "Llenado de la stage de brand ecomm desde archivo excel",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "airnails",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Column1",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DATOS_DE_PRODUCTO_BRAND_XLSX",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DATOS_DE_PRODUCTO_BRAND_XLSX')]",
+				"[concat(variables('factoryId'), '/datasets/STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DATOS_DE_PRODUCTO_BRAND_XLSX')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('AzureBlobStoragegr3')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "BRAND",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "DATOS DE PRODUCTO.xlsx",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "airnails",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/STAGE_ECOMM_DATOS_DE_PRODUCTO_BRAND')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('Servr_azure_gr3_2024')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Column1",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO_brand"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
