@@ -1,0 +1,21 @@
+{
+	"name": "T_STG_ECOM_DATOS_DE_P_BEAUTY_CAT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Beauty_cat",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat"
+		}
+	}
+}

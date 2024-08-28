@@ -140,7 +140,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STAGE_ECOMM_DATOS_DE_P_BRAND",
+						"referenceName": "T_STG_ECOM_DATOS_DE_P_BEAUTY_CAT",
 						"type": "DatasetReference"
 					}
 				]
