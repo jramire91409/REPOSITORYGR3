@@ -63,7 +63,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STAGE_ECOMM_DATOS_DE_P_BRAND",
+						"referenceName": "T_STG_ECOMM_DATOS_DE_P_BRAND",
 						"type": "DatasetReference"
 					}
 				]
@@ -72,7 +72,14 @@
 				"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
 				"description": "Llenado de la stage de BEAUTY CAT ecomm desde archivo excel",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "STG_ECOM_DATIOS_DE_P_BRAND",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
