@@ -302,7 +302,7 @@
 				]
 			},
 			{
-				"name": "STG_ECOM_DATIOS_DE_P_CATEGORY",
+				"name": "STG_ECOM_DATOS_DE_P_CATEGORY",
 				"description": "Llenado de la stage de CATEGORY ecomm desde archivo excel",
 				"type": "Copy",
 				"dependsOn": [
@@ -332,12 +332,51 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO_category",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "category_id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_id",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_code",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category_desc",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
