@@ -72,14 +72,7 @@
 				"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
 				"description": "Llenado de la stage de BEAUTY CAT ecomm desde archivo excel",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "STG_ECOM_DATIOS_DE_P_BRAND",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -103,7 +96,7 @@
 						"upsertSettings": {
 							"useTempDB": true,
 							"keys": [
-								"Column1"
+								"Beauty_cat"
 							]
 						},
 						"sqlWriterUseTableLock": false
