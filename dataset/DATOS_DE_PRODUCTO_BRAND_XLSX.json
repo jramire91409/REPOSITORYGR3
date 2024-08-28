@@ -1,0 +1,27 @@
+{
+	"name": "DATOS_DE_PRODUCTO_BRAND_XLSX",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStoragegr3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "BRAND",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "DATOS DE PRODUCTO.xlsx",
+				"folderPath": "ECOMMERCE",
+				"container": "contenedor-gr3"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "airnails",
+				"type": "String"
+			}
+		]
+	}
+}
