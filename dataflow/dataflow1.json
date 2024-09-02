@@ -12,10 +12,21 @@
 					"name": "STGDATOSPRODUCTO"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_BRAND",
+						"type": "DatasetReference"
+					},
+					"name": "DIMBRAND"
+				}
+			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "SELECTBRAND"
+				},
+				{
+					"name": "Modificarfila1"
 				}
 			],
 			"scriptLines": [
@@ -44,7 +55,22 @@
 				"          category_desc",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true) ~> SELECTBRAND",
+				"SELECTBRAND alterRow(upsertIf(isNull(brand))) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_BRAND as integer,",
+				"          DESC_BRAND as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['brand'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DIMBRAND"
 			]
 		}
 	}

@@ -1,0 +1,26 @@
+{
+	"name": "T_DIM_BRAND",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_BRAND",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESC_BRAND",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_BRAND"
+		}
+	}
+}
