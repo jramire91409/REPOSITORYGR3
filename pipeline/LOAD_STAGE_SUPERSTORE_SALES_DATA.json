@@ -5,8 +5,6 @@
 			{
 				"name": "XLS_SUPER_STORE_SALES_DATA",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -303,7 +301,7 @@
 				]
 			},
 			{
-				"name": "XLS_SUPER_STORE_SALES_DATA_copy1",
+				"name": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -332,7 +330,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_PEOPLE",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
@@ -386,11 +384,11 @@
 				]
 			},
 			{
-				"name": "XLS_SUPER_STORE_SALES_DATA_copy1_copy1",
+				"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "XLS_SUPER_STORE_SALES_DATA_copy1",
+						"activity": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -415,7 +413,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_RETURNS",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
