@@ -1,0 +1,31 @@
+{
+	"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStoragegr3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Returns",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Superstore Sales Data.xlsx",
+				"folderPath": "FISICA",
+				"container": "contenedor-gr3"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Returned",
+				"type": "String"
+			},
+			{
+				"name": "Order ID",
+				"type": "String"
+			}
+		]
+	}
+}

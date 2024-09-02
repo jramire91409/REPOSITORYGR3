@@ -1,5 +1,5 @@
 {
-	"name": "T_STG_SUPERSTORE_SALES_DATA",
+	"name": "T_STG_F_SUPERSTORE_SALES_DATA",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",

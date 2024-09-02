@@ -1,5 +1,5 @@
 {
-	"name": "T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE",
+	"name": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
@@ -9,17 +9,17 @@
 		"type": "SqlServerTable",
 		"schema": [
 			{
-				"name": "Person",
+				"name": "Returned",
 				"type": "varchar"
 			},
 			{
-				"name": "Region",
+				"name": "Order_ID",
 				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "stage",
-			"table": "Stage_Superstore_Sales_Data_people"
+			"table": "Stage_Superstore_Sales_Data_returns"
 		}
 	}
 }

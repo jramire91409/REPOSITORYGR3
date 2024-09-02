@@ -297,7 +297,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STG_SUPERSTORE_SALES_DATA",
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
 						"type": "DatasetReference"
 					}
 				]
@@ -380,7 +380,90 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_SUPERSTORE_SALES_DATA_PEOPLE",
+						"referenceName": "T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "XLS_SUPER_STORE_SALES_DATA_copy1_copy1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "XLS_SUPER_STORE_SALES_DATA_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Returned",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Returned",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Order ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Order_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
 						"type": "DatasetReference"
 					}
 				]
