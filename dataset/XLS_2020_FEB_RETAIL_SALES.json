@@ -1,5 +1,5 @@
 {
-	"name": "XLS_2019_DEC_RETAIL_SALES",
+	"name": "XLS_2020_FEB_RETAIL_SALES",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStoragegr3",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "2019-Dec.csv",
+				"fileName": "2020-Feb.csv",
 				"folderPath": "ECOMMERCE",
 				"container": "contenedor-gr3"
 			},
