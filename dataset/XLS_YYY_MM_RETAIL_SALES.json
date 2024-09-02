@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "*.csv",
+				"fileName": "2019-Dec.csv",
 				"folderPath": "ECOMMERCE",
 				"container": "contenedor-gr3"
 			},

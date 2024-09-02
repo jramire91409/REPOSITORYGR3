@@ -1,0 +1,56 @@
+{
+	"name": "T_STAGE_E_REAL_SALES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "event_time",
+				"type": "varchar"
+			},
+			{
+				"name": "event_type",
+				"type": "varchar"
+			},
+			{
+				"name": "product_id",
+				"type": "varchar"
+			},
+			{
+				"name": "category_id",
+				"type": "varchar"
+			},
+			{
+				"name": "category_code",
+				"type": "varchar"
+			},
+			{
+				"name": "brand",
+				"type": "varchar"
+			},
+			{
+				"name": "price",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 10
+			},
+			{
+				"name": "user_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "user_session",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecomm_real_sales"
+		}
+	}
+}
