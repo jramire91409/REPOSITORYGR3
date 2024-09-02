@@ -1,0 +1,61 @@
+{
+	"name": "XLS_YYY_MM_RETAIL_SALES",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStoragegr3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "*.csv",
+				"folderPath": "ECOMMERCE",
+				"container": "contenedor-gr3"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "event_time",
+				"type": "String"
+			},
+			{
+				"name": "event_type",
+				"type": "String"
+			},
+			{
+				"name": "product_id",
+				"type": "String"
+			},
+			{
+				"name": "category_id",
+				"type": "String"
+			},
+			{
+				"name": "category_code",
+				"type": "String"
+			},
+			{
+				"name": "brand",
+				"type": "String"
+			},
+			{
+				"name": "price",
+				"type": "String"
+			},
+			{
+				"name": "user_id",
+				"type": "String"
+			},
+			{
+				"name": "user_session",
+				"type": "String"
+			}
+		]
+	}
+}
