@@ -1,6 +1,7 @@
 {
-	"name": "dataflow1",
+	"name": "DIM_BRAND",
 	"properties": {
+		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

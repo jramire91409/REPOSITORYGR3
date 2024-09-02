@@ -18,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow1",
+						"referenceName": "DIM_BRAND",
 						"type": "DataFlowReference"
 					},
 					"compute": {
