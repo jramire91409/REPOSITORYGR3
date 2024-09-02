@@ -29,6 +29,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_ecomm_real_sales",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},

@@ -29,6 +29,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_dwh_ppto",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
