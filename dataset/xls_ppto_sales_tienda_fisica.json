@@ -1,0 +1,45 @@
+{
+	"name": "xls_ppto_sales_tienda_fisica",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStoragegr3",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "ppto_sales_tienda_fisica.csv",
+				"folderPath": "FISICA",
+				"container": "contenedor-gr3"
+			},
+			"columnDelimiter": ";",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "fec_ppto_month",
+				"type": "String"
+			},
+			{
+				"name": "Ship Mode",
+				"type": "String"
+			},
+			{
+				"name": "Region",
+				"type": "String"
+			},
+			{
+				"name": "Product ID",
+				"type": "String"
+			},
+			{
+				"name": "imp_ppto_ganancia",
+				"type": "String"
+			}
+		]
+	}
+}

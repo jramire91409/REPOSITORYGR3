@@ -1,0 +1,42 @@
+{
+	"name": "LOAD_STAGE_PPTO_TIENDA_FISICA",
+	"properties": {
+		"activities": [
+			{
+				"name": "XLS_PPTO_SALES_TIENDA_FISICA",
+				"description": "Carga desde el excel de ppto_sales_tienda_fisica a el area stage",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "xls_ppto_sales_tienda_fisica",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
