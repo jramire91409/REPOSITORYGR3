@@ -20,9 +20,9 @@
 					"name": "TBRAND"
 				},
 				{
-					"dataset": {
-						"referenceName": "T_DIM_BRAND",
-						"type": "DatasetReference"
+					"linkedService": {
+						"referenceName": "Servr_azure_gr3_2024",
+						"type": "LinkedServiceReference"
 					},
 					"name": "source1"
 				}
@@ -69,15 +69,12 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TBRAND",
-				"source(output(",
-				"          ID_BRAND as integer,",
-				"          DESC_BRAND as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
+				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     query: 'SELECT MAX(id_brand) as ID_MAX FROM dbo.DIM_BRAND',",
-				"     format: 'query') ~> source1",
+				"     format: 'query',",
+				"     store: 'sqlserver',",
+				"     query: 'select max (ID_BRAND) as ID_MAX_BRAND FROM dbo.DIM_BRAND',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> source1",
 				"STGDATOSPRODUCTO select(mapColumn(",
 				"          brand",
 				"     ),",
@@ -89,7 +86,7 @@
 				"aggregate1, TBRAND exists(brand == DESC_BRAND,",
 				"     negate:true,",
 				"     broadcast: 'auto')~> exists1",
-				"source1 keyGenerate(output(ID_BRAND as long),",
+				"exists1 keyGenerate(output(ID_BRAND as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
