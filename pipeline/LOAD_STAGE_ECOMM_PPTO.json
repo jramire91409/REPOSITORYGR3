@@ -38,7 +38,7 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "fec_ppto_month;event_type;product_id;imp_precio",
+									"name": "fec_ppto_month",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -49,6 +49,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "event_type",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "event_type",
 									"type": "String",
@@ -56,6 +61,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "product_id",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "product_id",
 									"type": "Int32",
@@ -63,6 +73,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "imp_precio",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "imp_precio",
 									"type": "Decimal",
