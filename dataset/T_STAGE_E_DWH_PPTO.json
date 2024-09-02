@@ -1,0 +1,36 @@
+{
+	"name": "T_STAGE_E_DWH_PPTO",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "fec_ppto_month",
+				"type": "nvarchar"
+			},
+			{
+				"name": "event_type",
+				"type": "varchar"
+			},
+			{
+				"name": "product_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "imp_precio",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_ecom_dwh_ppto"
+		}
+	}
+}

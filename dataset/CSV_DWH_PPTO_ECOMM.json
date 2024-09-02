@@ -21,7 +21,19 @@
 		},
 		"schema": [
 			{
-				"name": "fec_ppto_month;event_type;product_id;imp_precio",
+				"name": "fec_ppto_month",
+				"type": "String"
+			},
+			{
+				"name": "event_type",
+				"type": "String"
+			},
+			{
+				"name": "product_id",
+				"type": "String"
+			},
+			{
+				"name": "imp_precio",
 				"type": "String"
 			}
 		]
