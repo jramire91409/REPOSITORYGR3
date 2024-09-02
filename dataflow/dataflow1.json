@@ -1,0 +1,51 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "STGDATOSPRODUCTO"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as string,",
+				"          category_id as string,",
+				"          Column3 as string,",
+				"          category_code as string,",
+				"          beauty_category as string,",
+				"          brand as string,",
+				"          product_desc as string,",
+				"          category_desc as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STGDATOSPRODUCTO",
+				"STGDATOSPRODUCTO select(mapColumn(",
+				"          product_id,",
+				"          category_id,",
+				"          Column3,",
+				"          category_code,",
+				"          beauty_category,",
+				"          brand,",
+				"          product_desc,",
+				"          category_desc",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
+			]
+		}
+	}
+}
