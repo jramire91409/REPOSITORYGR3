@@ -328,7 +328,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "XLS_2019_DEC_RETAIL_SALES",
+						"referenceName": "XLS_2019_NOV_RETAIL_SALES",
 						"type": "DatasetReference"
 					}
 				],
@@ -500,7 +500,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "XLS_2019_DEC_RETAIL_SALES",
+						"referenceName": "XLS_2019_OCT_RETAIL_SALES",
 						"type": "DatasetReference"
 					}
 				],
@@ -672,7 +672,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "XLS_2019_DEC_RETAIL_SALES",
+						"referenceName": "XLS_2020_FEB_RETAIL_SALES",
 						"type": "DatasetReference"
 					}
 				],
@@ -844,7 +844,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "XLS_2019_DEC_RETAIL_SALES",
+						"referenceName": "XLS_2020_JAN_RETAIL_SALES",
 						"type": "DatasetReference"
 					}
 				],
