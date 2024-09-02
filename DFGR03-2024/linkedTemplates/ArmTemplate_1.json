@@ -2614,7 +2614,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "T_DIM_BRAND",
+								"referenceName": "T_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
 							"name": "DIMBRAND"
@@ -2659,8 +2659,11 @@
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_BRAND as integer,",
-						"          DESC_BRAND as string",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string,",
+						"          BEAUTY_CATEGORY as string,",
+						"          ID_BRAND as integer",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:false,",
@@ -2673,9 +2676,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/T_DIM_BRAND')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LOAD_FULL_STAGE')]",
@@ -2838,7 +2839,8 @@
 								"datasetParameters": {
 									"STGDATOSPRODUCTO": {},
 									"DIMBRAND": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
