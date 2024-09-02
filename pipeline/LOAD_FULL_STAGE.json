@@ -89,6 +89,7 @@
 			},
 			{
 				"name": "LOAD_STAGE_ECOM_REAL",
+				"description": "CARGA DE TODOS LOS STAGE",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
