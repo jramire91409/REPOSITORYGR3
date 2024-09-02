@@ -1,11 +1,10 @@
 {
 	"name": "DIMENSION_LOAD",
 	"properties": {
-		"description": "Carga de la DIM_BRAND",
+		"description": "Carga de dimensiones ECOMM",
 		"activities": [
 			{
 				"name": "DIM_BRAND",
-				"description": "Carga de la DIM_BRAND",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
