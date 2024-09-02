@@ -3692,7 +3692,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "T_DIM_PRODUCT",
+								"referenceName": "T_DIM_BRAND",
 								"type": "DatasetReference"
 							},
 							"name": "DIMBRAND"
@@ -3703,60 +3703,58 @@
 							"name": "SELECTBRAND"
 						},
 						{
+							"name": "aggregate1"
+						},
+						{
 							"name": "Modificarfila1"
+						},
+						{
+							"name": "surrogateKey1"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
+						"          brand as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> STGDATOSPRODUCTO",
 						"STGDATOSPRODUCTO select(mapColumn(",
-						"          product_id,",
-						"          category_id,",
-						"          Column3,",
-						"          category_code,",
-						"          beauty_category,",
-						"          brand,",
-						"          product_desc,",
-						"          category_desc",
+						"          brand",
 						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SELECTBRAND",
-						"SELECTBRAND alterRow(upsertIf(isNull(brand))) ~> Modificarfila1",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> SELECTBRAND",
+						"SELECTBRAND aggregate(groupBy(brand),",
+						"     COUNT = count()) ~> aggregate1",
+						"surrogateKey1 alterRow(upsertIf(isNull(brand))) ~> Modificarfila1",
+						"aggregate1 keyGenerate(output(ID_BRAND as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_PRODUCT as integer,",
-						"          ID_CATEGORY as integer,",
-						"          DESCRIPTION as string,",
-						"          BEAUTY_CATEGORY as string,",
-						"          ID_BRAND as integer",
+						"          ID_BRAND as integer,",
+						"          DESC_BRAND as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:false,",
 						"     updateable:false,",
 						"     upsertable:true,",
-						"     keys:['brand'],",
+						"     keys:['DESC_BRAND'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> DIMBRAND"
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_BRAND,",
+						"          DESC_BRAND = brand",
+						"     )) ~> DIMBRAND"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCT')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_BRAND')]"
 			]
 		},
 		{
