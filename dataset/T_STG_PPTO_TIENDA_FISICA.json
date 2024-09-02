@@ -1,0 +1,39 @@
+{
+	"name": "T_STG_PPTO_TIENDA_FISICA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "fec_ppto_month",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Ship_Mode",
+				"type": "varchar"
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			},
+			{
+				"name": "Product_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "imp_ppto_ganancia",
+				"type": "decimal",
+				"precision": 38,
+				"scale": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "stage_ppto_tienda_fisica"
+		}
+	}
+}
