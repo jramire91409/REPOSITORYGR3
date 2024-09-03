@@ -10,17 +10,8 @@
 						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
 						"type": "DatasetReference"
 					},
-					"name": "STGDATOSPRODUCTO"
+					"name": "source1"
 				},
-				{
-					"dataset": {
-						"referenceName": "T_DIM_CATEGORY",
-						"type": "DatasetReference"
-					},
-					"name": "TDIMCATEGORY"
-				}
-			],
-			"sinks": [
 				{
 					"dataset": {
 						"referenceName": "T_DIM_CATEGORY",
@@ -29,15 +20,36 @@
 					"name": "DIMCATEGORY"
 				}
 			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_CATEGORY",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "SELECTCATEGORY"
+					"name": "aggregate2"
 				},
 				{
-					"name": "aggregate1"
+					"name": "Siexiste"
 				},
 				{
-					"name": "exists1"
+					"name": "Noexiste"
+				},
+				{
+					"name": "UPSERTACTIONUP"
+				},
+				{
+					"name": "UPSERTACTIONIN"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "Modificarfila1"
 				}
 			],
 			"scriptLines": [
@@ -54,7 +66,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> STGDATOSPRODUCTO",
+				"     format: 'table') ~> source1",
 				"source(output(",
 				"          ID_CATEGORY as integer,",
 				"          DESCRIPTION as string,",
@@ -63,22 +75,20 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> TDIMCATEGORY",
-				"STGDATOSPRODUCTO select(mapColumn(",
-				"          category_id,",
-				"          category_code,",
-				"          category_desc",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SELECTCATEGORY",
-				"SELECTCATEGORY aggregate(groupBy(category_id,",
-				"          category_code,",
-				"          category_desc),",
-				"     COUNT = count()) ~> aggregate1",
-				"aggregate1, TDIMCATEGORY exists(toInteger(category_id) == ID_CATEGORY,",
+				"     format: 'table') ~> DIMCATEGORY",
+				"source1 aggregate(groupBy(category_id),",
+				"     COUNT = count()) ~> aggregate2",
+				"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id) ,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> Siexiste",
+				"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id) ,",
 				"     negate:true,",
-				"     broadcast: 'auto')~> exists1",
-				"exists1 sink(allowSchemaDrift: true,",
+				"     broadcast: 'auto')~> Noexiste",
+				"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
+				"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
+				"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
+				"union1 alterRow(upsertIf(isNull(UPSERT_ACTION) == false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_CATEGORY as integer,",
@@ -86,17 +96,13 @@
 				"          CATEGORY_CODE as string",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:true,",
+				"     insertable:false,",
 				"     updateable:false,",
-				"     upsertable:false,",
+				"     upsertable:true,",
+				"     keys:['category_id'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          ID_CATEGORY = category_id,",
-				"          DESCRIPTION = category_desc,",
-				"          CATEGORY_CODE = category_code",
-				"     )) ~> DIMCATEGORY"
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
