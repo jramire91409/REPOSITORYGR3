@@ -1,0 +1,103 @@
+{
+	"name": "DIM_CATEGORY",
+	"properties": {
+		"description": "Carga de la DIM_BRAND",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "STGDATOSPRODUCTO"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_CATEGORY",
+						"type": "DatasetReference"
+					},
+					"name": "TDIMCATEGORY"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_CATEGORY",
+						"type": "DatasetReference"
+					},
+					"name": "DIMCATEGORY"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTCATEGORY"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "exists1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as string,",
+				"          category_id as string,",
+				"          Column3 as string,",
+				"          category_code as string,",
+				"          beauty_category as string,",
+				"          brand as string,",
+				"          product_desc as string,",
+				"          category_desc as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STGDATOSPRODUCTO",
+				"source(output(",
+				"          ID_CATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          CATEGORY_CODE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TDIMCATEGORY",
+				"STGDATOSPRODUCTO select(mapColumn(",
+				"          category_id,",
+				"          category_code,",
+				"          category_desc",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTCATEGORY",
+				"SELECTCATEGORY aggregate(groupBy(category_id,",
+				"          category_code,",
+				"          category_desc),",
+				"     COUNT = count()) ~> aggregate1",
+				"aggregate1, TDIMCATEGORY exists(toInteger(category_id) == ID_CATEGORY,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists1",
+				"exists1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_CATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          CATEGORY_CODE as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_CATEGORY = category_id,",
+				"          DESCRIPTION = category_desc,",
+				"          CATEGORY_CODE = category_code",
+				"     )) ~> DIMCATEGORY"
+			]
+		}
+	}
+}

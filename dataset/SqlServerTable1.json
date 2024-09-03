@@ -1,0 +1,30 @@
+{
+	"name": "SqlServerTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_CATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "CATEGORY_CODE",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_CATEGORY"
+		}
+	}
+}
