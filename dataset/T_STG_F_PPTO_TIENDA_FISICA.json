@@ -1,5 +1,5 @@
 {
-	"name": "T_STG_PPTO_TIENDA_FISICA",
+	"name": "T_STG_F_PPTO_TIENDA_FISICA",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",

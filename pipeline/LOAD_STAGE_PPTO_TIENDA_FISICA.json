@@ -115,7 +115,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "T_STG_PPTO_TIENDA_FISICA",
+						"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
 						"type": "DatasetReference"
 					}
 				]
