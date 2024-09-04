@@ -1,0 +1,94 @@
+{
+	"name": "FACT_SALES_ECOMM",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STAGE_E_REAL_SALES",
+						"type": "DatasetReference"
+					},
+					"name": "STAGEREALSALES"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_EVENT_TYPE",
+						"type": "DatasetReference"
+					},
+					"name": "DIMEVENTTYPE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_FACT_SALES_ECOMM",
+						"type": "DatasetReference"
+					},
+					"name": "FACTSALESECOMM"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          event_time as string,",
+				"          event_type as string,",
+				"          product_id as string,",
+				"          category_id as string,",
+				"          category_code as string,",
+				"          brand as string,",
+				"          price as decimal(38,10),",
+				"          user_id as integer,",
+				"          user_session as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STAGEREALSALES",
+				"source(output(",
+				"          ID_EVENT_TYPE as integer,",
+				"          DESC_EVENT_TYPE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMEVENTTYPE",
+				"STAGEREALSALES, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_ROW as integer,",
+				"          ID_USER_SESION as string,",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10),",
+				"          ID_USER as integer,",
+				"          EVENT_TIME as binary",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_USER_SESION = user_session,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = price,",
+				"          ID_USER = user_id,",
+				"          EVENT_TIME = event_time",
+				"     )) ~> FACTSALESECOMM"
+			]
+		}
+	}
+}

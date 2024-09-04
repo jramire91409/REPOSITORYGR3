@@ -1,0 +1,51 @@
+{
+	"name": "T_FACT_SALES_ECOMM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_ROW",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_USER_SESION",
+				"type": "char"
+			},
+			{
+				"name": "ID_PRODUCT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_EVENT_TYPE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PRICE",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "ID_USER",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EVENT_TIME",
+				"type": "timestamp"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FACT_SALES_ECOMM"
+		}
+	}
+}
