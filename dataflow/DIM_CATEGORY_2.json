@@ -54,7 +54,7 @@
 				"     COUNT = count()) ~> aggregate2",
 				"cast1 alterRow(upsertIf(isNull(category_id)== false())) ~> Modificarfila1",
 				"aggregate2 cast(output(",
-				"          category_id as integer '000'",
+				"          category_id as long '000,000,000'",
 				"     ),",
 				"     errors: true) ~> cast1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
@@ -73,6 +73,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
+				"          ID_CATEGORY = category_id,",
+				"          DESCRIPTION = category_desc,",
 				"          CATEGORY_CODE = category_code",
 				"     )) ~> sink1"
 			]
