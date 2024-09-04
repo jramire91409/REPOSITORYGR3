@@ -118,7 +118,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_E_PRODUCTO",
+						"referenceName": "DIM_E_PRODUCT",
 						"type": "DataFlowReference"
 					},
 					"compute": {
