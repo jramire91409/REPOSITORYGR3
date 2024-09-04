@@ -43,9 +43,6 @@
 					"name": "join1"
 				},
 				{
-					"name": "cast1"
-				},
-				{
 					"name": "cast2"
 				},
 				{
@@ -93,7 +90,6 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				" cast(errors: true) ~> cast1",
 				"join1 cast(output(",
 				"          category_id as long '000,000,000'",
 				"     ),",
