@@ -25,7 +25,7 @@
 						"referenceName": "T_FACT_PPTO_ECOMM",
 						"type": "DatasetReference"
 					},
-					"name": "FACTSALESECOMM"
+					"name": "FACTPPTOECOMM"
 				}
 			],
 			"transformations": [
@@ -79,8 +79,12 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          ID_EVENT_TYPE",
-				"     )) ~> FACTSALESECOMM"
+				"          MONTH,",
+				"          YEAR,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = imp_precio",
+				"     )) ~> FACTPPTOECOMM"
 			]
 		}
 	}
