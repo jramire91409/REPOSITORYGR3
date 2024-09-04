@@ -1,0 +1,71 @@
+{
+	"name": "DIM_BEAUTY_CAT",
+	"properties": {
+		"description": "Carga de la DIM_BRAND",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_BEAUTY_CAT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as string,",
+				"          category_id as string,",
+				"          Column3 as string,",
+				"          category_code as string,",
+				"          beauty_category as string,",
+				"          brand as string,",
+				"          product_desc as string,",
+				"          category_desc as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source1 aggregate(groupBy(beauty_category = upper(beauty_category)),",
+				"     COUNT = count()) ~> aggregate2",
+				"aggregate2 alterRow(upsertIf(isNull(beauty_category) == false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_BEAUTY_CAT as integer,",
+				"          DESC_BEAUTY_CAT as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['DESC_BEAUTY_CAT'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_BEAUTY_CAT = beauty_category",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
