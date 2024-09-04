@@ -29,7 +29,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "T_DIM_F_PRODUCT",
+						"referenceName": "T_DIM_PRODUCT",
 						"type": "DatasetReference"
 					},
 					"name": "DIMPRODUCTO"
@@ -98,9 +98,11 @@
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          ID_PRODUCT as string,",
-				"          ID_SUBCATEGORY as integer,",
-				"          DESCRIPTION as string",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          ID_BEAUTY_CAT as integer,",
+				"          ID_BRAND as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
@@ -109,7 +111,14 @@
 				"     keys:['product_id'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DIMPRODUCTO"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_PRODUCT = product_id,",
+				"          ID_CATEGORY = category_id,",
+				"          DESCRIPTION = product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND",
+				"     )) ~> DIMPRODUCTO"
 			]
 		}
 	}
