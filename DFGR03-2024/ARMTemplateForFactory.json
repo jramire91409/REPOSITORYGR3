@@ -4809,6 +4809,154 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_PPTO_ECOMM')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STAGE_E_DWH_PPTO",
+								"type": "DatasetReference"
+							},
+							"name": "STAGEREALSALES"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_EVENT_TYPE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMEVENTTYPE"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_ECOMM",
+								"type": "DatasetReference"
+							},
+							"name": "FACTPPTOECOMM"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "MONTHANDYEAR"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          event_type as string,",
+						"          product_id as integer,",
+						"          imp_precio as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STAGEREALSALES",
+						"source(output(",
+						"          ID_EVENT_TYPE as integer,",
+						"          DESC_EVENT_TYPE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMEVENTTYPE",
+						"MONTHANDYEAR, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
+						"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          MONTH as decimal(2,0),",
+						"          YEAR as decimal(4,0),",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          MONTH,",
+						"          YEAR,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = imp_precio",
+						"     )) ~> FACTPPTOECOMM"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_DWH_PPTO')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
+				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_ECOMM')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_ECOMM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "MONTH",
+						"type": "decimal",
+						"precision": 2,
+						"scale": 0
+					},
+					{
+						"name": "YEAR",
+						"type": "decimal",
+						"precision": 4,
+						"scale": 0
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_PPTO_ECOMM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
 		}
 	]
 }
