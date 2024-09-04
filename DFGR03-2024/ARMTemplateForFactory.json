@@ -4642,6 +4642,44 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "FACT_PPTO_ECOMM",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "FACT_SALES_ECOMM",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FACT_PPTO_ECOMM",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STAGEREALSALES": {},
+									"DIMEVENTTYPE": {},
+									"FACTPPTOECOMM": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -4650,7 +4688,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_SALES_ECOMM')]"
+				"[concat(variables('factoryId'), '/dataflows/FACT_SALES_ECOMM')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_PPTO_ECOMM')]"
 			]
 		},
 		{

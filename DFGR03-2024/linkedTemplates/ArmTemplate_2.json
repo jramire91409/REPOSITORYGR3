@@ -2065,7 +2065,14 @@
 					{
 						"name": "FACT_PPTO_ECOMM",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "FACT_SALES_ECOMM",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
