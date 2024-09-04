@@ -2154,7 +2154,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_E_PRODUCTO')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_PRODUCT')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2697,7 +2697,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "T_DIM_SUB_CATEGORY",
+								"referenceName": "T_DIM_F_SUB_CATEGORY",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -2777,6 +2777,123 @@
 						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
 						"          ID_CATEGORY",
 						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "SUPERSTORESALESDATA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SUB_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSUBCATEGORIA"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMPRODUCTO"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SUPERSTORESALESDATA",
+						"source(output(",
+						"          DESC_SUB_CATEGORY as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          ID_CATEGORY as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSUBCATEGORIA",
+						"select1, DIMFSUBCATEGORIA join(upper(Sub_Category) == upper(DESC_SUB_CATEGORY),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 alterRow(upsertIf(isNull(Product_ID)==false())) ~> Modificarfila1",
+						"SUPERSTORESALESDATA select(mapColumn(",
+						"          Product_ID,",
+						"          Sub_Category,",
+						"          Product_Name",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          DESCRIPTION as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESCRIPTION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          ID_SUBCATEGORY,",
+						"          DESCRIPTION = Product_Name",
+						"     )) ~> DIMPRODUCTO"
 					]
 				}
 			},
@@ -2922,7 +3039,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_E_PRODUCTO",
+								"referenceName": "DIM_E_PRODUCT",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -2988,7 +3105,7 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_E_BRAND')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_E_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_E_BEAUTY_CAT')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_E_PRODUCTO')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_PRODUCT')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_E_EVENT_TYPE')]"
 			]
 		},
