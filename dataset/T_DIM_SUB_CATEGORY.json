@@ -1,0 +1,31 @@
+{
+	"name": "T_DIM_SUB_CATEGORY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DESC_SUB_CATEGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_SUBCATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_CATEGORY",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_F_SUB_CATEGORY"
+		}
+	}
+}
