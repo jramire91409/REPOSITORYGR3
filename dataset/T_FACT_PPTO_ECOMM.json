@@ -1,0 +1,45 @@
+{
+	"name": "T_FACT_PPTO_ECOMM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "MONTH",
+				"type": "decimal",
+				"precision": 2,
+				"scale": 0
+			},
+			{
+				"name": "YEAR",
+				"type": "decimal",
+				"precision": 4,
+				"scale": 0
+			},
+			{
+				"name": "ID_PRODUCT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_EVENT_TYPE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PRICE",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FACT_PPTO_ECOMM"
+		}
+	}
+}

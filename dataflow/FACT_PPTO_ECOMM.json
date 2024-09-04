@@ -1,0 +1,87 @@
+{
+	"name": "FACT_PPTO_ECOMM",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STAGE_E_DWH_PPTO",
+						"type": "DatasetReference"
+					},
+					"name": "STAGEREALSALES"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_EVENT_TYPE",
+						"type": "DatasetReference"
+					},
+					"name": "DIMEVENTTYPE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_FACT_PPTO_ECOMM",
+						"type": "DatasetReference"
+					},
+					"name": "FACTSALESECOMM"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "MONTHANDYEAR"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          fec_ppto_month as string,",
+				"          event_type as string,",
+				"          product_id as integer,",
+				"          imp_precio as decimal(38,10)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STAGEREALSALES",
+				"source(output(",
+				"          ID_EVENT_TYPE as integer,",
+				"          DESC_EVENT_TYPE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMEVENTTYPE",
+				"MONTHANDYEAR, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
+				"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MONTH as decimal(2,0),",
+				"          YEAR as decimal(4,0),",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_EVENT_TYPE",
+				"     )) ~> FACTSALESECOMM"
+			]
+		}
+	}
+}
