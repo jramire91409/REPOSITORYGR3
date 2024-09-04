@@ -2749,7 +2749,8 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source2",
-						"join1 aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category)),",
+						"join1 aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
+						"          ID_CATEGORY),",
 						"     COUNT = count()) ~> aggregate2",
 						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
 						"source1, source2 join(upper(Category) == upper(DESCRIPTION),",
@@ -2768,10 +2769,14 @@
 						"     insertable:false,",
 						"     updateable:false,",
 						"     upsertable:true,",
-						"     keys:['SUB_CATEGORY'],",
+						"     keys:['DESC_SUB_CATEGORY'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
+						"          ID_CATEGORY",
+						"     )) ~> sink1"
 					]
 				}
 			},
