@@ -1,0 +1,26 @@
+{
+	"name": "T_DIM_EVENT_TYPE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_EVENT_TYPE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESC_EVENT_TYPE",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_EVENT_TYPE"
+		}
+	}
+}

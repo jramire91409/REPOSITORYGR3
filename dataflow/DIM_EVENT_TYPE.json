@@ -1,0 +1,65 @@
+{
+	"name": "DIM_EVENT_TYPE",
+	"properties": {
+		"description": "Carga de la DIM_BRAND",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_EVENT_TYPE",
+						"type": "DatasetReference"
+					},
+					"name": "DIMEVENTTYPE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_BRAND",
+						"type": "DatasetReference"
+					},
+					"name": "DIMBRAND"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID_EVENT_TYPE as integer,",
+				"          DESC_EVENT_TYPE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMEVENTTYPE",
+				"DIMEVENTTYPE aggregate(groupBy(brand),",
+				"     COUNT = count()) ~> aggregate1",
+				"aggregate1 alterRow(upsertIf(isNull(brand)==false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_BRAND as integer,",
+				"          DESC_BRAND as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['DESC_BRAND'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_BRAND = brand",
+				"     )) ~> DIMBRAND"
+			]
+		}
+	}
+}
