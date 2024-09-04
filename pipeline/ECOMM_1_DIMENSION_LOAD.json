@@ -19,7 +19,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_BRAND",
+						"referenceName": "DIM_E_BRAND",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -52,7 +52,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_CATEGORY",
+						"referenceName": "DIM_E_CATEGORY",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -85,7 +85,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_BEAUTY_CAT",
+						"referenceName": "DIM_E_BEAUTY_CAT",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -118,7 +118,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_PRODUCTO",
+						"referenceName": "DIM_E_PRODUCTO",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -149,7 +149,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_EVENT_TYPE",
+						"referenceName": "DIM_E_EVENT_TYPE",
 						"type": "DataFlowReference"
 					},
 					"compute": {

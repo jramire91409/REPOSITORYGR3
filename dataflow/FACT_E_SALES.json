@@ -1,5 +1,5 @@
 {
-	"name": "FACT_SALES_ECOMM",
+	"name": "FACT_E_SALES",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {

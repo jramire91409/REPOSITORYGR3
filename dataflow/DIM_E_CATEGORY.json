@@ -1,5 +1,5 @@
 {
-	"name": "DIM_CATEGORY",
+	"name": "DIM_E_CATEGORY",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
@@ -52,7 +52,7 @@
 				"          category_code,",
 				"          category_desc),",
 				"     COUNT = count()) ~> aggregate2",
-				"cast1 alterRow(upsertIf(isNull(category_id)== false())) ~> Modificarfila1",
+				"cast1 alterRow(upsertIf(isNull(category_id)==false())) ~> Modificarfila1",
 				"aggregate2 cast(output(",
 				"          category_id as long '000,000,000'",
 				"     ),",

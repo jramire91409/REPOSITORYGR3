@@ -1,5 +1,5 @@
 {
-	"name": "DIM_BEAUTY_CAT",
+	"name": "DIM_E_BEAUTY_CAT",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
@@ -47,7 +47,7 @@
 				"     format: 'table') ~> source1",
 				"source1 aggregate(groupBy(beauty_category = upper(beauty_category)),",
 				"     COUNT = count()) ~> aggregate2",
-				"aggregate2 alterRow(upsertIf(isNull(beauty_category) == false())) ~> Modificarfila1",
+				"aggregate2 alterRow(upsertIf(isNull(beauty_category)==false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

@@ -1,5 +1,5 @@
 {
-	"name": "DIM_BRAND",
+	"name": "DIM_E_BRAND",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
@@ -47,7 +47,7 @@
 				"     format: 'table') ~> STGDATOSPRODUCTO",
 				"STGDATOSPRODUCTO aggregate(groupBy(brand),",
 				"     COUNT = count()) ~> aggregate1",
-				"aggregate1 alterRow(upsertIf(isNull(brand) == false())) ~> Modificarfila1",
+				"aggregate1 alterRow(upsertIf(isNull(brand)==false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

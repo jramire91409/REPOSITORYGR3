@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FACT_SALES_ECOMM",
+						"referenceName": "FACT_E_SALES",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -47,7 +47,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FACT_PPTO_ECOMM",
+						"referenceName": "FACT_E_PPTO",
 						"type": "DataFlowReference"
 					},
 					"compute": {

@@ -1,5 +1,5 @@
 {
-	"name": "DIM_EVENT_TYPE",
+	"name": "DIM_E_EVENT_TYPE",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",

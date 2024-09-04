@@ -1,5 +1,5 @@
 {
-	"name": "DIM_PRODUCTO",
+	"name": "DIM_E_PRODUCTO",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -94,7 +94,7 @@
 				"          category_id as long '000,000,000'",
 				"     ),",
 				"     errors: true) ~> cast2",
-				"cast2 alterRow(upsertIf(isNull( product_id) == false())) ~> Modificarfila1",
+				"cast2 alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",

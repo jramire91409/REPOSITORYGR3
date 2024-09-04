@@ -1,5 +1,5 @@
 {
-	"name": "FACT_PPTO_ECOMM",
+	"name": "FACT_E_PPTO",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
