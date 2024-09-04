@@ -13,6 +13,134 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/XLS_2019_DEC_RETAIL_SALES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "2019-Dec.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XLS_2019_NOV_RETAIL_SALES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "2019-Nov.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/XLS_2019_OCT_RETAIL_SALES')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -703,11 +831,6 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"IDMAX": {
-						"type": "Integer"
-					}
 				},
 				"annotations": []
 			},
@@ -1587,14 +1710,11 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"variables": {
-					"IDMAX": {
-						"type": "Integer"
-					}
-				},
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/XLS_2019_DEC_RETAIL_SALES')]",
+				"[concat(variables('factoryId'), '/datasets/XLS_2019_NOV_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_2019_OCT_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_2020_FEB_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_2020_JAN_RETAIL_SALES')]"
@@ -2732,196 +2852,116 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIMENSION_LOAD')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY_long')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Carga de dimensiones ECOMM",
-				"activities": [
-					{
-						"name": "DIM_BRAND",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_BRAND",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGDATOSPRODUCTO": {},
-									"TBRAND": {},
-									"DIMBRAND": {}
-								}
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+							"name": "DIMCATEGORY"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"IDMAX": {
-						"type": "Integer"
-					}
-				},
-				"annotations": []
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Siexiste"
+						},
+						{
+							"name": "Noexiste"
+						},
+						{
+							"name": "UPSERTACTIONUP"
+						},
+						{
+							"name": "UPSERTACTIONIN"
+						},
+						{
+							"name": "union1"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMCATEGORY",
+						"source1 aggregate(groupBy(category_id),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
+						"     negate:false,",
+						"     broadcast: 'auto')~> Siexiste",
+						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
+						"     negate:true,",
+						"     broadcast: 'auto')~> Noexiste",
+						"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
+						"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
+						"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
+						"union1 alterRow(upsertIf(isNull(UPSERT_ACTION)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['category_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_BRAND')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LOAD_FULL_STAGE')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "LOAD_STAGE_PRODUCT",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_PRODUCT",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_PRODUCT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_ECOMM_PPTO",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_ECOMM_PPTO",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_ECOM_REAL",
-						"description": "CARGA DE TODOS LOS STAGE",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_ECOMM_PPTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_ECOM_REAL",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"IDMAX": {
-						"type": "Integer"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_PRODUCT')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_SUPERSTORE_SALES_DATA')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_PPTO_TIENDA_FISICA')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_ECOMM_PPTO')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_ECOM_REAL')]"
-			]
+			"dependsOn": []
 		}
 	]
 }

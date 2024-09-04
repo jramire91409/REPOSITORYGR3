@@ -1,0 +1,317 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Nombre de instancia de Data Factory",
+			"defaultValue": "DFGR03-2024"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(category_id,",
+						"          category_code,",
+						"          category_desc),",
+						"     COUNT = count()) ~> aggregate2",
+						"cast1 alterRow(upsertIf(isNull(category_id)== false())) ~> Modificarfila1",
+						"aggregate2 cast(output(",
+						"          category_id as long '000,000,000'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_CATEGORY'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = category_desc,",
+						"          CATEGORY_CODE = category_code",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIMENSION_LOAD')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de dimensiones ECOMM",
+				"activities": [
+					{
+						"name": "DIM_BRAND",
+						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_BRAND",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGDATOSPRODUCTO": {},
+									"TBRAND": {},
+									"DIMBRAND": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DIM_CATEGORY",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_BRAND",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_CATEGORY",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_CATEGORY')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_FULL_STAGE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LOAD_STAGE_PRODUCT",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LOAD_STAGE_PRODUCT",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LOAD_STAGE_PRODUCT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "LOAD_STAGE_PPTO_TIENDA_FISICA",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LOAD_STAGE_PPTO_TIENDA_FISICA",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "LOAD_STAGE_ECOMM_PPTO",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LOAD_STAGE_PPTO_TIENDA_FISICA",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LOAD_STAGE_ECOMM_PPTO",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "LOAD_STAGE_ECOM_REAL",
+						"description": "CARGA DE TODOS LOS STAGE",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LOAD_STAGE_ECOMM_PPTO",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LOAD_STAGE_ECOM_REAL",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
