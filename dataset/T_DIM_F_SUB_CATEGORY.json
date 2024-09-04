@@ -1,5 +1,5 @@
 {
-	"name": "T_DIM_SUB_CATEGORY",
+	"name": "T_DIM_F_SUB_CATEGORY",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",

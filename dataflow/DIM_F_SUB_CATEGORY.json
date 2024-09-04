@@ -23,7 +23,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "T_DIM_SUB_CATEGORY",
+						"referenceName": "T_DIM_F_SUB_CATEGORY",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"

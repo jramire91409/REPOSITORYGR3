@@ -6,24 +6,24 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
 						"type": "DatasetReference"
 					},
-					"name": "DATOSDEPRODUCTO"
+					"name": "SUPERSTORESALESDATA"
 				},
 				{
 					"dataset": {
-						"referenceName": "T_DIM_BEAUTY_CAT",
+						"referenceName": "T_STG_PPTO_TIENDA_FISICA",
 						"type": "DatasetReference"
 					},
-					"name": "DIMBEAUTYCAT"
+					"name": "PPTOTIENDAFISICA"
 				},
 				{
 					"dataset": {
-						"referenceName": "T_DIM_BRAND",
+						"referenceName": "T_DIM_F_SUB_CATEGORY",
 						"type": "DatasetReference"
 					},
-					"name": "DIMBRAND"
+					"name": "DIMFSUBCATEGORIA"
 				}
 			],
 			"sinks": [
@@ -47,45 +47,64 @@
 				},
 				{
 					"name": "Modificarfila1"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          product_id as string,",
-				"          category_id as string,",
-				"          Column3 as string,",
-				"          category_code as string,",
-				"          beauty_category as string,",
-				"          brand as string,",
-				"          product_desc as string,",
-				"          category_desc as string",
+				"          Order_ID as string,",
+				"          Order_Date as string,",
+				"          Ship_Date as string,",
+				"          Ship_Mode as string,",
+				"          Customer_ID as string,",
+				"          Customer_Name as string,",
+				"          Segment as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Postal_Code as integer,",
+				"          Region as string,",
+				"          Product_ID as string,",
+				"          Category as string,",
+				"          Sub_Category as string,",
+				"          Product_Name as string,",
+				"          Sales as decimal(38,10),",
+				"          Quantity as integer,",
+				"          Discount as decimal(38,10),",
+				"          Profit as decimal(38,10)",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DATOSDEPRODUCTO",
+				"     format: 'table') ~> SUPERSTORESALESDATA",
 				"source(output(",
-				"          ID_BEAUTY_CAT as integer,",
-				"          DESC_BEAUTY_CAT as string",
+				"          fec_ppto_month as string,",
+				"          Ship_Mode as string,",
+				"          Region as string,",
+				"          Product_ID as string,",
+				"          imp_ppto_ganancia as decimal(38,10)",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DIMBEAUTYCAT",
+				"     format: 'table') ~> PPTOTIENDAFISICA",
 				"source(output(",
-				"          ID_BRAND as integer,",
-				"          DESC_BRAND as string",
+				"          DESC_SUB_CATEGORY as string,",
+				"          ID_SUBCATEGORY as integer,",
+				"          ID_CATEGORY as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DIMBRAND",
-				"DATOSDEPRODUCTO, DIMBEAUTYCAT join(upper(beauty_category) == upper(DESC_BEAUTY_CAT),",
+				"     format: 'table') ~> DIMFSUBCATEGORIA",
+				"union1, PPTOTIENDAFISICA join(upper() == upper(DESC_BEAUTY_CAT),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> CONBEAUTY",
-				"CONBEAUTY, DIMBRAND join(upper(brand) == upper(DESC_BRAND),",
+				"CONBEAUTY, DIMFSUBCATEGORIA join(upper(brand) == upper(DESC_BRAND),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -95,6 +114,7 @@
 				"     ),",
 				"     errors: true) ~> cast2",
 				"cast2 alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+				"SUPERSTORESALESDATA, PPTOTIENDAFISICA union(byName: true)~> union1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -113,7 +133,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          ID_PRODUCT = product_id,",
+				"          ID_PRODUCT = SUPERSTORESALESDATA@product_id,",
 				"          ID_CATEGORY = category_id,",
 				"          DESCRIPTION = product_desc,",
 				"          ID_BEAUTY_CAT,",
