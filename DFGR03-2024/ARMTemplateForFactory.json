@@ -5127,6 +5127,8 @@
 					{
 						"name": "DIM_F_CATEGORY",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -5153,6 +5155,44 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "DIM_F_SUB_CATEGORY",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_F_CATEGORY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_SUB_CATEGORY",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -5161,7 +5201,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_CATEGORY')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CATEGORY')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]"
 			]
 		},
 		{
