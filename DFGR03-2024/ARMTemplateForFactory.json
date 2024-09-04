@@ -95,7 +95,7 @@
 							{
 								"activity": "DIM_BRAND",
 								"dependencyConditions": [
-									"Completed"
+									"Succeeded"
 								]
 							}
 						],
