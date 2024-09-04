@@ -71,7 +71,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_BRAND",
+								"referenceName": "DIM_E_BRAND",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -110,7 +110,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_CATEGORY",
+								"referenceName": "DIM_E_CATEGORY",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -149,7 +149,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_BEAUTY_CAT",
+								"referenceName": "DIM_E_BEAUTY_CAT",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -188,7 +188,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_PRODUCTO",
+								"referenceName": "DIM_E_PRODUCTO",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -227,7 +227,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_EVENT_TYPE",
+								"referenceName": "DIM_E_EVENT_TYPE",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -251,11 +251,11 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_BRAND')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_BEAUTY_CAT')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_EVENT_TYPE')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_BRAND')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_CATEGORY')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_BEAUTY_CAT')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_PRODUCTO')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_EVENT_TYPE')]"
 			]
 		},
 		{
@@ -3938,7 +3938,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_BRAND')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_BRAND')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4015,122 +4015,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY_long')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "DIMCATEGORY"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Siexiste"
-						},
-						{
-							"name": "Noexiste"
-						},
-						{
-							"name": "UPSERTACTIONUP"
-						},
-						{
-							"name": "UPSERTACTIONIN"
-						},
-						{
-							"name": "union1"
-						},
-						{
-							"name": "Modificarfila1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source(output(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMCATEGORY",
-						"source1 aggregate(groupBy(category_id),",
-						"     COUNT = count()) ~> aggregate2",
-						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-						"     negate:false,",
-						"     broadcast: 'auto')~> Siexiste",
-						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-						"     negate:true,",
-						"     broadcast: 'auto')~> Noexiste",
-						"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
-						"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
-						"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
-						"union1 alterRow(upsertIf(isNull(UPSERT_ACTION)==false())) ~> Modificarfila1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['category_id'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_CATEGORY')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_CATEGORY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4219,7 +4104,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_BEAUTY_CAT')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_BEAUTY_CAT')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4269,7 +4154,7 @@
 						"     format: 'table') ~> source1",
 						"source1 aggregate(groupBy(beauty_category = upper(beauty_category)),",
 						"     COUNT = count()) ~> aggregate2",
-						"aggregate2 alterRow(upsertIf(isNull(beauty_category) == false())) ~> Modificarfila1",
+						"aggregate2 alterRow(upsertIf(isNull(beauty_category)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -4327,7 +4212,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_PRODUCTO')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_PRODUCTO')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4424,7 +4309,7 @@
 						"          category_id as long '000,000,000'",
 						"     ),",
 						"     errors: true) ~> cast2",
-						"cast2 alterRow(upsertIf(isNull( product_id) == false())) ~> Modificarfila1",
+						"cast2 alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -4460,7 +4345,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_EVENT_TYPE')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_E_EVENT_TYPE')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4626,7 +4511,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "FACT_SALES_ECOMM",
+								"referenceName": "FACT_E_SALES",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -4664,7 +4549,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "FACT_PPTO_ECOMM",
+								"referenceName": "FACT_E_PPTO",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -4688,12 +4573,12 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_SALES_ECOMM')]",
-				"[concat(variables('factoryId'), '/dataflows/FACT_PPTO_ECOMM')]"
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FACT_SALES_ECOMM')]",
+			"name": "[concat(parameters('factoryName'), '/FACT_E_SALES')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4850,7 +4735,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FACT_PPTO_ECOMM')]",
+			"name": "[concat(parameters('factoryName'), '/FACT_E_PPTO')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4996,6 +4881,227 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(category = upper(Category)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(category)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESCRIPTION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESCRIPTION = category",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CATEGORY')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_SUB_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(category_id,",
+						"          category_code,",
+						"          category_desc),",
+						"     COUNT = count()) ~> aggregate2",
+						"cast1 alterRow(upsertIf(isNull(category_id)==false())) ~> Modificarfila1",
+						"aggregate2 cast(output(",
+						"          category_id as long '000,000,000'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_CATEGORY'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = category_desc,",
+						"          CATEGORY_CODE = category_code",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_CATEGORY')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_CATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_CATEGORY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
 		}
 	]
 }
