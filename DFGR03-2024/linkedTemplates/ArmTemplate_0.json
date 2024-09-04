@@ -332,8 +332,9 @@
 						"type": "varchar"
 					},
 					{
-						"name": "BEAUTY_CATEGORY",
-						"type": "varchar"
+						"name": "ID_BEAUTY_CAT",
+						"type": "int",
+						"precision": 10
 					},
 					{
 						"name": "ID_BRAND",
