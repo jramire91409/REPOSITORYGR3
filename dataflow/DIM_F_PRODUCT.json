@@ -13,13 +13,6 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "T_STG_PPTO_TIENDA_FISICA",
-						"type": "DatasetReference"
-					},
-					"name": "PPTOTIENDAFISICA"
-				},
-				{
-					"dataset": {
 						"referenceName": "T_DIM_F_SUB_CATEGORY",
 						"type": "DatasetReference"
 					},
@@ -29,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "T_DIM_PRODUCT",
+						"referenceName": "T_DIM_F_PRODUCT",
 						"type": "DatasetReference"
 					},
 					"name": "DIMPRODUCTO"
@@ -37,19 +30,13 @@
 			],
 			"transformations": [
 				{
-					"name": "CONBEAUTY"
-				},
-				{
 					"name": "join1"
-				},
-				{
-					"name": "cast2"
 				},
 				{
 					"name": "Modificarfila1"
 				},
 				{
-					"name": "union1"
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -80,17 +67,6 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SUPERSTORESALESDATA",
 				"source(output(",
-				"          fec_ppto_month as string,",
-				"          Ship_Mode as string,",
-				"          Region as string,",
-				"          Product_ID as string,",
-				"          imp_ppto_ganancia as decimal(38,10)",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> PPTOTIENDAFISICA",
-				"source(output(",
 				"          DESC_SUB_CATEGORY as string,",
 				"          ID_SUBCATEGORY as integer,",
 				"          ID_CATEGORY as integer",
@@ -99,45 +75,38 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DIMFSUBCATEGORIA",
-				"union1, PPTOTIENDAFISICA join(upper() == upper(DESC_BEAUTY_CAT),",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> CONBEAUTY",
-				"CONBEAUTY, DIMFSUBCATEGORIA join(upper(brand) == upper(DESC_BRAND),",
+				"select1, DIMFSUBCATEGORIA join(upper(Sub_Category) == upper(DESC_SUB_CATEGORY),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 cast(output(",
-				"          category_id as long '000,000,000'",
+				"join1 alterRow(upsertIf(isNull(Product_ID)==false())) ~> Modificarfila1",
+				"SUPERSTORESALESDATA select(mapColumn(",
+				"          Product_ID,",
+				"          Sub_Category,",
+				"          Product_Name",
 				"     ),",
-				"     errors: true) ~> cast2",
-				"cast2 alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
-				"SUPERSTORESALESDATA, PPTOTIENDAFISICA union(byName: true)~> union1",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          ID_PRODUCT as integer,",
-				"          ID_CATEGORY as integer,",
-				"          DESCRIPTION as string,",
-				"          ID_BEAUTY_CAT as integer,",
-				"          ID_BRAND as integer",
+				"          ID_PRODUCT as string,",
+				"          ID_SUBCATEGORY as integer,",
+				"          DESCRIPTION as string",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['ID_PRODUCT'],",
+				"     keys:['DESCRIPTION'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          ID_PRODUCT = SUPERSTORESALESDATA@product_id,",
-				"          ID_CATEGORY = category_id,",
-				"          DESCRIPTION = product_desc,",
-				"          ID_BEAUTY_CAT,",
-				"          ID_BRAND",
+				"          ID_PRODUCT = Product_ID,",
+				"          ID_SUBCATEGORY,",
+				"          DESCRIPTION = Product_Name",
 				"     )) ~> DIMPRODUCTO"
 			]
 		}
