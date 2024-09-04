@@ -2775,13 +2775,6 @@
 								"type": "DatasetReference"
 							},
 							"name": "STGDATOSPRODUCTO"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_BRAND",
-								"type": "DatasetReference"
-							},
-							"name": "TBRAND"
 						}
 					],
 					"sinks": [
@@ -2795,51 +2788,41 @@
 					],
 					"transformations": [
 						{
-							"name": "SELECTBRAND"
-						},
-						{
 							"name": "aggregate1"
 						},
 						{
-							"name": "exists1"
+							"name": "Modificarfila1"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          brand as string",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> STGDATOSPRODUCTO",
-						"source(output(",
-						"          ID_BRAND as integer,",
-						"          DESC_BRAND as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> TBRAND",
-						"STGDATOSPRODUCTO select(mapColumn(",
-						"          brand",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> SELECTBRAND",
-						"SELECTBRAND aggregate(groupBy(brand),",
+						"STGDATOSPRODUCTO aggregate(groupBy(brand),",
 						"     COUNT = count()) ~> aggregate1",
-						"aggregate1, TBRAND exists(brand == DESC_BRAND,",
-						"     negate:true,",
-						"     broadcast: 'auto')~> exists1",
-						"exists1 sink(allowSchemaDrift: true,",
+						"aggregate1 alterRow(upsertIf(isNull(brand)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ID_BRAND as integer,",
 						"          DESC_BRAND as string",
 						"     ),",
 						"     deletable:false,",
-						"     insertable:true,",
+						"     insertable:false,",
 						"     updateable:false,",
-						"     upsertable:false,",
+						"     upsertable:true,",
+						"     keys:['DESC_BRAND'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
