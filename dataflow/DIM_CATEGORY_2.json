@@ -1,5 +1,5 @@
 {
-	"name": "DIM_CATEGORY",
+	"name": "DIM_CATEGORY_2",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
@@ -11,13 +11,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
-				},
-				{
-					"dataset": {
-						"referenceName": "T_DIM_CATEGORY",
-						"type": "DatasetReference"
-					},
-					"name": "DIMCATEGORY"
 				}
 			],
 			"sinks": [
@@ -34,22 +27,10 @@
 					"name": "aggregate2"
 				},
 				{
-					"name": "Siexiste"
-				},
-				{
-					"name": "Noexiste"
-				},
-				{
-					"name": "UPSERTACTIONUP"
-				},
-				{
-					"name": "UPSERTACTIONIN"
-				},
-				{
-					"name": "union1"
-				},
-				{
 					"name": "Modificarfila1"
+				},
+				{
+					"name": "cast1"
 				}
 			],
 			"scriptLines": [
@@ -67,27 +48,15 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"source(output(",
-				"          ID_CATEGORY as decimal(25,0),",
-				"          DESCRIPTION as string,",
-				"          CATEGORY_CODE as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DIMCATEGORY",
-				"source1 aggregate(groupBy(category_id),",
+				"source1 aggregate(groupBy(category_id,",
+				"          category_code,",
+				"          category_desc),",
 				"     COUNT = count()) ~> aggregate2",
-				"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-				"     negate:false,",
-				"     broadcast: 'auto')~> Siexiste",
-				"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-				"     negate:true,",
-				"     broadcast: 'auto')~> Noexiste",
-				"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
-				"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
-				"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
-				"union1 alterRow(upsertIf(isNull(UPSERT_ACTION)==false())) ~> Modificarfila1",
+				"cast1 alterRow(upsertIf(isNull(category_id)== false())) ~> Modificarfila1",
+				"aggregate2 cast(output(",
+				"          category_id as integer '000'",
+				"     ),",
+				"     errors: true) ~> cast1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -99,10 +68,13 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['category_id'],",
+				"     keys:['ID_CATEGORY'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          CATEGORY_CODE = category_code",
+				"     )) ~> sink1"
 			]
 		}
 	}

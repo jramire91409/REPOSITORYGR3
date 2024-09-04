@@ -10,8 +10,9 @@
 		"schema": [
 			{
 				"name": "ID_CATEGORY",
-				"type": "int",
-				"precision": 10
+				"type": "decimal",
+				"precision": 25,
+				"scale": 0
 			},
 			{
 				"name": "DESCRIPTION",
