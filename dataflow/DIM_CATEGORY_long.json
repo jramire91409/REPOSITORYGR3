@@ -1,5 +1,5 @@
 {
-	"name": "DIM_CATEGORY",
+	"name": "DIM_CATEGORY_long",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
