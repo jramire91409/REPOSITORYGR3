@@ -13,48 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_PPTO_TIENDA_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "fec_ppto_month",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Ship_Mode",
-						"type": "varchar"
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					},
-					{
-						"name": "Product_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "imp_ppto_ganancia",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "stage_ppto_tienda_fisica"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/XLS_2019_DEC_RETAIL_SALES')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -941,6 +899,40 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "DIM_F_CATEGORY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_SUB_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_SUB_CATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CATEGORY",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_SUB_CATEGORY"
 				}
 			},
 			"dependsOn": []

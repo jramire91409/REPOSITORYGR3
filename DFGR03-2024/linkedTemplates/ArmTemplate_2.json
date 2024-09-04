@@ -2681,16 +2681,23 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
 								"type": "DatasetReference"
 							},
 							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
+								"referenceName": "T_DIM_SUB_CATEGORY",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -2704,60 +2711,74 @@
 							"name": "Modificarfila1"
 						},
 						{
-							"name": "cast1"
+							"name": "join1"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> source1",
-						"source1 aggregate(groupBy(category_id,",
-						"          category_code,",
-						"          category_desc),",
-						"     COUNT = count()) ~> aggregate2",
-						"cast1 alterRow(upsertIf(isNull(category_id)==false())) ~> Modificarfila1",
-						"aggregate2 cast(output(",
-						"          category_id as long '000,000,000'",
+						"source(output(",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string",
 						"     ),",
-						"     errors: true) ~> cast1",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"join1 aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
+						"source1, source2 join(upper(Category) == upper(DESCRIPTION),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
+						"          DESC_SUB_CATEGORY as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          ID_CATEGORY as integer",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:false,",
 						"     updateable:false,",
 						"     upsertable:true,",
-						"     keys:['ID_CATEGORY'],",
+						"     keys:['SUB_CATEGORY'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          ID_CATEGORY = category_id,",
-						"          DESCRIPTION = category_desc,",
-						"          CATEGORY_CODE = category_code",
-						"     )) ~> sink1"
+						"     skipDuplicateMapOutputs: true) ~> sink1"
 					]
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ECOMM_1_DIMENSION_LOAD')]",
+			"name": "[concat(parameters('factoryName'), '/ECOMM_1_DIMMENSION_LOAD')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3183,6 +3204,52 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]",
 				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PHYSICAL_1_DIMMENSION_LOAD')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DIM_F_CATEGORY",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_CATEGORY",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CATEGORY')]"
 			]
 		}
 	]
