@@ -129,6 +129,8 @@
 					{
 						"name": "DIM_BEAUTY_CAT",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_CATEGORY",
@@ -162,6 +164,45 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "DIM_PRODUCTO",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_BEAUTY_CAT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_PRODUCTO",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"DATOSDEPRODUCTO": {},
+									"DIMBEAUTYCAT": {},
+									"DIMBRAND": {},
+									"DIMPRODUCTO": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -172,7 +213,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DIM_BRAND')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_BEAUTY_CAT')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_BEAUTY_CAT')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_PRODUCTO')]"
 			]
 		},
 		{
