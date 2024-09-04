@@ -168,6 +168,8 @@
 					{
 						"name": "DIM_PRODUCTO",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_BEAUTY_CAT",
