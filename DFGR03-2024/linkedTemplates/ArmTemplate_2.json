@@ -13,6 +13,118 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY_long')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "DIMCATEGORY"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Siexiste"
+						},
+						{
+							"name": "Noexiste"
+						},
+						{
+							"name": "UPSERTACTIONUP"
+						},
+						{
+							"name": "UPSERTACTIONIN"
+						},
+						{
+							"name": "union1"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMCATEGORY",
+						"source1 aggregate(groupBy(category_id),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
+						"     negate:false,",
+						"     broadcast: 'auto')~> Siexiste",
+						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
+						"     negate:true,",
+						"     broadcast: 'auto')~> Noexiste",
+						"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
+						"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
+						"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
+						"union1 alterRow(upsertIf(isNull(UPSERT_ACTION)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          CATEGORY_CODE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['category_id'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -99,6 +211,80 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_BEAUTY_CAT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BEAUTY_CAT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(beauty_category = upper(beauty_category)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(beauty_category) == false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_BEAUTY_CAT as integer,",
+						"          DESC_BEAUTY_CAT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESC_BEAUTY_CAT'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_BEAUTY_CAT = beauty_category",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIMENSION_LOAD')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -108,6 +294,8 @@
 					{
 						"name": "DIM_BRAND",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -173,6 +361,43 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "DIM_BEAUTY_CAT",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_CATEGORY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_BEAUTY_CAT",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -181,7 +406,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_CATEGORY')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_CATEGORY')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_BEAUTY_CAT')]"
 			]
 		},
 		{

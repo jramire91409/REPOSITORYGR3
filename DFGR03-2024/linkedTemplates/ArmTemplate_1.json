@@ -715,6 +715,35 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_BEAUTY_CAT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_BEAUTY_CAT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_BEAUTY_CAT",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_BEAUTY_CAT"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_ECOMM_PPTO')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2829,118 +2858,6 @@
 						"     mapColumn(",
 						"          DESC_BRAND = brand",
 						"     )) ~> DIMBRAND"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_CATEGORY_long')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "DIMCATEGORY"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Siexiste"
-						},
-						{
-							"name": "Noexiste"
-						},
-						{
-							"name": "UPSERTACTIONUP"
-						},
-						{
-							"name": "UPSERTACTIONIN"
-						},
-						{
-							"name": "union1"
-						},
-						{
-							"name": "Modificarfila1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source(output(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMCATEGORY",
-						"source1 aggregate(groupBy(category_id),",
-						"     COUNT = count()) ~> aggregate2",
-						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-						"     negate:false,",
-						"     broadcast: 'auto')~> Siexiste",
-						"aggregate2, DIMCATEGORY exists(ID_CATEGORY == toInteger(category_id),",
-						"     negate:true,",
-						"     broadcast: 'auto')~> Noexiste",
-						"Siexiste derive(UPSERT_ACTION = 'UP') ~> UPSERTACTIONUP",
-						"Noexiste derive(UPSERT_ACTION = 'IN') ~> UPSERTACTIONIN",
-						"UPSERTACTIONUP, UPSERTACTIONIN union(byName: true)~> union1",
-						"union1 alterRow(upsertIf(isNull(UPSERT_ACTION)==false())) ~> Modificarfila1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['category_id'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
 					]
 				}
 			},
