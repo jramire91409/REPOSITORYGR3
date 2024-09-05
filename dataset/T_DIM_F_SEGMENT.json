@@ -1,0 +1,16 @@
+{
+	"name": "T_DIM_F_SEGMENT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_F_SEGMENT"
+		}
+	}
+}

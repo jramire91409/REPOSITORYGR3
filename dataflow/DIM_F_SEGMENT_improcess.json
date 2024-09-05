@@ -16,7 +16,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "T_DIM_F_SHIP_MODE",
+						"referenceName": "T_DIM_F_SEGMENT",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -62,20 +62,16 @@
 				"aggregate2 alterRow(upsertIf(isNull(Segment)==false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          ID_SHIP_MODE as integer,",
-				"          DESC_SHIP_MODE as string",
-				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['DESC_SHIP_MODE'],",
+				"     keys:['Segment'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          DESC_SHIP_MODE = POSTAL_CODE",
+				"          Segment",
 				"     )) ~> sink1"
 			]
 		}
