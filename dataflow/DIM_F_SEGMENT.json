@@ -70,12 +70,12 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['Segment'],",
+				"     keys:['DESC_SEGMENT'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          Segment",
+				"          DESC_SEGMENT = Segment",
 				"     )) ~> sink1"
 			]
 		}
