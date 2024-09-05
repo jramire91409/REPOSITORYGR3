@@ -1540,21 +1540,25 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> STGFSUPERSTORESALESDATA",
-						"STGFSUPERSTORESALESDATA aggregate(groupBy(Segment),",
+						"STGFSUPERSTORESALESDATA aggregate(groupBy(Segment = upper(Segment)),",
 						"     COUNT = count()) ~> aggregate2",
 						"aggregate2 alterRow(upsertIf(isNull(Segment)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          ID_SEGMENT as integer,",
+						"          DESC_SEGMENT as string",
+						"     ),",
 						"     deletable:false,",
 						"     insertable:false,",
 						"     updateable:false,",
 						"     upsertable:true,",
-						"     keys:['Segment'],",
+						"     keys:['DESC_SEGMENT'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
-						"          Segment",
+						"          DESC_SEGMENT = Segment",
 						"     )) ~> sink1"
 					]
 				}
@@ -2601,7 +2605,8 @@
 								"datasetParameters": {
 									"STGFSUPERSTORESALESDATA": {},
 									"sink1": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {

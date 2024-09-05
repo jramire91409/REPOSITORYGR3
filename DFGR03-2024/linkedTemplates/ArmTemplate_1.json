@@ -953,7 +953,17 @@
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
-				"schema": [],
+				"schema": [
+					{
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_SEGMENT",
+						"type": "char"
+					}
+				],
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "DIM_F_SEGMENT"
