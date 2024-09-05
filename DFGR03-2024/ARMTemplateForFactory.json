@@ -527,6 +527,8 @@
 						"name": "XLS_RETAIL_SALES_DEC2019",
 						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -695,6 +697,8 @@
 						"name": "XLS_RETAIL_SALES_NOV2019",
 						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "XLS_RETAIL_SALES_DEC2019",
@@ -869,6 +873,8 @@
 						"name": "XLS_RETAIL_SALES_OCT2019",
 						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "XLS_RETAIL_SALES_NOV2019",
@@ -1043,6 +1049,8 @@
 						"name": "XLS_RETAIL_SALES_FEB2020",
 						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "XLS_RETAIL_SALES_OCT2019",
@@ -1217,6 +1225,8 @@
 						"name": "XLS_RETAIL_SALES_JAN2020",
 						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "XLS_RETAIL_SALES_FEB2020",
@@ -1386,6 +1396,180 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_JAN2020_copy1",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_JAN2020",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_REAL_MES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -1399,7 +1583,8 @@
 				"[concat(variables('factoryId'), '/datasets/XLS_2019_NOV_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_2019_OCT_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_2020_FEB_RETAIL_SALES')]",
-				"[concat(variables('factoryId'), '/datasets/XLS_2020_JAN_RETAIL_SALES')]"
+				"[concat(variables('factoryId'), '/datasets/XLS_2020_JAN_RETAIL_SALES')]",
+				"[concat(variables('factoryId'), '/datasets/XLS_REAL_MES')]"
 			]
 		},
 		{
@@ -1522,7 +1707,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "T_STG_PPTO_TIENDA_FISICA",
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -1536,7 +1721,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/xls_ppto_sales_tienda_fisica')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_PPTO_TIENDA_FISICA')]"
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_PPTO_TIENDA_FISICA')]"
 			]
 		},
 		{
@@ -1546,158 +1731,10 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "STG_ECOM_DATIOS_DE_P_BRAND",
-						"description": "Llenado de la stage de brand ecomm desde archivo excel",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO_brand",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "BRAND",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Column1",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_DATOS_DE_PRODUCTO_BRAND",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_E_DATOS_DE_P_BRAND",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
-						"description": "Llenado de la stage de BEAUTY CAT ecomm desde archivo excel",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "STG_ECOM_DATIOS_DE_P_BRAND",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "truncate table stage.Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "BEAUTY_CAT",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Beauty_cat",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_DATOS_DE_PRODUCTO_BEAUTY_CAT",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_E_DATOS_DE_P_BEAUTY_CAT",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
 						"name": "STG_ECOM_DATIOS_DE_PRODUCTO",
 						"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "STG_ECOM_DATIOS_DE_P_BEAUTY_CAT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1843,104 +1880,6 @@
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "STG_ECOM_DATOS_DE_P_CATEGORY",
-						"description": "Llenado de la stage de CATEGORY ecomm desde archivo excel",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "STG_ECOM_DATIOS_DE_PRODUCTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO_category",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "category_id",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "category_id",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "category_code",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "category_code",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "category_desc",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "category_desc",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_DATOS_DE_PRODUCTO_CATEGORY",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_E_DATOS_DE_P_CATEGORY",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
 					}
 				],
 				"policy": {
@@ -1949,14 +1888,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/XLS_DATOS_DE_PRODUCTO_BRAND')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_P_BRAND')]",
-				"[concat(variables('factoryId'), '/datasets/XLS_DATOS_DE_PRODUCTO_BEAUTY_CAT')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_P_BEAUTY_CAT')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/XLS_DATOS_DE_PRODUCTO_CATEGORY')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_P_CATEGORY')]"
+				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]"
 			]
 		},
 		{
@@ -2494,41 +2427,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_CATEGORY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "CATEGORY_CODE",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DIM_CATEGORY"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		},
 		{
@@ -3092,7 +2990,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_PPTO_TIENDA_FISICA')]",
+			"name": "[concat(parameters('factoryName'), '/T_STG_F_PPTO_TIENDA_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3513,110 +3411,6 @@
 					},
 					{
 						"name": "product_desc",
-						"type": "String"
-					},
-					{
-						"name": "category_desc",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_DATOS_DE_PRODUCTO_BEAUTY_CAT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "BEAUTY_CAT",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "DATOS DE PRODUCTO.xlsx",
-						"folderPath": "ECOMMERCE",
-						"container": "contenedor-gr3"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "BEAUTY_CAT",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_DATOS_DE_PRODUCTO_BRAND')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "BRAND",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "DATOS DE PRODUCTO.xlsx",
-						"folderPath": "ECOMMERCE",
-						"container": "contenedor-gr3"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "airnails",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_DATOS_DE_PRODUCTO_CATEGORY')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "CATEGORY",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "DATOS DE PRODUCTO.xlsx",
-						"folderPath": "ECOMMERCE",
-						"container": "contenedor-gr3"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "category_id",
-						"type": "String"
-					},
-					{
-						"name": "category_code",
 						"type": "String"
 					},
 					{
@@ -5199,6 +4993,8 @@
 					{
 						"name": "DIM_F_PRODUCT",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SUB_CATEGORY",
@@ -5217,7 +5013,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_F_PRODUCT",
+								"referenceName": "DIM_F_PRODUCT_fail",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
@@ -5226,6 +5022,44 @@
 									"DIMPRODUCTO": {}
 								},
 								"linkedServiceParameters": {}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DIM_F_SHIP_MODE",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_F_PRODUCT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_SHIP_MODE",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGFSUPERSTORESALESDATA": {},
+									"STGPPTOTIENDAFISCA": {},
+									"sink1": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -5244,7 +5078,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_PRODUCT')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_PRODUCT_fail')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]"
 			]
 		},
 		{
@@ -5284,7 +5119,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIM_F_PRODUCT')]",
+			"name": "[concat(parameters('factoryName'), '/DIM_F_PRODUCT_fail')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -5409,6 +5244,231 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_PRODUCT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_SHIP_MODE')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "STGFSUPERSTORESALESDATA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "STGPPTOTIENDAFISCA"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "union1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGFSUPERSTORESALESDATA",
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          Ship_Mode as string,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          imp_ppto_ganancia as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGPPTOTIENDAFISCA",
+						"union1 aggregate(groupBy(ship_mode = upper(Ship_Mode)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(ship_mode)==false())) ~> Modificarfila1",
+						"STGFSUPERSTORESALESDATA select(mapColumn(",
+						"          Ship_Mode",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"STGPPTOTIENDAFISCA select(mapColumn(",
+						"          Ship_Mode",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select1, select2 union(byName: true)~> union1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESC_SHIP_MODE'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_SHIP_MODE = ship_mode",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_PPTO_TIENDA_FISICA')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_SHIP_MODE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_SHIP_MODE",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_SHIP_MODE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XLS_REAL_MES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "REAL_MES.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		}
 	]
