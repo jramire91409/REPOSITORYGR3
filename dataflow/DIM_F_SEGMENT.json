@@ -1,5 +1,5 @@
 {
-	"name": "DIM_F_SEGMENT_improcess",
+	"name": "DIM_F_SEGMENT",
 	"properties": {
 		"description": "Carga de la DIM_BRAND",
 		"type": "MappingDataFlow",
