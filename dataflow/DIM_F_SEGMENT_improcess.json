@@ -1,0 +1,83 @@
+{
+	"name": "DIM_F_SEGMENT_improcess",
+	"properties": {
+		"description": "Carga de la DIM_BRAND",
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+						"type": "DatasetReference"
+					},
+					"name": "STGFSUPERSTORESALESDATA"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_SHIP_MODE",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Order_ID as string,",
+				"          Order_Date as string,",
+				"          Ship_Date as string,",
+				"          Ship_Mode as string,",
+				"          Customer_ID as string,",
+				"          Customer_Name as string,",
+				"          Segment as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Postal_Code as integer,",
+				"          Region as string,",
+				"          Product_ID as string,",
+				"          Category as string,",
+				"          Sub_Category as string,",
+				"          Product_Name as string,",
+				"          Sales as decimal(38,10),",
+				"          Quantity as integer,",
+				"          Discount as decimal(38,10),",
+				"          Profit as decimal(38,10)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STGFSUPERSTORESALESDATA",
+				"STGFSUPERSTORESALESDATA aggregate(groupBy(Segment),",
+				"     COUNT = count()) ~> aggregate2",
+				"aggregate2 alterRow(upsertIf(isNull(Segment)==false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_SHIP_MODE as integer,",
+				"          DESC_SHIP_MODE as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['DESC_SHIP_MODE'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_SHIP_MODE = POSTAL_CODE",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
