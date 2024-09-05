@@ -1,0 +1,29 @@
+{
+	"name": "T_DIM_F_CUSTOMER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_SEGMENT",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_F_CUSTOMER"
+		}
+	}
+}
