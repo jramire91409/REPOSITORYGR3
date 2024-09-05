@@ -1,0 +1,90 @@
+{
+	"name": "DIM_F_CUSTOMER",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_SEGMENT",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Order_ID as string,",
+				"          Order_Date as string,",
+				"          Ship_Date as string,",
+				"          Ship_Mode as string,",
+				"          Customer_ID as string,",
+				"          Customer_Name as string,",
+				"          Segment as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Postal_Code as integer,",
+				"          Region as string,",
+				"          Product_ID as string,",
+				"          Category as string,",
+				"          Sub_Category as string,",
+				"          Product_Name as string,",
+				"          Sales as decimal(38,10),",
+				"          Quantity as integer,",
+				"          Discount as decimal(38,10),",
+				"          Profit as decimal(38,10)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source(output(",
+				"          ID_SEGMENT as integer,",
+				"          DESC_SEGMENT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1 select(mapColumn(",
+				"          Customer_ID,",
+				"          Customer_Name,",
+				"          Segment,",
+				"          Postal_Code",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(Customer_ID,",
+				"          Customer_Name,",
+				"          Segment = upper(Segment),",
+				"          Postal_Code),",
+				"     COUNT = count()) ~> aggregate1",
+				"aggregate1, source2 join(Segment == DESC_SEGMENT,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
+			]
+		}
+	}
+}
