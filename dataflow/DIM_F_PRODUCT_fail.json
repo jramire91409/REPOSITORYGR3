@@ -1,5 +1,5 @@
 {
-	"name": "DIM_F_PRODUCT",
+	"name": "DIM_F_PRODUCT_fail",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
