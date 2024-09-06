@@ -16,7 +16,7 @@
 						"referenceName": "T_DIM_F_REGION",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "DIMFREGION1"
 				}
 			],
 			"sinks": [
@@ -25,15 +25,41 @@
 						"referenceName": "T_DIM_F_REGION",
 						"type": "DatasetReference"
 					},
-					"name": "DIMFREGION"
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_REGION",
+						"type": "DatasetReference"
+					},
+					"name": "INSERT"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_REGION",
+						"type": "DatasetReference"
+					},
+					"name": "UPDATEFECHAFIN"
 				}
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "SIEXISTE"
 				},
 				{
-					"name": "exists1"
+					"name": "NOEXISTE"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "NUEVOPERSONA"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "Modificarfila2"
 				}
 			],
 			"scriptLines": [
@@ -48,40 +74,91 @@
 				"source(output(",
 				"          ID_REGION as integer,",
 				"          NAME_REGION as string,",
-				"          ID_MANAGER as integer,",
+				"          DESC_MANAGER as string,",
 				"          FEC_INI as date,",
 				"          FEC_FIN as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"superstoresalesdatapeople derive(FECHA_INI = currentDate()) ~> derivedColumn1",
-				"derivedColumn1 exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     format: 'table') ~> DIMFREGION1",
+				"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
 				"     negate:false,",
-				"     broadcast: 'auto')~> exists1",
-				"exists1 sink(allowSchemaDrift: true,",
+				"     broadcast: 'auto')~> SIEXISTE",
+				"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
+				"     negate:true,",
+				"     broadcast: 'auto')~> NOEXISTE",
+				"NOEXISTE derive(ACCION = 'INSERT',",
+				"          FECHA_INI = currentDate(),",
+				"          FECHA_FIN = '') ~> derivedColumn3",
+				"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> NUEVOPERSONA",
+				"NUEVOPERSONA derive(FECHA_FIN = currentDate()) ~> derivedColumn5",
+				"derivedColumn5 alterRow(updateIf(isNull(Region)==false())) ~> Modificarfila2",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_REGION as integer,",
 				"          NAME_REGION as string,",
-				"          ID_MANAGER as integer,",
+				"          DESC_MANAGER as string,",
 				"          FEC_INI as date,",
 				"          FEC_FIN as date",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:false,",
+				"     insertable:true,",
 				"     updateable:false,",
-				"     upsertable:true,",
-				"     keys:['Person','NAME_REGION'],",
+				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
 				"          NAME_REGION = Region,",
-				"          ID_MANAGER = Person,",
+				"          DESC_MANAGER = Person,",
 				"          FEC_INI = FECHA_INI",
-				"     )) ~> DIMFREGION"
+				"     )) ~> sink1",
+				"derivedColumn5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_REGION as integer,",
+				"          NAME_REGION as string,",
+				"          DESC_MANAGER as string,",
+				"          FEC_INI as date,",
+				"          FEC_FIN as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          NAME_REGION = Region,",
+				"          DESC_MANAGER = Person,",
+				"          FEC_INI = FECHA_FIN",
+				"     )) ~> INSERT",
+				"Modificarfila2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_REGION as integer,",
+				"          NAME_REGION as string,",
+				"          DESC_MANAGER as string,",
+				"          FEC_INI as date,",
+				"          FEC_FIN as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['NAME_REGION'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          FEC_FIN = FECHA_FIN,",
+				"          NAME_REGION = Region",
+				"     )) ~> UPDATEFECHAFIN"
 			]
 		}
 	}

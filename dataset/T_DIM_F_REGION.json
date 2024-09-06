@@ -18,9 +18,8 @@
 				"type": "varchar"
 			},
 			{
-				"name": "ID_MANAGER",
-				"type": "int",
-				"precision": 10
+				"name": "DESC_MANAGER",
+				"type": "varchar"
 			},
 			{
 				"name": "FEC_INI",
