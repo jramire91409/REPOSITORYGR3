@@ -181,7 +181,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_F_CUSTOMER",
+						"referenceName": "DIM_F_CUSTOMER_nop",
 						"type": "DataFlowReference"
 					},
 					"compute": {

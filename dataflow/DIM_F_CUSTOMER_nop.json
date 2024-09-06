@@ -1,5 +1,5 @@
 {
-	"name": "DIM_F_CUSTOMER",
+	"name": "DIM_F_CUSTOMER_nop",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -33,13 +33,13 @@
 					"name": "select1"
 				},
 				{
-					"name": "aggregate1"
-				},
-				{
 					"name": "join1"
 				},
 				{
 					"name": "Modificarfila1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -85,17 +85,16 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 aggregate(groupBy(Customer_ID,",
-				"          Customer_Name,",
-				"          Segment = upper(Segment),",
-				"          Postal_Code),",
-				"     COUNT = count()) ~> aggregate1",
-				"aggregate1, source2 join(fuzzyCompare(Segment, DESC_SEGMENT, 80.00),",
+				"select1, source2 join(fuzzyCompare(Segment, DESC_SEGMENT, 80.00),",
 				"     joinType:'left',",
 				"     matchType:'fuzzy',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'off')~> join1",
-				"join1 alterRow(upsertIf(isNull(Customer_ID))) ~> Modificarfila1",
+				"aggregate1 alterRow(upsertIf(isNull(Customer_ID))) ~> Modificarfila1",
+				"join1 aggregate(groupBy(Customer_ID,",
+				"          Customer_Name,",
+				"          ID_SEGMENT),",
+				"     COUNT = count()) ~> aggregate1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
