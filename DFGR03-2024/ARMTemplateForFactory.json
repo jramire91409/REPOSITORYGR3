@@ -6106,7 +6106,7 @@
 						"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
 						"     negate:true,",
 						"     broadcast: 'auto')~> NUEVOPERSONA",
-						"NUEVOPERSONA derive(FECHA_FIN = currentDate()) ~> derivedColumn5",
+						"NUEVOPERSONA derive(CURRENT_DATE = currentDate()) ~> derivedColumn5",
 						"derivedColumn5 alterRow(updateIf(isNull(Region)==false())) ~> Modificarfila2",
 						"superstoresalesdatapeople aggregate(groupBy(Person = upper(Person),",
 						"          Region = upper(Region)),",
@@ -6151,7 +6151,7 @@
 						"     mapColumn(",
 						"          NAME_REGION = Region,",
 						"          DESC_MANAGER = Person,",
-						"          FEC_INI = FECHA_FIN",
+						"          FEC_INI = CURRENT_DATE",
 						"     )) ~> INSERT",
 						"Modificarfila2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -6171,7 +6171,7 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
-						"          FEC_FIN = FECHA_FIN,",
+						"          FEC_FIN = CURRENT_DATE,",
 						"          NAME_REGION = Region",
 						"     )) ~> UPDATEFECHAFIN"
 					]
