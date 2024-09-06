@@ -6069,6 +6069,9 @@
 						},
 						{
 							"name": "Modificarfila2"
+						},
+						{
+							"name": "aggregate1"
 						}
 					],
 					"scriptLines": [
@@ -6091,10 +6094,10 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> DIMFREGION1",
-						"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
+						"aggregate1, DIMFREGION1 exists(Region == NAME_REGION,",
 						"     negate:false,",
 						"     broadcast: 'auto')~> SIEXISTE",
-						"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
+						"aggregate1, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
 						"     negate:true,",
 						"     broadcast: 'auto')~> NOEXISTE",
 						"NOEXISTE derive(ACCION = 'INSERT',",
@@ -6105,6 +6108,9 @@
 						"     broadcast: 'auto')~> NUEVOPERSONA",
 						"NUEVOPERSONA derive(FECHA_FIN = currentDate()) ~> derivedColumn5",
 						"derivedColumn5 alterRow(updateIf(isNull(Region)==false())) ~> Modificarfila2",
+						"superstoresalesdatapeople aggregate(groupBy(Person = upper(Person),",
+						"          Region = upper(Region)),",
+						"     count = count()) ~> aggregate1",
 						"derivedColumn3 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
