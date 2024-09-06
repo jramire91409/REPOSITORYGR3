@@ -2630,6 +2630,8 @@
 					{
 						"name": "DIM_F_SEGMENT",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SHIP_MODE",
@@ -2664,6 +2666,44 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "DIM_F_CUSTOMER",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_F_SEGMENT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_CUSTOMER",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"source2": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -2676,7 +2716,8 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_PRODUCT_fail')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CUSTOMER')]"
 			]
 		},
 		{
