@@ -156,7 +156,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          FEC_INI = FECHA_FIN,",
+				"          FEC_FIN = FECHA_FIN,",
 				"          NAME_REGION = Region",
 				"     )) ~> UPDATEFECHAFIN"
 			]
