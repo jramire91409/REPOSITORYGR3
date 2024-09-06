@@ -2735,8 +2735,45 @@
 									"superstoresalesdatapeople": {},
 									"DIMFREGION1": {},
 									"sink1": {},
-									"INSERT": {},
 									"UPDATEFECHAFIN": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DIM_F_REGION_2STEP",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DIM_F_REGION",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_REGION_2STEP",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"superstoresalesdatapeople": {},
+									"DIMFREGION1": {},
+									"INSERT": {}
 								}
 							},
 							"staging": {},
@@ -2760,7 +2797,8 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_CUSTOMER_nop')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]"
 			]
 		},
 		{
@@ -6041,13 +6079,6 @@
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "INSERT"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_REGION",
-								"type": "DatasetReference"
-							},
 							"name": "UPDATEFECHAFIN"
 						}
 					],
@@ -6132,27 +6163,6 @@
 						"          DESC_MANAGER = Person,",
 						"          FEC_INI = FECHA_INI",
 						"     )) ~> sink1",
-						"derivedColumn5 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_REGION as integer,",
-						"          NAME_REGION as string,",
-						"          DESC_MANAGER as string,",
-						"          FEC_INI as date,",
-						"          FEC_FIN as date",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          NAME_REGION = Region,",
-						"          DESC_MANAGER = Person,",
-						"          FEC_INI = CURRENT_DATE",
-						"     )) ~> INSERT",
 						"Modificarfila2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -6253,6 +6263,111 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_REGION_2STEP')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "stagesuperstoresalesdatapeople",
+								"type": "DatasetReference"
+							},
+							"name": "superstoresalesdatapeople"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFREGION1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "INSERT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SIEXISTE"
+						},
+						{
+							"name": "NUEVOPERSONA"
+						},
+						{
+							"name": "derivedColumn5"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Person as string,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> superstoresalesdatapeople",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION1",
+						"aggregate1, DIMFREGION1 exists(Region == NAME_REGION,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> SIEXISTE",
+						"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> NUEVOPERSONA",
+						"NUEVOPERSONA derive(CURRENT_DATE = currentDate()) ~> derivedColumn5",
+						"superstoresalesdatapeople aggregate(groupBy(Person = upper(Person),",
+						"          Region = upper(Region)),",
+						"     count = count()) ~> aggregate1",
+						"derivedColumn5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          NAME_REGION = Region,",
+						"          DESC_MANAGER = Person,",
+						"          FEC_INI = CURRENT_DATE",
+						"     )) ~> INSERT"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/stagesuperstoresalesdatapeople')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]"
 			]
 		}
 	]
