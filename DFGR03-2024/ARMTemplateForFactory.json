@@ -2668,7 +2668,7 @@
 						}
 					},
 					{
-						"name": "DIM_F_CUSTOMER",
+						"name": "DIM_F_CUSTOMER_nop",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
