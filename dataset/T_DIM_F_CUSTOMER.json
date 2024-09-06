@@ -17,8 +17,9 @@
 				"type": "varchar"
 			},
 			{
-				"name": "DESC_SEGMENT",
-				"type": "varchar"
+				"name": "ID_SEGMENT",
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

@@ -101,7 +101,7 @@
 				"     input(",
 				"          ID_CUSTOMER as string,",
 				"          DESC_CUSTOMER as string,",
-				"          DESC_SEGMENT as string",
+				"          ID_SEGMENT as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
