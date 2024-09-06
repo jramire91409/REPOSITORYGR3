@@ -1,0 +1,59 @@
+{
+	"name": "DIM_F_RETURNED",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
+						"type": "DatasetReference"
+					},
+					"name": "STGSUPERSTORESALESDATARETURNED"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "DIMFRETURNED"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Returned as string,",
+				"          Order_ID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STGSUPERSTORESALESDATARETURNED",
+				"STGSUPERSTORESALESDATARETURNED aggregate(groupBy(Returned),",
+				"     COUNT = count()) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_RETURN as integer,",
+				"          DESC_RETURNED as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_RETURNED = Returned",
+				"     )) ~> DIMFRETURNED"
+			]
+		}
+	}
+}
