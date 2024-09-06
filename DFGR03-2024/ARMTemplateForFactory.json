@@ -6439,7 +6439,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "DIMFCITY",
+								"referenceName": "T_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -6548,11 +6548,11 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
-				"[concat(variables('factoryId'), '/datasets/DIMFCITY')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CITY')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DIMFCITY')]",
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_CITY')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
