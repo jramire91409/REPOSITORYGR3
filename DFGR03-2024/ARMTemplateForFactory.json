@@ -5865,6 +5865,346 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_RETURNED')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
+								"type": "DatasetReference"
+							},
+							"name": "STGSUPERSTORESALESDATARETURNED"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SqlServerTable1",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFRETURNED"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Returned as string,",
+						"          Order_ID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGSUPERSTORESALESDATARETURNED",
+						"STGSUPERSTORESALESDATARETURNED aggregate(groupBy(Returned),",
+						"     COUNT = count()) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_RETURN as integer,",
+						"          DESC_RETURNED as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_RETURNED = Returned",
+						"     )) ~> DIMFRETURNED"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]",
+				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_RETURN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_RETURNED",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_RETURNED"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "stagesuperstoresalesdatapeople",
+								"type": "DatasetReference"
+							},
+							"name": "superstoresalesdatapeople"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFREGION1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "INSERT"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "UPDATEFECHAFIN"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SIEXISTE"
+						},
+						{
+							"name": "NOEXISTE"
+						},
+						{
+							"name": "derivedColumn3"
+						},
+						{
+							"name": "NUEVOPERSONA"
+						},
+						{
+							"name": "derivedColumn5"
+						},
+						{
+							"name": "Modificarfila2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Person as string,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> superstoresalesdatapeople",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION1",
+						"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
+						"     negate:false,",
+						"     broadcast: 'auto')~> SIEXISTE",
+						"superstoresalesdatapeople, DIMFREGION1 exists(upper(Region) == upper(NAME_REGION),",
+						"     negate:true,",
+						"     broadcast: 'auto')~> NOEXISTE",
+						"NOEXISTE derive(ACCION = 'INSERT',",
+						"          FECHA_INI = currentDate(),",
+						"          FECHA_FIN = '') ~> derivedColumn3",
+						"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> NUEVOPERSONA",
+						"NUEVOPERSONA derive(FECHA_FIN = currentDate()) ~> derivedColumn5",
+						"derivedColumn5 alterRow(updateIf(isNull(Region)==false())) ~> Modificarfila2",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          NAME_REGION = Region,",
+						"          DESC_MANAGER = Person,",
+						"          FEC_INI = FECHA_INI",
+						"     )) ~> sink1",
+						"derivedColumn5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          NAME_REGION = Region,",
+						"          DESC_MANAGER = Person,",
+						"          FEC_INI = FECHA_FIN",
+						"     )) ~> INSERT",
+						"Modificarfila2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['NAME_REGION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          FEC_FIN = FECHA_FIN,",
+						"          NAME_REGION = Region",
+						"     )) ~> UPDATEFECHAFIN"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/stagesuperstoresalesdatapeople')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stagesuperstoresalesdatapeople')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Person",
+						"type": "varchar"
+					},
+					{
+						"name": "Region",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_Superstore_Sales_Data_people"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_REGION')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NAME_REGION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_MANAGER",
+						"type": "varchar"
+					},
+					{
+						"name": "FEC_INI",
+						"type": "date"
+					},
+					{
+						"name": "FEC_FIN",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_REGION"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
 		}
 	]
 }
