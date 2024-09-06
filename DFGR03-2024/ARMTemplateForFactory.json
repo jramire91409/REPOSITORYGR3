@@ -6517,7 +6517,7 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"join1 alterRow(upsertIf(isNull(Postal_Code))) ~> Modificarfila1",
+						"join1 alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
