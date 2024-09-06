@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DIM_F_REGION",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
