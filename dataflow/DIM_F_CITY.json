@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DIMFCITY",
+						"referenceName": "T_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"

@@ -1,5 +1,5 @@
 {
-	"name": "DIMFCITY",
+	"name": "T_DIM_F_CITY",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
