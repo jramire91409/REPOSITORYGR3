@@ -1,0 +1,88 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "stagesuperstoresalesdatapeople",
+						"type": "DatasetReference"
+					},
+					"name": "superstoresalesdatapeople"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_REGION",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_REGION",
+						"type": "DatasetReference"
+					},
+					"name": "DIMFREGION"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "exists1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Person as string,",
+				"          Region as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> superstoresalesdatapeople",
+				"source(output(",
+				"          ID_REGION as integer,",
+				"          NAME_REGION as string,",
+				"          ID_MANAGER as integer,",
+				"          FEC_INI as date,",
+				"          FEC_FIN as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"superstoresalesdatapeople derive(FECHA_INI = currentDate()) ~> derivedColumn1",
+				"derivedColumn1 exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists1",
+				"exists1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_REGION as integer,",
+				"          NAME_REGION as string,",
+				"          ID_MANAGER as integer,",
+				"          FEC_INI as date,",
+				"          FEC_FIN as date",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['Person','NAME_REGION'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          NAME_REGION = Region,",
+				"          ID_MANAGER = Person,",
+				"          FEC_INI = FECHA_INI",
+				"     )) ~> DIMFREGION"
+			]
+		}
+	}
+}

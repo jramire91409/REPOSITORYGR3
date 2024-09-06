@@ -1,0 +1,39 @@
+{
+	"name": "T_DIM_F_REGION",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_REGION",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NAME_REGION",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_MANAGER",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FEC_INI",
+				"type": "date"
+			},
+			{
+				"name": "FEC_FIN",
+				"type": "date"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_F_REGION"
+		}
+	}
+}

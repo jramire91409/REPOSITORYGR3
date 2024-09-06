@@ -1,0 +1,25 @@
+{
+	"name": "stagesuperstoresalesdatapeople",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Person",
+				"type": "varchar"
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_Superstore_Sales_Data_people"
+		}
+	}
+}
