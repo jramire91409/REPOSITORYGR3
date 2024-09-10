@@ -19,13 +19,24 @@
 					"name": "DIMFSEGMENT"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "aggregate1"
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "Modificarfila1"
 				}
 			],
 			"scriptLines": [
@@ -72,7 +83,30 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"join1 alterRow(upsertIf(isNull(Customer_ID) == false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_CUSTOMER as string,",
+				"          DESC_CUSTOMER as string,",
+				"          ID_SEGMENT as integer,",
+				"          ID_POSTAL_CODE as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['Customer_ID'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_CUSTOMER = Customer_ID,",
+				"          DESC_CUSTOMER = Customer_Name,",
+				"          ID_SEGMENT,",
+				"          ID_POSTAL_CODE = Postal_Code",
+				"     )) ~> sink1"
 			]
 		}
 	}

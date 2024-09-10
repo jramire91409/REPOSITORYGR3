@@ -23,9 +23,8 @@
 			},
 			{
 				"name": "ID_POSTAL_CODE",
-				"type": "decimal",
-				"precision": 38,
-				"scale": 0
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {
