@@ -10,19 +10,20 @@
 		"schema": [
 			{
 				"name": "DESC_CITY",
-				"type": "varchar"
+				"type": "char"
 			},
 			{
 				"name": "DESC_STATE",
-				"type": "varchar"
+				"type": "char"
 			},
 			{
 				"name": "DESC_COUNTRY",
-				"type": "varchar"
+				"type": "char"
 			},
 			{
 				"name": "ID_POSTAL_CODE",
-				"type": "nvarchar"
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "ID_REGION",

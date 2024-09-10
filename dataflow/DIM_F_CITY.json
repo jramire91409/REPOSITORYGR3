@@ -107,7 +107,7 @@
 				"          DESC_CITY as string,",
 				"          DESC_STATE as string,",
 				"          DESC_COUNTRY as string,",
-				"          ID_POSTAL_CODE as string,",
+				"          ID_POSTAL_CODE as integer,",
 				"          ID_REGION as integer",
 				"     ),",
 				"     deletable:false,",
