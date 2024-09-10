@@ -303,8 +303,6 @@
 			{
 				"name": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_SUPER_STORE_SALES_DATA",
@@ -388,8 +386,6 @@
 			{
 				"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
