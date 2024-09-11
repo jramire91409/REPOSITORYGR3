@@ -25,11 +25,6 @@
 				"type": "SqlServerTable",
 				"schema": [
 					{
-						"name": "ID_ROW",
-						"type": "int",
-						"precision": 10
-					},
-					{
 						"name": "ID_USER_SESION",
 						"type": "char"
 					},
@@ -55,8 +50,8 @@
 						"precision": 10
 					},
 					{
-						"name": "EVENT_TIME",
-						"type": "timestamp"
+						"name": "EVENT_DATE",
+						"type": "date"
 					}
 				],
 				"typeProperties": {

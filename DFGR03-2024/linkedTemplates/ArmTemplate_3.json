@@ -372,6 +372,9 @@
 						},
 						{
 							"name": "MONTHANDYEAR"
+						},
+						{
+							"name": "aggregate1"
 						}
 					],
 					"scriptLines": [
@@ -393,13 +396,18 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> DIMEVENTTYPE",
-						"MONTHANDYEAR, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
 						"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
 						"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
+						"MONTHANDYEAR aggregate(groupBy(YEAR,",
+						"          MONTH,",
+						"          product_id,",
+						"          event_type),",
+						"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
 						"join1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -421,7 +429,7 @@
 						"          YEAR,",
 						"          ID_PRODUCT = product_id,",
 						"          ID_EVENT_TYPE,",
-						"          PRICE = imp_precio",
+						"          PRICE = IMPORTE_PRECIO",
 						"     )) ~> FACTPPTOECOMM"
 					]
 				}
@@ -463,6 +471,18 @@
 					"transformations": [
 						{
 							"name": "join1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
 						}
 					],
 					"scriptLines": [
@@ -489,21 +509,42 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> DIMEVENTTYPE",
-						"STAGEREALSALES, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
+						"STAGEREALSALES derive(FECHA = left(event_time,10)) ~> derivedColumn1",
+						"derivedColumn1 cast(output(",
+						"          product_id as integer '000',",
+						"          FECHA as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"select1 aggregate(groupBy(event_type,",
+						"          product_id,",
+						"          user_session,",
+						"          user_id,",
+						"          FECHA),",
+						"     price = sum(price)) ~> aggregate1",
+						"cast1 select(mapColumn(",
+						"          event_type,",
+						"          product_id,",
+						"          price,",
+						"          user_id,",
+						"          user_session,",
+						"          FECHA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
 						"join1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_ROW as integer,",
 						"          ID_USER_SESION as string,",
 						"          ID_PRODUCT as integer,",
 						"          ID_EVENT_TYPE as integer,",
 						"          PRICE as decimal(24,10),",
 						"          ID_USER as integer,",
-						"          EVENT_TIME as binary",
+						"          EVENT_DATE as date",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -518,7 +559,7 @@
 						"          ID_EVENT_TYPE,",
 						"          PRICE = price,",
 						"          ID_USER = user_id,",
-						"          EVENT_TIME = event_time",
+						"          EVENT_DATE = FECHA",
 						"     )) ~> FACTSALESECOMM"
 					]
 				}
@@ -738,7 +779,14 @@
 					{
 						"name": "FACT_SALES_ECOMM",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [],
+						"dependsOn": [
+							{
+								"activity": "FACT_PPTO_ECOMM",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -769,14 +817,7 @@
 					{
 						"name": "FACT_PPTO_ECOMM",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "FACT_SALES_ECOMM",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
