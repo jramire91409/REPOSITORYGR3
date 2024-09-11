@@ -19,7 +19,7 @@
 						"referenceName": "T_DIM_F_SEGMENT",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DIMFSEGMENT"
 				}
 			],
 			"transformations": [
@@ -67,13 +67,12 @@
 				"          DESC_SEGMENT as string",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:false,",
+				"     insertable:true,",
 				"     updateable:false,",
-				"     upsertable:true,",
-				"     keys:['DESC_SEGMENT'],",
+				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> DIMFSEGMENT"
 			]
 		}
 	}
