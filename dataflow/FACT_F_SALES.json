@@ -150,7 +150,8 @@
 				"          QUANTITY as integer,",
 				"          DISCOUNT as decimal(24,10),",
 				"          PROFIT as decimal(24,10),",
-				"          ID_RETURNED as integer",
+				"          ID_RETURNED as integer,",
+				"          PRECIO_TOTAL as decimal(24,10)",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -158,7 +159,19 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TFACTSALESFISICA"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_ORDER = Order_ID,",
+				"          ID_PRODUCT = Product_ID,",
+				"          ORDER_DATE = Order_Date,",
+				"          SHIP_DATE = Ship_Date,",
+				"          ID_SHIP_MODE,",
+				"          ID_CUSTOMER = Customer_ID,",
+				"          IMPORTE = Importe,",
+				"          QUANTITY = Quantity,",
+				"          DISCOUNT = Discount,",
+				"          PROFIT = Profit",
+				"     )) ~> TFACTSALESFISICA"
 			]
 		}
 	}
