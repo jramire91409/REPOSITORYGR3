@@ -2552,6 +2552,8 @@
 					{
 						"name": "DIM_F_PRODUCT",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SUB_CATEGORY",
@@ -4865,7 +4867,7 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> STGDATOSPRODUCTO",
-						"STGDATOSPRODUCTO aggregate(groupBy(brand),",
+						"STGDATOSPRODUCTO aggregate(groupBy(brand = upper(brand)),",
 						"     COUNT = count()) ~> aggregate1",
 						"aggregate1 alterRow(upsertIf(isNull(brand)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
