@@ -1923,8 +1923,6 @@
 					{
 						"name": "DIM_F_CITY",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_REGION_2STEP",
