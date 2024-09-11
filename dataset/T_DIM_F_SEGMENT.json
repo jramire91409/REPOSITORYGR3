@@ -15,7 +15,7 @@
 			},
 			{
 				"name": "DESC_SEGMENT",
-				"type": "char"
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
