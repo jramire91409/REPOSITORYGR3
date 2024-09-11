@@ -67,12 +67,16 @@
 				"          DESC_SEGMENT as string",
 				"     ),",
 				"     deletable:false,",
-				"     insertable:true,",
+				"     insertable:false,",
 				"     updateable:false,",
-				"     upsertable:false,",
+				"     upsertable:true,",
+				"     keys:['DESC_SEGMENT'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DIMFSEGMENT"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_SEGMENT = Segment",
+				"     )) ~> DIMFSEGMENT"
 			]
 		}
 	}
