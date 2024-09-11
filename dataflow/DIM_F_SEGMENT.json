@@ -73,10 +73,7 @@
 				"     keys:['DESC_SEGMENT'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          DESC_SEGMENT = Segment",
-				"     )) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
