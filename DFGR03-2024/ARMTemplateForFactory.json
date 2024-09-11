@@ -2848,6 +2848,54 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PHYSICAL_2_FACT_TABLES')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FACT_F_PPTO",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FACT_PPTO_FISICA",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"DIMFSHIPMODE": {},
+									"TDIMFREGION": {},
+									"FACTPPTOTIENDAFISICA": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/FACT_PPTO_FISICA')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CSV_DWH_PPTO_ECOMM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3434,6 +3482,56 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "FACT_PPTO_ECOMM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "char"
+					},
+					{
+						"name": "IMP_PPTO_GANANCIA",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MONTH",
+						"type": "char"
+					},
+					{
+						"name": "YEAR",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FAC_PPTO_FISICA"
 				}
 			},
 			"dependsOn": [
@@ -6545,7 +6643,7 @@
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
 						"STAGEREALSALES derive(FECHA = left(event_time,10),",
-						"          user_session_NULL = coalesce(user_session,'NA')) ~> derivedColumn1",
+						"          user_session_NULL = coalesce(user_session,\"NA\")) ~> derivedColumn1",
 						"derivedColumn1 cast(output(",
 						"          product_id as integer '000',",
 						"          FECHA as date 'yyyy-MM-dd'",
@@ -6562,7 +6660,7 @@
 						"          product_id,",
 						"          price,",
 						"          user_id,",
-						"          user_session,",
+						"          user_session = user_session_NULL,",
 						"          FECHA",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
@@ -6748,104 +6846,6 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_FISICA')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_PRODUCT",
-						"type": "char"
-					},
-					{
-						"name": "IMP_PPTO_GANANCIA",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "ID_REGION",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_SHIP_MODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "MONTH",
-						"type": "char"
-					},
-					{
-						"name": "YEAR",
-						"type": "char"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "FAC_PPTO_FISICA"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PHYSICAL_2_FACT_TABLES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "FACT_F_PPTO",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_PPTO_FISICA",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"DIMFSHIPMODE": {},
-									"TDIMFREGION": {},
-									"FACTPPTOTIENDAFISICA": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_PPTO_FISICA')]"
 			]
 		}
 	]
