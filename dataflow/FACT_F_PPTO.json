@@ -1,5 +1,5 @@
 {
-	"name": "FACT_PPTO_FISICA",
+	"name": "FACT_F_PPTO",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -63,6 +63,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -122,6 +125,7 @@
 				"     errors: true) ~> cast1",
 				"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
 				"     disjoint: false) ~> split1@(LlavesLlenas, llavesNULL)",
+				"split1@llavesNULL derive(FECHA = currentUTC()) ~> derivedColumn3",
 				"split1@LlavesLlenas sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -147,7 +151,7 @@
 				"          MONTH,",
 				"          YEAR",
 				"     )) ~> FACTPPTOTIENDAFISICA",
-				"split1@llavesNULL sink(allowSchemaDrift: true,",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_PRODUCT as string,",

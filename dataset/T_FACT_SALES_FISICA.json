@@ -1,0 +1,70 @@
+{
+	"name": "T_FACT_SALES_FISICA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_ORDER",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_PRODUCT",
+				"type": "varchar"
+			},
+			{
+				"name": "ORDER_DATE",
+				"type": "date"
+			},
+			{
+				"name": "SHIP_DATE",
+				"type": "date"
+			},
+			{
+				"name": "ID_SHIP_MODE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "IMPORTE",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "QUANTITY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DISCOUNT",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "PROFIT",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "ID_RETURNED",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FACT_SALES_FISICA"
+		}
+	}
+}
