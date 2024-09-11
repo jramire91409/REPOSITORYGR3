@@ -98,7 +98,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()),",
+				"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
 				"     joinType:'cross',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
