@@ -3748,12 +3748,6 @@
 						"name": "ID_RETURNED",
 						"type": "int",
 						"precision": 10
-					},
-					{
-						"name": "PRECIO_TOTAL",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
 					}
 				],
 				"typeProperties": {
@@ -7220,8 +7214,7 @@
 						"          QUANTITY as integer,",
 						"          DISCOUNT as decimal(24,10),",
 						"          PROFIT as decimal(24,10),",
-						"          ID_RETURNED as integer,",
-						"          PRECIO_TOTAL as decimal(24,10)",
+						"          ID_RETURNED as integer",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
