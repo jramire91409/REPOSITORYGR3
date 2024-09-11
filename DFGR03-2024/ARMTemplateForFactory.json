@@ -2790,8 +2790,6 @@
 					{
 						"name": "DIM_F_CUSTOMER",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SEGMENT",
