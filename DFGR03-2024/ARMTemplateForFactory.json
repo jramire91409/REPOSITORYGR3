@@ -6942,6 +6942,9 @@
 						},
 						{
 							"name": "aggregate1"
+						},
+						{
+							"name": "derivedColumn2"
 						}
 					],
 					"scriptLines": [
@@ -7009,12 +7012,12 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> RETURNS1",
-						"RETURNS1, DIMSHIPMODE join(Ship_Mode <=> DESC_SHIP_MODE,",
+						"RETURNS1, DIMSHIPMODE join(upper(Ship_Mode) == upper(DESC_SHIP_MODE),",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join2",
-						"join2 aggregate(groupBy(Order_ID = upper(select1@Order_ID),",
+						"derivedColumn2 aggregate(groupBy(Order_ID = upper(select1@Order_ID),",
 						"          Product_ID = upper(Product_ID),",
 						"          Order_Date,",
 						"          Ship_Date,",
@@ -7026,6 +7029,7 @@
 						"          Discount = sum(Discount),",
 						"          Profit = sum(Profit),",
 						"          Precio_Total = sum(Precio_Total)) ~> aggregate1",
+						"join2 derive(ID_RETURNED = iif(upper(Returned)=='YES',1,0)) ~> derivedColumn2",
 						"aggregate1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -7039,7 +7043,8 @@
 						"          QUANTITY as integer,",
 						"          DISCOUNT as decimal(24,10),",
 						"          PROFIT as decimal(24,10),",
-						"          ID_RETURNED as integer",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10)",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -7047,7 +7052,21 @@
 						"     upsertable:false,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> TFACTSALESFISICA"
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED = Returned,",
+						"          PRECIO_TOTAL = Precio_Total",
+						"     )) ~> TFACTSALESFISICA"
 					]
 				}
 			},
@@ -7172,6 +7191,12 @@
 						"name": "ID_RETURNED",
 						"type": "int",
 						"precision": 10
+					},
+					{
+						"name": "PRECIO_TOTAL",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
 					}
 				],
 				"typeProperties": {
