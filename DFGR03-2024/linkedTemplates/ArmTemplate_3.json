@@ -890,7 +890,7 @@
 								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "source1"
+							"name": "STGPPTOTIENDAFISICA"
 						},
 						{
 							"dataset": {
@@ -960,7 +960,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
+						"     format: 'table') ~> STGPPTOTIENDAFISICA",
 						"source(output(",
 						"          ID_SHIP_MODE as integer,",
 						"          DESC_SHIP_MODE as string",
@@ -980,7 +980,7 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> TDIMFREGION",
-						"source1 derive(YEAR = left(fec_ppto_month,4),",
+						"STGPPTOTIENDAFISICA derive(YEAR = left(fec_ppto_month,4),",
 						"          MONTH = right(fec_ppto_month,2)) ~> derivedColumn1",
 						"derivedColumn2 aggregate(groupBy(Product_ID,",
 						"          Region = upper(Region),",
@@ -2055,7 +2055,7 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"source1": {},
+									"STGPPTOTIENDAFISICA": {},
 									"DIMFSHIPMODE": {},
 									"TDIMFREGION": {},
 									"FACTPPTOTIENDAFISICA": {},

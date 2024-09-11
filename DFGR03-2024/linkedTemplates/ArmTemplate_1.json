@@ -74,7 +74,7 @@
 				"schema": [
 					{
 						"name": "ID_PRODUCT",
-						"type": "char"
+						"type": "varchar"
 					},
 					{
 						"name": "IMP_PPTO_GANANCIA",
@@ -94,11 +94,11 @@
 					},
 					{
 						"name": "MONTH",
-						"type": "char"
+						"type": "varchar"
 					},
 					{
 						"name": "YEAR",
-						"type": "char"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
