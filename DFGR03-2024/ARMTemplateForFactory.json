@@ -2854,8 +2854,6 @@
 					{
 						"name": "FACT_F_PPTO",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -2889,6 +2887,8 @@
 					{
 						"name": "FACT_F_SALES",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "FACT_F_PPTO",
@@ -3480,6 +3480,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "char"
+					},
+					{
+						"name": "IMP_PPTO_GANANCIA",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MONTH",
+						"type": "char"
+					},
+					{
+						"name": "YEAR",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_PPTO_FISICA"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_ECOMM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3624,6 +3674,87 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "FACT_SALES_ECOMM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_SALES_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "date"
+					},
+					{
+						"name": "SHIP_DATE",
+						"type": "date"
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "IMPORTE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "QUANTITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DISCOUNT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "PROFIT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_RETURNED",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRECIO_TOTAL",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_SALES_FISICA"
 				}
 			},
 			"dependsOn": [
@@ -7117,137 +7248,6 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_FISICA')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_PRODUCT",
-						"type": "char"
-					},
-					{
-						"name": "IMP_PPTO_GANANCIA",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "ID_REGION",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_SHIP_MODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "MONTH",
-						"type": "char"
-					},
-					{
-						"name": "YEAR",
-						"type": "char"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "ER_FACT_PPTO_FISICA"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_FACT_SALES_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_ORDER",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_PRODUCT",
-						"type": "varchar"
-					},
-					{
-						"name": "ORDER_DATE",
-						"type": "date"
-					},
-					{
-						"name": "SHIP_DATE",
-						"type": "date"
-					},
-					{
-						"name": "ID_SHIP_MODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "IMPORTE",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "QUANTITY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DISCOUNT",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "PROFIT",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "ID_RETURNED",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "PRECIO_TOTAL",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "FACT_SALES_FISICA"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		}
 	]

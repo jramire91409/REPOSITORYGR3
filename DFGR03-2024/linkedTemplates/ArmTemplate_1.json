@@ -13,6 +13,54 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_ECOMM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "MONTH",
+						"type": "decimal",
+						"precision": 2,
+						"scale": 0
+					},
+					{
+						"name": "YEAR",
+						"type": "decimal",
+						"precision": 4,
+						"scale": 0
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_PPTO_ECOMM"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -105,6 +153,85 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "FACT_SALES_ECOMM"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_SALES_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "date"
+					},
+					{
+						"name": "SHIP_DATE",
+						"type": "date"
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "IMPORTE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "QUANTITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DISCOUNT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "PROFIT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_RETURNED",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRECIO_TOTAL",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_SALES_FISICA"
 				}
 			},
 			"dependsOn": []
@@ -917,180 +1044,6 @@
 					},
 					{
 						"name": "category_desc",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_REAL_MES')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "REAL_MES.csv",
-						"folderPath": "ECOMMERCE",
-						"container": "contenedor-gr3"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "event_time",
-						"type": "String"
-					},
-					{
-						"name": "event_type",
-						"type": "String"
-					},
-					{
-						"name": "product_id",
-						"type": "String"
-					},
-					{
-						"name": "category_id",
-						"type": "String"
-					},
-					{
-						"name": "category_code",
-						"type": "String"
-					},
-					{
-						"name": "brand",
-						"type": "String"
-					},
-					{
-						"name": "price",
-						"type": "String"
-					},
-					{
-						"name": "user_id",
-						"type": "String"
-					},
-					{
-						"name": "user_session",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_SUPER_STORE_SALES_DATA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "Orders",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Superstore Sales Data.xlsx",
-						"folderPath": "FISICA",
-						"container": "contenedor-gr3"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "Row ID",
-						"type": "String"
-					},
-					{
-						"name": "Order ID",
-						"type": "String"
-					},
-					{
-						"name": "Order Date",
-						"type": "String"
-					},
-					{
-						"name": "Ship Date",
-						"type": "String"
-					},
-					{
-						"name": "Ship Mode",
-						"type": "String"
-					},
-					{
-						"name": "Customer ID",
-						"type": "String"
-					},
-					{
-						"name": "Customer Name",
-						"type": "String"
-					},
-					{
-						"name": "Segment",
-						"type": "String"
-					},
-					{
-						"name": "Country",
-						"type": "String"
-					},
-					{
-						"name": "City",
-						"type": "String"
-					},
-					{
-						"name": "State",
-						"type": "String"
-					},
-					{
-						"name": "Postal Code",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					},
-					{
-						"name": "Product ID",
-						"type": "String"
-					},
-					{
-						"name": "Category",
-						"type": "String"
-					},
-					{
-						"name": "Sub-Category",
-						"type": "String"
-					},
-					{
-						"name": "Product Name",
-						"type": "String"
-					},
-					{
-						"name": "Sales",
-						"type": "String"
-					},
-					{
-						"name": "Quantity",
-						"type": "String"
-					},
-					{
-						"name": "Discount",
-						"type": "String"
-					},
-					{
-						"name": "Profit",
 						"type": "String"
 					}
 				]
