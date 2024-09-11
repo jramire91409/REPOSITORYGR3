@@ -2653,7 +2653,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"STGFSUPERSTORESALESDATA": {},
-									"sink1": {}
+									"DIMFSEGMENT": {}
 								}
 							},
 							"staging": {},
@@ -2885,37 +2885,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIMFSEGMENT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_SEGMENT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESC_SEGMENT",
-						"type": "char"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DIM_F_SEGMENT"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		},
 		{
@@ -6080,7 +6049,7 @@
 								"referenceName": "T_DIM_F_SEGMENT",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "DIMFSEGMENT"
 						}
 					],
 					"transformations": [
@@ -6137,7 +6106,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
 						"          DESC_SEGMENT = Segment",
-						"     )) ~> sink1"
+						"     )) ~> DIMFSEGMENT"
 					]
 				}
 			},
