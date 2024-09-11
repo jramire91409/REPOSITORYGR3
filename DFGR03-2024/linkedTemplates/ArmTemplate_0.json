@@ -169,6 +169,68 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DIMFSEGMENT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_SEGMENT",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_SEGMENT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_RETURN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_RETURNED",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_RETURNED"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_DIM_BEAUTY_CAT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -329,6 +391,90 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_CITY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_CITY",
+						"type": "char"
+					},
+					{
+						"name": "DESC_STATE",
+						"type": "char"
+					},
+					{
+						"name": "DESC_COUNTRY",
+						"type": "char"
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_CITY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_CUSTOMER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_CUSTOMER"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_DIM_F_PRODUCT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -357,6 +503,80 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "DIM_F_PRODUCT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_REGION')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NAME_REGION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_MANAGER",
+						"type": "varchar"
+					},
+					{
+						"name": "FEC_INI",
+						"type": "date"
+					},
+					{
+						"name": "FEC_FIN",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_REGION"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_SEGMENT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_SEGMENT",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_SEGMENT"
 				}
 			},
 			"dependsOn": [
@@ -470,294 +690,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "DIM_PRODUCT"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_ECOMM')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "MONTH",
-						"type": "decimal",
-						"precision": 2,
-						"scale": 0
-					},
-					{
-						"name": "YEAR",
-						"type": "decimal",
-						"precision": 4,
-						"scale": 0
-					},
-					{
-						"name": "ID_PRODUCT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_EVENT_TYPE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "PRICE",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "FACT_PPTO_ECOMM"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_FACT_SALES_ECOMM')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_ROW",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_USER_SESION",
-						"type": "char"
-					},
-					{
-						"name": "ID_PRODUCT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_EVENT_TYPE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "PRICE",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "ID_USER",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "EVENT_TIME",
-						"type": "timestamp"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "FACT_SALES_ECOMM"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STAGE_E_DWH_PPTO')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "fec_ppto_month",
-						"type": "nvarchar"
-					},
-					{
-						"name": "event_type",
-						"type": "varchar"
-					},
-					{
-						"name": "product_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "imp_precio",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_ecom_dwh_ppto"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STAGE_E_REAL_SALES')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "event_time",
-						"type": "varchar"
-					},
-					{
-						"name": "event_type",
-						"type": "varchar"
-					},
-					{
-						"name": "product_id",
-						"type": "varchar"
-					},
-					{
-						"name": "category_id",
-						"type": "varchar"
-					},
-					{
-						"name": "category_code",
-						"type": "varchar"
-					},
-					{
-						"name": "brand",
-						"type": "varchar"
-					},
-					{
-						"name": "price",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					},
-					{
-						"name": "user_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "user_session",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_ecomm_real_sales"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_E_DATOS_DE_PRODUCTO')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "product_id",
-						"type": "varchar"
-					},
-					{
-						"name": "category_id",
-						"type": "varchar"
-					},
-					{
-						"name": "Column3",
-						"type": "varchar"
-					},
-					{
-						"name": "category_code",
-						"type": "varchar"
-					},
-					{
-						"name": "beauty_category",
-						"type": "varchar"
-					},
-					{
-						"name": "brand",
-						"type": "varchar"
-					},
-					{
-						"name": "product_desc",
-						"type": "varchar"
-					},
-					{
-						"name": "category_desc",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_ecom_DATOS_DE_PRODUCTO"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_E_DATOS_DE_P_BEAUTY_CAT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Beauty_cat",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat"
 				}
 			},
 			"dependsOn": [
