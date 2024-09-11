@@ -13,40 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/XLS_SUPER_STORE_SALES_DATA_PEOPLE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Excel",
-				"typeProperties": {
-					"sheetName": "People",
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Superstore Sales Data.xlsx",
-						"folderPath": "FISICA",
-						"container": "contenedor-gr3"
-					},
-					"firstRowAsHeader": true
-				},
-				"schema": [
-					{
-						"name": "Person",
-						"type": "String"
-					},
-					{
-						"name": "Region",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/XLS_SUPER_STORE_SALES_DATA_RETURNS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2172,7 +2138,6 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_PEOPLE')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_RETURNS')]"
 			]
 		},
@@ -3251,6 +3216,110 @@
 						"          FEC_FIN = CURRENT_DATE,",
 						"          NAME_REGION = Region",
 						"     )) ~> UPDATEFECHAFIN"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/stagesuperstoresalesdatapeople')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_REGION_2STEP')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "stagesuperstoresalesdatapeople",
+								"type": "DatasetReference"
+							},
+							"name": "superstoresalesdatapeople"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFREGION1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "INSERT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SIEXISTE"
+						},
+						{
+							"name": "NUEVOPERSONA"
+						},
+						{
+							"name": "derivedColumn5"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Person as string,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> superstoresalesdatapeople",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION1",
+						"aggregate1, DIMFREGION1 exists(Region == NAME_REGION,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> SIEXISTE",
+						"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> NUEVOPERSONA",
+						"NUEVOPERSONA derive(CURRENT_DATE = currentDate()) ~> derivedColumn5",
+						"superstoresalesdatapeople aggregate(groupBy(Person = upper(Person),",
+						"          Region = upper(Region)),",
+						"     count = count()) ~> aggregate1",
+						"derivedColumn5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          NAME_REGION = Region,",
+						"          DESC_MANAGER = Person,",
+						"          FEC_INI = CURRENT_DATE",
+						"     )) ~> INSERT"
 					]
 				}
 			},
