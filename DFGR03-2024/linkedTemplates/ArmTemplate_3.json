@@ -1114,6 +1114,9 @@
 						},
 						{
 							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
 						}
 					],
 					"scriptLines": [
@@ -1192,14 +1195,20 @@
 						"          Ship_Date,",
 						"          ID_SHIP_MODE,",
 						"          Customer_ID = upper(Customer_ID),",
-						"          Returned = upper(Returned)),",
+						"          Returned = upper(Returned),",
+						"          ID_RETURNED),",
 						"     Importe = sum(Importe),",
 						"          Quantity = sum(Quantity),",
 						"          Discount = sum(Discount),",
 						"          Profit = sum(Profit),",
 						"          Precio_Total = sum(Precio_Total)) ~> aggregate1",
 						"join2 derive(ID_RETURNED = iif(upper(Returned)=='YES',1,0)) ~> derivedColumn2",
-						"aggregate1 sink(allowSchemaDrift: true,",
+						"aggregate1 cast(output(",
+						"          Order_Date as date 'yyyy-MM-dd',",
+						"          Ship_Date as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ID_ORDER as string,",
@@ -1212,7 +1221,8 @@
 						"          QUANTITY as integer,",
 						"          DISCOUNT as decimal(24,10),",
 						"          PROFIT as decimal(24,10),",
-						"          ID_RETURNED as integer",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10)",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1232,7 +1242,7 @@
 						"          QUANTITY = Quantity,",
 						"          DISCOUNT = Discount,",
 						"          PROFIT = Profit,",
-						"          ID_RETURNED = Returned,",
+						"          ID_RETURNED,",
 						"          PRECIO_TOTAL = Precio_Total",
 						"     )) ~> TFACTSALESFISICA"
 					]
@@ -2100,7 +2110,8 @@
 									"RETURNS": {},
 									"DIMSHIPMODE": {},
 									"TFACTSALESFISICA": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
