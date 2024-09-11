@@ -64,8 +64,6 @@
 			{
 				"name": "DIM_F_PRODUCT",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DIM_F_SUB_CATEGORY",
