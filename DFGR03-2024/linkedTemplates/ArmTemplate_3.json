@@ -13,6 +13,170 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_REGION_2STEP')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "stagesuperstoresalesdatapeople",
+								"type": "DatasetReference"
+							},
+							"name": "superstoresalesdatapeople"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFREGION1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "INSERT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SIEXISTE"
+						},
+						{
+							"name": "NUEVOPERSONA"
+						},
+						{
+							"name": "derivedColumn5"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Person as string,",
+						"          Region as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> superstoresalesdatapeople",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION1",
+						"aggregate1, DIMFREGION1 exists(Region == NAME_REGION,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> SIEXISTE",
+						"SIEXISTE, DIMFREGION1 exists(Person == DESC_MANAGER,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> NUEVOPERSONA",
+						"NUEVOPERSONA derive(CURRENT_DATE = currentDate()) ~> derivedColumn5",
+						"superstoresalesdatapeople aggregate(groupBy(Person = upper(Person),",
+						"          Region = upper(Region)),",
+						"     count = count()) ~> aggregate1",
+						"derivedColumn5 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          NAME_REGION = Region,",
+						"          DESC_MANAGER = Person,",
+						"          FEC_INI = CURRENT_DATE",
+						"     )) ~> INSERT"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_RETURNED')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
+								"type": "DatasetReference"
+							},
+							"name": "STGSUPERSTORESALESDATARETURNED"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SqlServerTable1",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFRETURNED"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Returned as string,",
+						"          Order_ID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGSUPERSTORESALESDATARETURNED",
+						"STGSUPERSTORESALESDATARETURNED aggregate(groupBy(Returned),",
+						"     COUNT = count()) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_RETURN as integer,",
+						"          DESC_RETURNED as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_RETURNED = Returned",
+						"     )) ~> DIMFRETURNED"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_SEGMENT')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -561,6 +725,150 @@
 						"          ID_USER = user_id,",
 						"          EVENT_DATE = FECHA",
 						"     )) ~> FACTSALESECOMM"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_F_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSHIPMODE"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "TDIMFREGION"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          Ship_Mode as string,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          imp_ppto_ganancia as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSHIPMODE",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TDIMFREGION",
+						"source1 derive(YEAR = left(fec_ppto_month,4),",
+						"          MONTH = right(fec_ppto_month,2)) ~> derivedColumn1",
+						"derivedColumn2 aggregate(groupBy(Product_ID,",
+						"          Region = upper(Region),",
+						"          Ship_Mode = upper(Ship_Mode),",
+						"          YEAR,",
+						"          MONTH,",
+						"          FECHATOREGION),",
+						"     IMPORTE_PPTO_GANANCIA = sum(imp_ppto_ganancia)) ~> aggregate1",
+						"aggregate1, DIMFSHIPMODE join(Ship_Mode == DESC_SHIP_MODE,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"cast1, TDIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()),",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"derivedColumn1 derive(FECHATOREGION = concat(YEAR,'-',MONTH,'-01')) ~> derivedColumn2",
+						"join1 cast(output(",
+						"          FECHATOREGION as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"join2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -1353,7 +1661,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]"
 			]
 		}
 	]

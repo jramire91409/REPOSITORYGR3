@@ -6599,6 +6599,217 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_ECOMM')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_F_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSHIPMODE"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "TDIMFREGION"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          Ship_Mode as string,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          imp_ppto_ganancia as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSHIPMODE",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TDIMFREGION",
+						"source1 derive(YEAR = left(fec_ppto_month,4),",
+						"          MONTH = right(fec_ppto_month,2)) ~> derivedColumn1",
+						"derivedColumn2 aggregate(groupBy(Product_ID,",
+						"          Region = upper(Region),",
+						"          Ship_Mode = upper(Ship_Mode),",
+						"          YEAR,",
+						"          MONTH,",
+						"          FECHATOREGION),",
+						"     IMPORTE_PPTO_GANANCIA = sum(imp_ppto_ganancia)) ~> aggregate1",
+						"aggregate1, DIMFSHIPMODE join(Ship_Mode == DESC_SHIP_MODE,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"cast1, TDIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()),",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"derivedColumn1 derive(FECHATOREGION = concat(YEAR,'-',MONTH,'-01')) ~> derivedColumn2",
+						"join1 cast(output(",
+						"          FECHATOREGION as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"join2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_PPTO_TIENDA_FISICA')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
+				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_FISICA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_FACT_PPTO_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "char"
+					},
+					{
+						"name": "IMP_PPTO_GANANCIA",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MONTH",
+						"type": "char"
+					},
+					{
+						"name": "YEAR",
+						"type": "char"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FAC_PPTO_FISICA"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
 		}
 	]
 }
