@@ -1104,6 +1104,8 @@
 					{
 						"name": "DIM_F_SEGMENT",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SHIP_MODE",
@@ -1262,6 +1264,8 @@
 					{
 						"name": "DIM_F_CUSTOMER",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SEGMENT",
