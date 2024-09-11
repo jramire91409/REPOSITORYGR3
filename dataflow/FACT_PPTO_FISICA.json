@@ -33,6 +33,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "FACTPPTOTIENDAFISICA"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_FACT_PPTO_FISICA",
+						"type": "DatasetReference"
+					},
+					"name": "ERROR"
 				}
 			],
 			"transformations": [
@@ -53,6 +60,9 @@
 				},
 				{
 					"name": "cast1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -110,7 +120,9 @@
 				"          FECHATOREGION as date 'yyyy-MM-dd'",
 				"     ),",
 				"     errors: true) ~> cast1",
-				"join2 sink(allowSchemaDrift: true,",
+				"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
+				"     disjoint: false) ~> split1@(LlavesLlenas, llavesNULL)",
+				"split1@LlavesLlenas sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_PRODUCT as string,",
@@ -134,7 +146,24 @@
 				"          ID_SHIP_MODE,",
 				"          MONTH,",
 				"          YEAR",
-				"     )) ~> FACTPPTOTIENDAFISICA"
+				"     )) ~> FACTPPTOTIENDAFISICA",
+				"split1@llavesNULL sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as string,",
+				"          IMP_PPTO_GANANCIA as decimal(24,10),",
+				"          ID_REGION as integer,",
+				"          ID_SHIP_MODE as integer,",
+				"          MONTH as string,",
+				"          YEAR as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ERROR"
 			]
 		}
 	}

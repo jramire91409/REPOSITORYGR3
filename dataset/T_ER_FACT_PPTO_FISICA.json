@@ -1,0 +1,45 @@
+{
+	"name": "T_ER_FACT_PPTO_FISICA",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "char"
+			},
+			{
+				"name": "IMP_PPTO_GANANCIA",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "ID_REGION",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_SHIP_MODE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MONTH",
+				"type": "char"
+			},
+			{
+				"name": "YEAR",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "error",
+			"table": "ER_FACT_PPTO_FISICA"
+		}
+	}
+}
