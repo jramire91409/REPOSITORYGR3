@@ -630,7 +630,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/FACT_F_PPTO')]",
+			"name": "[concat(parameters('factoryName'), '/FACT_PPTO_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -665,7 +665,7 @@
 								"referenceName": "T_FACT_PPTO_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "FACTPPTOTIENDAFISICA"
 						}
 					],
 					"transformations": [
@@ -767,7 +767,7 @@
 						"          ID_SHIP_MODE,",
 						"          MONTH,",
 						"          YEAR",
-						"     )) ~> sink1"
+						"     )) ~> FACTPPTOTIENDAFISICA"
 					]
 				}
 			},
@@ -1583,14 +1583,14 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "FACT_F_PPTO",
+								"referenceName": "FACT_PPTO_FISICA",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
 									"DIMFSHIPMODE": {},
 									"TDIMFREGION": {},
-									"sink1": {}
+									"FACTPPTOTIENDAFISICA": {}
 								}
 							},
 							"staging": {},
@@ -1608,7 +1608,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]"
+				"[concat(variables('factoryId'), '/dataflows/FACT_PPTO_FISICA')]"
 			]
 		}
 	]
