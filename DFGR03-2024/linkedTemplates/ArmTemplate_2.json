@@ -2853,6 +2853,9 @@
 						},
 						{
 							"name": "Modificarfila1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -2908,12 +2911,13 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"aggregate1, DIMFREGION join(Region == NAME_REGION,",
-						"     joinType:'left',",
+						"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()),",
+						"     joinType:'cross',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
 						"join1 alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
+						"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
