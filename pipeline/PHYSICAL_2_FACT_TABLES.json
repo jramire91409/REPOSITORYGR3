@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "FACT_F_PPTO",
+						"referenceName": "FACT_PPTO_FISICA",
 						"type": "DataFlowReference"
 					},
 					"compute": {

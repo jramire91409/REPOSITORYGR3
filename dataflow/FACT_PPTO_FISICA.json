@@ -1,5 +1,5 @@
 {
-	"name": "FACT_F_PPTO",
+	"name": "FACT_PPTO_FISICA",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -32,7 +32,7 @@
 						"referenceName": "T_FACT_PPTO_FISICA",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "FACTPPTOTIENDAFISICA"
 				}
 			],
 			"transformations": [
@@ -134,7 +134,7 @@
 				"          ID_SHIP_MODE,",
 				"          MONTH,",
 				"          YEAR",
-				"     )) ~> sink1"
+				"     )) ~> FACTPPTOTIENDAFISICA"
 			]
 		}
 	}
