@@ -2752,6 +2752,8 @@
 					{
 						"name": "DIM_F_CITY",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_REGION_2STEP",
@@ -5674,9 +5676,9 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
 						"join1 aggregate(groupBy(Product_ID,",
-						"          ID_SUBCATEGORY,",
-						"          Product_Name),",
-						"     COUNT = count()) ~> aggregate1",
+						"          ID_SUBCATEGORY),",
+						"     COUNT = count(),",
+						"          Product_Name_2 = max(Product_Name)) ~> aggregate1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -5695,7 +5697,7 @@
 						"     mapColumn(",
 						"          ID_PRODUCT = Product_ID,",
 						"          ID_SUBCATEGORY,",
-						"          DESCRIPTION = Product_Name",
+						"          DESCRIPTION = Product_Name_2",
 						"     )) ~> DIMPRODUCTO"
 					]
 				}
