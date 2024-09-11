@@ -39,7 +39,7 @@
 		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "FAC_PPTO_FISICA"
+			"table": "FACT_PPTO_FISICA"
 		}
 	}
 }
