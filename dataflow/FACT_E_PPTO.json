@@ -34,6 +34,9 @@
 				},
 				{
 					"name": "MONTHANDYEAR"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -55,13 +58,18 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DIMEVENTTYPE",
-				"MONTHANDYEAR, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+				"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
 				"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
+				"MONTHANDYEAR aggregate(groupBy(YEAR,",
+				"          MONTH,",
+				"          product_id,",
+				"          event_type),",
+				"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
 				"join1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -83,7 +91,7 @@
 				"          YEAR,",
 				"          ID_PRODUCT = product_id,",
 				"          ID_EVENT_TYPE,",
-				"          PRICE = imp_precio",
+				"          PRICE = IMPORTE_PRECIO",
 				"     )) ~> FACTPPTOECOMM"
 			]
 		}
