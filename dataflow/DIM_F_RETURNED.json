@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "SqlServerTable1",
+						"referenceName": "T_DIM_F_RETURNED",
 						"type": "DatasetReference"
 					},
 					"name": "DIMFRETURNED"

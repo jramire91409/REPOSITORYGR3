@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "stagesuperstoresalesdatapeople",
+						"referenceName": "T_STAGESUPERSTORE_PEOLPLE",
 						"type": "DatasetReference"
 					},
 					"name": "superstoresalesdatapeople"
