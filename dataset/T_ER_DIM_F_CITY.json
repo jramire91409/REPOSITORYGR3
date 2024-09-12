@@ -1,0 +1,39 @@
+{
+	"name": "T_ER_DIM_F_CITY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DESC_CITY",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_STATE",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_COUNTRY",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_POSTAL_CODE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_REGION",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "error",
+			"table": "ER_DIM_F_CITY"
+		}
+	}
+}

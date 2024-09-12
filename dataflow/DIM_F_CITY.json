@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_DIM_F_CITY",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -43,6 +50,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -103,8 +113,10 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
+				"split1@llavesllenas alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
 				"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
+				"join1 split(isNull(ID_REGION) == false(),",
+				"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -128,7 +140,30 @@
 				"          DESC_COUNTRY = Country,",
 				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"split1@LLAVEREGIONNULL sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DESC_CITY as string,",
+				"          DESC_STATE as string,",
+				"          DESC_COUNTRY as string,",
+				"          ID_POSTAL_CODE as integer,",
+				"          ID_REGION as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          DESC_CITY = City,",
+				"          DESC_STATE = State,",
+				"          DESC_COUNTRY = Country,",
+				"          ID_POSTAL_CODE = Postal_Code,",
+				"          ID_REGION",
+				"     )) ~> sink2"
 			]
 		}
 	}
