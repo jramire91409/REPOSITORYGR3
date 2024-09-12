@@ -2821,7 +2821,8 @@
 								"datasetParameters": {
 									"SUPERSTORESALESDATA": {},
 									"DIMFSEGMENT": {},
-									"sink1": {}
+									"sink1": {},
+									"sink2": {}
 								}
 							},
 							"staging": {},
@@ -5654,6 +5655,9 @@
 						},
 						{
 							"name": "split1"
+						},
+						{
+							"name": "derivedColumn2"
 						}
 					],
 					"scriptLines": [
@@ -5718,6 +5722,7 @@
 						"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
 						"join1 split(isNull(ID_REGION) == false(),",
 						"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
+						"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -5742,14 +5747,15 @@
 						"          ID_POSTAL_CODE = Postal_Code,",
 						"          ID_REGION",
 						"     )) ~> sink1",
-						"split1@LLAVEREGIONNULL sink(allowSchemaDrift: true,",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          DESC_CITY as string,",
 						"          DESC_STATE as string,",
 						"          DESC_COUNTRY as string,",
 						"          ID_POSTAL_CODE as integer,",
-						"          ID_REGION as integer",
+						"          ID_REGION as integer,",
+						"          FECHA_CARGA as binary",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -5763,7 +5769,8 @@
 						"          DESC_STATE = State,",
 						"          DESC_COUNTRY = Country,",
 						"          ID_POSTAL_CODE = Postal_Code,",
-						"          ID_REGION",
+						"          ID_REGION,",
+						"          FECHA_CARGA",
 						"     )) ~> sink2"
 					]
 				}
@@ -5805,6 +5812,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
 						}
 					],
 					"transformations": [
@@ -5816,6 +5830,12 @@
 						},
 						{
 							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -5863,7 +5883,10 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"join1 alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+						"split1@LLAVESLLENAS alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+						"join1 split(isNull(ID_SEGMENT) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, LLAVESNULL)",
+						"split1@LLAVESNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -5885,14 +5908,38 @@
 						"          DESC_CUSTOMER = Customer_Name,",
 						"          ID_SEGMENT,",
 						"          ID_POSTAL_CODE = Postal_Code",
-						"     )) ~> sink1"
+						"     )) ~> sink1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer,",
+						"          fecha_carga as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          DESC_CUSTOMER = Customer_Name,",
+						"          ID_SEGMENT,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          fecha_carga = FECHA_CARGA",
+						"     )) ~> sink2"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SEGMENT')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CUSTOMER')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CUSTOMER')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_F_CUSTOMER')]"
 			]
 		},
 		{
@@ -7333,11 +7380,59 @@
 						"name": "ID_REGION",
 						"type": "int",
 						"precision": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "timestamp"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
 					"table": "ER_DIM_F_CITY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CUSTOMER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_carga",
+						"type": "timestamp"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_CUSTOMER"
 				}
 			},
 			"dependsOn": [

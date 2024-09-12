@@ -13,6 +13,161 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_CUSTOMER')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "SUPERSTORESALESDATA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SEGMENT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSEGMENT"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SUPERSTORESALESDATA",
+						"source(output(",
+						"          ID_SEGMENT as integer,",
+						"          DESC_SEGMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSEGMENT",
+						"SUPERSTORESALESDATA aggregate(groupBy(Customer_ID,",
+						"          Customer_Name = upper(Customer_Name),",
+						"          Segment = upper(Segment),",
+						"          Postal_Code),",
+						"     count = count()) ~> aggregate1",
+						"aggregate1, DIMFSEGMENT join(Segment == DESC_SEGMENT,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"split1@LLAVESLLENAS alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+						"join1 split(isNull(ID_SEGMENT) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, LLAVESNULL)",
+						"split1@LLAVESNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['ID_CUSTOMER'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          DESC_CUSTOMER = Customer_Name,",
+						"          ID_SEGMENT,",
+						"          ID_POSTAL_CODE = Postal_Code",
+						"     )) ~> sink1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer,",
+						"          fecha_carga as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          DESC_CUSTOMER = Customer_Name,",
+						"          ID_SEGMENT,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          fecha_carga = FECHA_CARGA",
+						"     )) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_PRODUCT')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -2140,7 +2295,8 @@
 								"datasetParameters": {
 									"SUPERSTORESALESDATA": {},
 									"DIMFSEGMENT": {},
-									"sink1": {}
+									"sink1": {},
+									"sink2": {}
 								}
 							},
 							"staging": {},
@@ -2163,7 +2319,8 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CUSTOMER')]"
 			]
 		},
 		{
