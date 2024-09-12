@@ -31,8 +31,8 @@
 				"precision": 10
 			},
 			{
-				"name": "FECHA_DE_CARGA",
-				"type": "varchar"
+				"name": "FECHA_CARGA",
+				"type": "timestamp"
 			}
 		],
 		"typeProperties": {
