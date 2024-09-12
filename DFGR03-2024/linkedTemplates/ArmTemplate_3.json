@@ -13,6 +13,185 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_CITY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "STGDIMSALESDATS"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFREGION"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CITY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CITY",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGDIMSALESDATS",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION",
+						"select1 aggregate(groupBy(City = upper(City),",
+						"          State = upper(State),",
+						"          Country = upper(Country),",
+						"          Postal_Code,",
+						"          Region = upper(Region)),",
+						"     count = count()) ~> aggregate1",
+						"STGDIMSALESDATS select(mapColumn(",
+						"          Country,",
+						"          City,",
+						"          State,",
+						"          Postal_Code,",
+						"          Region",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"split1@llavesllenas alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
+						"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
+						"join1 split(isNull(ID_REGION) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
+						"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_POSTAL_CODE'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_CITY = City,",
+						"          DESC_STATE = State,",
+						"          DESC_COUNTRY = Country,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          ID_REGION",
+						"     )) ~> sink1",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer,",
+						"          FECHA_CARGA as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_CITY = City,",
+						"          DESC_STATE = State,",
+						"          DESC_COUNTRY = Country,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          ID_REGION,",
+						"          FECHA_CARGA",
+						"     )) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_CUSTOMER')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1676,7 +1855,8 @@
 									"DATOSDEPRODUCTO": {},
 									"DIMBEAUTYCAT": {},
 									"DIMBRAND": {},
-									"DIMPRODUCTO": {}
+									"DIMPRODUCTO": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -2320,6 +2500,7 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]",
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CITY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_CUSTOMER')]"
 			]
 		},
