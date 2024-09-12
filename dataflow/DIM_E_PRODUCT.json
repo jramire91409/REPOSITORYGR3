@@ -33,6 +33,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "DIMPRODUCTO"
+				},
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -47,6 +54,12 @@
 				},
 				{
 					"name": "Modificarfila1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -94,7 +107,10 @@
 				"          category_id as long '000,000,000'",
 				"     ),",
 				"     errors: true) ~> cast2",
-				"cast2 alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+				"split1@llavesllenas alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+				"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
+				"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
+				"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -118,7 +134,30 @@
 				"          DESCRIPTION = product_desc,",
 				"          ID_BEAUTY_CAT,",
 				"          ID_BRAND",
-				"     )) ~> DIMPRODUCTO"
+				"     )) ~> DIMPRODUCTO",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as decimal(25,0),",
+				"          DESCRIPTION as string,",
+				"          ID_BEAUTY_CAT as integer,",
+				"          ID_BRAND as integer,",
+				"          FECHA_CARGA as binary",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_PRODUCT = product_id,",
+				"          ID_SUBCATEGORY = category_id,",
+				"          DESCRIPTION = product_desc,",
+				"          FECHA_CARGA",
+				"     )) ~> sink1"
 			]
 		}
 	}

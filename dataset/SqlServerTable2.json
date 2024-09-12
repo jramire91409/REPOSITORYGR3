@@ -1,0 +1,46 @@
+{
+	"name": "SqlServerTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_CATEGORY",
+				"type": "decimal",
+				"precision": 25,
+				"scale": 0
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_BEAUTY_CAT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_BRAND",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FECHA_CARGA",
+				"type": "timestamp"
+			}
+		],
+		"typeProperties": {
+			"schema": "error",
+			"table": "DIM_PRODUCT"
+		}
+	}
+}
