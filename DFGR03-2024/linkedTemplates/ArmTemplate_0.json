@@ -169,37 +169,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_RETURN",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESC_RETURNED",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DIM_F_RETURNED"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/T_DIM_BEAUTY_CAT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -522,6 +491,37 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_F_RETURNED')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_RETURN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESC_RETURNED",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_RETURNED"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_DIM_F_SEGMENT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -666,7 +666,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_FISICA')]",
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CITY')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -678,14 +678,21 @@
 				"type": "SqlServerTable",
 				"schema": [
 					{
-						"name": "ID_PRODUCT",
-						"type": "char"
+						"name": "DESC_CITY",
+						"type": "varchar"
 					},
 					{
-						"name": "IMP_PPTO_GANANCIA",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
+						"name": "DESC_STATE",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
 					},
 					{
 						"name": "ID_REGION",
@@ -693,22 +700,13 @@
 						"precision": 10
 					},
 					{
-						"name": "ID_SHIP_MODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "MONTH",
-						"type": "char"
-					},
-					{
-						"name": "YEAR",
-						"type": "char"
+						"name": "FECHA_CARGA",
+						"type": "timestamp"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "ER_FACT_PPTO_FISICA"
+					"table": "ER_DIM_F_CITY"
 				}
 			},
 			"dependsOn": [

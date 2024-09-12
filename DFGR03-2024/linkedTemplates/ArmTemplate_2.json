@@ -13,6 +13,256 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/XLS_2019_OCT_RETAIL_SALES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "2019-Oct.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XLS_2020_FEB_RETAIL_SALES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "2020-Feb.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XLS_2020_JAN_RETAIL_SALES')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "2020-Jan.csv",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "event_time",
+						"type": "String"
+					},
+					{
+						"name": "event_type",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "price",
+						"type": "String"
+					},
+					{
+						"name": "user_id",
+						"type": "String"
+					},
+					{
+						"name": "user_session",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/XLS_DATOS_DE_PRODUCTO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStoragegr3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Hoja1",
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "DATOS DE PRODUCTO.xlsx",
+						"folderPath": "ECOMMERCE",
+						"container": "contenedor-gr3"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "product_id",
+						"type": "String"
+					},
+					{
+						"name": "category_id",
+						"type": "String"
+					},
+					{
+						"name": "COLUMNA1",
+						"type": "String"
+					},
+					{
+						"name": "category_code",
+						"type": "String"
+					},
+					{
+						"name": "beauty_category",
+						"type": "String"
+					},
+					{
+						"name": "brand",
+						"type": "String"
+					},
+					{
+						"name": "product_desc",
+						"type": "String"
+					},
+					{
+						"name": "category_desc",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/XLS_REAL_MES')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -255,34 +505,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/stagesuperstoresalesdatapeople')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Person",
-						"type": "varchar"
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_Superstore_Sales_Data_people"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/xls_ppto_sales_tienda_fisica')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -327,143 +549,6 @@
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CITY')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "DESC_CITY",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_STATE",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_COUNTRY",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_POSTAL_CODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_REGION",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "FECHA_CARGA",
-						"type": "timestamp"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "ER_DIM_F_CITY"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CUSTOMER')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_SEGMENT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_POSTAL_CODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "fecha_carga",
-						"type": "timestamp"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "ER_DIM_F_CUSTOMER"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_PRODUCT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_PRODUCT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_CATEGORY",
-						"type": "decimal",
-						"precision": 25,
-						"scale": 0
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_BEAUTY_CAT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_BRAND",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "FECHA_CARGA",
-						"type": "timestamp"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "DIM_PRODUCT"
-				}
 			},
 			"dependsOn": []
 		},
@@ -1650,6 +1735,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/XLS_2019_OCT_RETAIL_SALES')]",
+				"[concat(variables('factoryId'), '/datasets/XLS_2020_FEB_RETAIL_SALES')]",
+				"[concat(variables('factoryId'), '/datasets/XLS_2020_JAN_RETAIL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/XLS_REAL_MES')]"
 			]
 		},
@@ -1952,7 +2040,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/XLS_DATOS_DE_PRODUCTO')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_SUPERSTORE_SALES_DATA')]",
@@ -2856,6 +2946,9 @@
 						},
 						{
 							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
 						}
 					],
 					"scriptLines": [
@@ -2907,7 +3000,13 @@
 						"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
 						"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
 						"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"Modificarfila1 aggregate(groupBy(product_id,",
+						"          category_id,",
+						"          product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND),",
+						"     count = count()) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ID_PRODUCT as integer,",
@@ -2959,9 +3058,7 @@
 					]
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_PRODUCT')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_CATEGORY')]",

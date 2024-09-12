@@ -480,7 +480,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "stagesuperstoresalesdatapeople",
+								"referenceName": "T_STAGESUPERSTORE_PEOLPLE",
 								"type": "DatasetReference"
 							},
 							"name": "superstoresalesdatapeople"
@@ -626,7 +626,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "stagesuperstoresalesdatapeople",
+								"referenceName": "T_STAGESUPERSTORE_PEOLPLE",
 								"type": "DatasetReference"
 							},
 							"name": "superstoresalesdatapeople"
@@ -737,7 +737,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "SqlServerTable1",
+								"referenceName": "T_DIM_F_RETURNED",
 								"type": "DatasetReference"
 							},
 							"name": "DIMFRETURNED"
