@@ -163,6 +163,10 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
+				"          DESC_CITY = City,",
+				"          DESC_STATE = State,",
+				"          DESC_COUNTRY = Country,",
+				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION,",
 				"          FECHA_CARGA",
 				"     )) ~> sink2"
