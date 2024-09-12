@@ -53,6 +53,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -117,6 +120,7 @@
 				"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
 				"join1 split(isNull(ID_REGION) == false(),",
 				"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
+				"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentUTC()) ~> derivedColumn2",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -141,7 +145,7 @@
 				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION",
 				"     )) ~> sink1",
-				"split1@LLAVEREGIONNULL sink(allowSchemaDrift: true,",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          DESC_CITY as string,",
@@ -159,7 +163,12 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          ID_REGION",
+				"          DESC_CITY = City,",
+				"          DESC_STATE = State,",
+				"          DESC_COUNTRY = Country,",
+				"          ID_POSTAL_CODE = Postal_Code,",
+				"          ID_REGION,",
+				"          FECHA_DE_CARGA = FECHA_CARGA",
 				"     )) ~> sink2"
 			]
 		}
