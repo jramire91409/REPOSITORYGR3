@@ -1,5 +1,5 @@
 {
-	"name": "SqlServerTable2",
+	"name": "T_ER_DIM_PRODUCT",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
