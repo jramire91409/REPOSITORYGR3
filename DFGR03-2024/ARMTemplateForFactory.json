@@ -2780,7 +2780,8 @@
 								"datasetParameters": {
 									"STGDIMSALESDATS": {},
 									"DIMFREGION": {},
-									"sink1": {}
+									"sink1": {},
+									"sink2": {}
 								}
 							},
 							"staging": {},
@@ -2919,8 +2920,7 @@
 									"RETURNS": {},
 									"DIMSHIPMODE": {},
 									"TFACTSALESFISICA": {}
-								},
-								"linkedServiceParameters": {}
+								}
 							},
 							"staging": {},
 							"compute": {
@@ -5627,6 +5627,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CITY",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
 						}
 					],
 					"transformations": [
@@ -5644,6 +5651,9 @@
 						},
 						{
 							"name": "derivedColumn1"
+						},
+						{
+							"name": "split1"
 						}
 					],
 					"scriptLines": [
@@ -5704,8 +5714,10 @@
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"join1 alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
+						"split1@llavesllenas alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
 						"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
+						"join1 split(isNull(ID_REGION) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -5729,14 +5741,38 @@
 						"          DESC_COUNTRY = Country,",
 						"          ID_POSTAL_CODE = Postal_Code,",
 						"          ID_REGION",
-						"     )) ~> sink1"
+						"     )) ~> sink1",
+						"split1@LLAVEREGIONNULL sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          DESC_CITY = City,",
+						"          DESC_STATE = State,",
+						"          DESC_COUNTRY = Country,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          ID_REGION",
+						"     )) ~> sink2"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CITY')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CITY')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_F_CITY')]"
 			]
 		},
 		{
@@ -7262,6 +7298,50 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_FISICA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CITY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_CITY",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_STATE",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_CITY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		}
 	]
