@@ -29,6 +29,10 @@
 				"name": "ID_REGION",
 				"type": "int",
 				"precision": 10
+			},
+			{
+				"name": "FECHA_DE_CARGA",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {

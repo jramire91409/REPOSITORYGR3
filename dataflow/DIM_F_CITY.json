@@ -148,7 +148,8 @@
 				"          DESC_STATE as string,",
 				"          DESC_COUNTRY as string,",
 				"          ID_POSTAL_CODE as integer,",
-				"          ID_REGION as integer",
+				"          ID_REGION as integer,",
+				"          FECHA_DE_CARGA as string",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -158,10 +159,6 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          DESC_CITY = City,",
-				"          DESC_STATE = State,",
-				"          DESC_COUNTRY = Country,",
-				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION",
 				"     )) ~> sink2"
 			]
