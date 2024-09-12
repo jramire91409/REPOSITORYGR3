@@ -154,8 +154,10 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
 				"          ID_PRODUCT = product_id,",
-				"          ID_SUBCATEGORY = category_id,",
+				"          ID_CATEGORY = category_id,",
 				"          DESCRIPTION = product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND,",
 				"          FECHA_CARGA",
 				"     )) ~> sink1"
 			]
