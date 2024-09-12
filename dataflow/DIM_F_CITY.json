@@ -120,7 +120,7 @@
 				"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
 				"join1 split(isNull(ID_REGION) == false(),",
 				"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
-				"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentUTC()) ~> derivedColumn2",
+				"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -164,7 +164,7 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
 				"          ID_REGION,",
-				"          FECHA_DE_CARGA = FECHA_CARGA",
+				"          FECHA_CARGA",
 				"     )) ~> sink2"
 			]
 		}
