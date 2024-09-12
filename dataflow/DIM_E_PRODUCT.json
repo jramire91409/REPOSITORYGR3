@@ -60,6 +60,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -111,7 +114,13 @@
 				"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
 				"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
 				"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
-				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"Modificarfila1 aggregate(groupBy(product_id,",
+				"          category_id,",
+				"          product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND),",
+				"     count = count()) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_PRODUCT as integer,",
