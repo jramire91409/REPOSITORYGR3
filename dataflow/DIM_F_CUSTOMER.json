@@ -26,6 +26,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_DIM_F_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -37,6 +44,12 @@
 				},
 				{
 					"name": "Modificarfila1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -84,7 +97,10 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+				"split1@LLAVESLLENAS alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+				"join1 split(isNull(ID_SEGMENT) == false(),",
+				"     disjoint: false) ~> split1@(LLAVESLLENAS, LLAVESNULL)",
+				"split1@LLAVESNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -106,7 +122,30 @@
 				"          DESC_CUSTOMER = Customer_Name,",
 				"          ID_SEGMENT,",
 				"          ID_POSTAL_CODE = Postal_Code",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_CUSTOMER as string,",
+				"          DESC_CUSTOMER as string,",
+				"          ID_SEGMENT as integer,",
+				"          ID_POSTAL_CODE as integer,",
+				"          fecha_carga as binary",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_CUSTOMER = Customer_ID,",
+				"          DESC_CUSTOMER = Customer_Name,",
+				"          ID_SEGMENT,",
+				"          ID_POSTAL_CODE = Postal_Code,",
+				"          fecha_carga = FECHA_CARGA",
+				"     )) ~> sink2"
 			]
 		}
 	}
