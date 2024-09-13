@@ -129,7 +129,7 @@
 				"     errors: true) ~> cast1",
 				"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
 				"     disjoint: false) ~> split1@(LlavesLlenas, llavesNULL)",
-				"split1@llavesNULL derive(FECHA = currentUTC()) ~> derivedColumn3",
+				"split1@llavesNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
 				"split1@LlavesLlenas sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -177,7 +177,18 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> ERROR"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_PRODUCT = Product_ID,",
+				"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+				"          ID_REGION,",
+				"          ID_SHIP_MODE,",
+				"          MONTH,",
+				"          YEAR,",
+				"          FECHA_CARGA,",
+				"          DESC_SHIP_MODE_H = DESC_SHIP_MODE,",
+				"          DESC_REGION_H = NAME_REGION",
+				"     )) ~> ERROR"
 			]
 		}
 	}
