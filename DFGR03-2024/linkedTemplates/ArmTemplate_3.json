@@ -41,14 +41,14 @@
 								"referenceName": "T_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "dimfcity"
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "sink2"
+							"name": "huerfanos"
 						}
 					],
 					"transformations": [
@@ -160,7 +160,7 @@
 						"          DESC_COUNTRY = Country,",
 						"          ID_POSTAL_CODE = Postal_Code,",
 						"          ID_REGION",
-						"     )) ~> sink1",
+						"     )) ~> dimfcity",
 						"derivedColumn2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -175,6 +175,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -185,7 +186,7 @@
 						"          ID_POSTAL_CODE = Postal_Code,",
 						"          ID_REGION,",
 						"          FECHA_CARGA",
-						"     )) ~> sink2"
+						"     )) ~> huerfanos"
 					]
 				}
 			},
@@ -740,7 +741,11 @@
 								"referenceName": "T_DIM_F_RETURNED",
 								"type": "DatasetReference"
 							},
-							"name": "DIMFRETURNED"
+							"name": "DIMFRETURNED",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -1634,7 +1639,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false()) ~> filter1",
+						"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false() && filtrofecha == 1) ~> filter1",
 						"select1 derive(filtrofecha = iif(Order_Date>Ship_Date,0,1),",
 						"          Precio_Total = Importe*Quantity) ~> derivedColumn1",
 						"filter1, RETURNS join(select1@Order_ID == RETURNS@Order_ID,",
@@ -2434,8 +2439,8 @@
 								"datasetParameters": {
 									"STGDIMSALESDATS": {},
 									"DIMFREGION": {},
-									"sink1": {},
-									"sink2": {}
+									"dimfcity": {},
+									"huerfanos": {}
 								}
 							},
 							"staging": {},
@@ -2593,6 +2598,52 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]",
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PRUEBAS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DIM_F_RETURNED",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_RETURNED",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGSUPERSTORESALESDATARETURNED": {},
+									"DIMFRETURNED": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_RETURNED')]"
 			]
 		}
 	]

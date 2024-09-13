@@ -2559,7 +2559,11 @@
 								"referenceName": "T_DIM_BEAUTY_CAT",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
