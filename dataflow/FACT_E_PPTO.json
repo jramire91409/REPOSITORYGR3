@@ -36,7 +36,11 @@
 						"referenceName": "T_ER_FACT_PPTO_ECPOM",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -130,9 +134,21 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          MONTH,",
+				"          YEAR,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = IMPORTE_PRECIO,",
+				"          FECHA_CARGA",
+				"     )) ~> sink1"
 			]
 		}
 	}
