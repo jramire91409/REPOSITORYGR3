@@ -759,7 +759,8 @@
 						"          DESC_COUNTRY as string,",
 						"          ID_POSTAL_CODE as integer,",
 						"          ID_REGION as integer,",
-						"          FECHA_CARGA as binary",
+						"          FECHA_CARGA as string,",
+						"          DESC_REGION as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -930,7 +931,8 @@
 						"          DESC_CUSTOMER as string,",
 						"          ID_SEGMENT as integer,",
 						"          ID_POSTAL_CODE as integer,",
-						"          fecha_carga as binary",
+						"          fecha_carga as string,",
+						"          DESC_SEGMENT_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -948,7 +950,8 @@
 						"          DESC_CUSTOMER = Customer_Name,",
 						"          ID_SEGMENT,",
 						"          ID_POSTAL_CODE = Postal_Code,",
-						"          fecha_carga = FECHA_CARGA",
+						"          fecha_carga = FECHA_CARGA,",
+						"          DESC_SEGMENT_H = Segment",
 						"     )) ~> HUERFANOS"
 					]
 				}
@@ -2641,304 +2644,324 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ECOMM_1_DIMMENSION_LOAD')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/HUER_DIM_F_CITY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Carga de dimensiones ECOMM",
-				"activities": [
-					{
-						"name": "DIM_BRAND",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CITY",
+								"type": "DatasetReference"
+							},
+							"name": "STGDIMSALESDATS"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_E_BRAND",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGDATOSPRODUCTO": {},
-									"DIMBRAND": {}
-								}
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+							"name": "DIMFREGION"
 						}
-					},
-					{
-						"name": "DIM_CATEGORY",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "DIM_BRAND",
-								"dependencyConditions": [
-									"Succeeded"
-								]
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CITY",
+								"type": "DatasetReference"
+							},
+							"name": "dimfcity",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
 							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_E_CATEGORY",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CITY",
+								"type": "DatasetReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "DIM_BEAUTY_CAT",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "DIM_CATEGORY",
-								"dependencyConditions": [
-									"Succeeded"
-								]
+							"name": "huerfanos",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
 							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_E_BEAUTY_CAT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
 						}
-					},
-					{
-						"name": "DIM_PRODUCTO",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "DIM_BEAUTY_CAT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+					],
+					"transformations": [
+						{
+							"name": "join1"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_E_PRODUCT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"DATOSDEPRODUCTO": {},
-									"DIMBEAUTYCAT": {},
-									"DIMBRAND": {},
-									"DIMPRODUCTO": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "DIM_EVENT_TYPE",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "DIM_PRODUCTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+						{
+							"name": "Modificarfila1"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_E_EVENT_TYPE",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGEDWHPPTO": {},
-									"STAGEEREALSALES": {},
-									"DIMEVENTTYPE": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn2"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
+					],
+					"scriptLines": [
+						"source(output(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_REGION as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGDIMSALESDATS",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFREGION",
+						"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && DESC_REGION == NAME_REGION,",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"split1@llavesllenas alterRow(upsertIf(isNull(ID_POSTAL_CODE)==false())) ~> Modificarfila1",
+						"STGDIMSALESDATS derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
+						"join1 split(isNull(DIMFREGION@ID_REGION) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
+						"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_POSTAL_CODE'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_CITY,",
+						"          DESC_STATE,",
+						"          DESC_COUNTRY,",
+						"          ID_POSTAL_CODE,",
+						"          ID_REGION = split1@llavesllenas@ID_REGION",
+						"     )) ~> dimfcity",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_CITY as string,",
+						"          DESC_STATE as string,",
+						"          DESC_COUNTRY as string,",
+						"          ID_POSTAL_CODE as integer,",
+						"          ID_REGION as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_REGION as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_CITY,",
+						"          DESC_STATE,",
+						"          DESC_COUNTRY,",
+						"          ID_POSTAL_CODE,",
+						"          ID_REGION = split1@LLAVEREGIONNULL@ID_REGION,",
+						"          DESC_REGION,",
+						"          FECHA_CARGA",
+						"     )) ~> huerfanos"
+					]
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_E_BRAND')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_E_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_E_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/DIM_E_EVENT_TYPE')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ECOMM_2_FACT_TABLES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/HUER_DIM_F_CUSTOMER')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "FACT_SALES_ECOMM",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "FACT_PPTO_ECOMM",
-								"dependencyConditions": [
-									"Succeeded"
-								]
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "SUPERSTORESALESDATA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SEGMENT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSEGMENT"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
 							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_E_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTSALESECOMM": {},
-									"sink1": {}
-								}
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_CUSTOMER",
+								"type": "DatasetReference"
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+							"name": "HUERFANOS",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
-					},
-					{
-						"name": "FACT_PPTO_ECOMM",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
 						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_E_PPTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTPPTOECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
+						{
+							"name": "join1"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer,",
+						"          fecha_carga as string,",
+						"          DESC_SEGMENT_H as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SUPERSTORESALESDATA",
+						"source(output(",
+						"          ID_SEGMENT as integer,",
+						"          DESC_SEGMENT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSEGMENT",
+						"SUPERSTORESALESDATA aggregate(groupBy(Customer_ID = ID_CUSTOMER,",
+						"          Customer_Name = upper(DESC_CUSTOMER),",
+						"          Segment = upper(DESC_SEGMENT_H),",
+						"          Postal_Code = ID_POSTAL_CODE),",
+						"     count = count()) ~> aggregate1",
+						"aggregate1, DIMFSEGMENT join(Segment == DESC_SEGMENT,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"split1@LLAVESLLENAS alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
+						"join1 split(isNull(ID_SEGMENT) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, LLAVESNULL)",
+						"split1@LLAVESNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:true,",
+						"     upsertable:true,",
+						"     keys:['ID_CUSTOMER'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          DESC_CUSTOMER = Customer_Name,",
+						"          ID_SEGMENT,",
+						"          ID_POSTAL_CODE = Postal_Code",
+						"     )) ~> sink1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CUSTOMER as string,",
+						"          DESC_CUSTOMER as string,",
+						"          ID_SEGMENT as integer,",
+						"          ID_POSTAL_CODE as integer,",
+						"          fecha_carga as string,",
+						"          DESC_SEGMENT_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          DESC_CUSTOMER = Customer_Name,",
+						"          ID_SEGMENT,",
+						"          ID_POSTAL_CODE = Postal_Code,",
+						"          fecha_carga = FECHA_CARGA,",
+						"          DESC_SEGMENT_H = Segment",
+						"     )) ~> HUERFANOS"
+					]
+				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]",
-				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]"
-			]
+			"dependsOn": []
 		}
 	]
 }

@@ -44,7 +44,11 @@
 					},
 					{
 						"name": "fecha_carga",
-						"type": "timestamp"
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_SEGMENT_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {

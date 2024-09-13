@@ -701,7 +701,11 @@
 					},
 					{
 						"name": "FECHA_CARGA",
-						"type": "timestamp"
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_REGION",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
