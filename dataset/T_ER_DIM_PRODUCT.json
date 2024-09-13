@@ -36,6 +36,14 @@
 			{
 				"name": "FECHA_CARGA",
 				"type": "varchar"
+			},
+			{
+				"name": "DESC_BEAUTYCAT_H",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_BRAND_H",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
