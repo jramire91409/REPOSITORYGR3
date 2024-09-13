@@ -2920,7 +2920,8 @@
 									"DIMSHIPMODE": {},
 									"TFACTSALESFISICA": {},
 									"sink1": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
@@ -7874,7 +7875,7 @@
 						"          PROFIT as decimal(24,10),",
 						"          ID_RETURNED as integer,",
 						"          PRECIO_TOTAL as decimal(24,10),",
-						"          FECHA_CARGA as binary",
+						"          FECHA_CARGA as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -7984,7 +7985,7 @@
 					},
 					{
 						"name": "FECHA_CARGA",
-						"type": "timestamp"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {

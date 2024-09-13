@@ -689,7 +689,7 @@
 					},
 					{
 						"name": "FECHA_CARGA",
-						"type": "timestamp"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
