@@ -306,8 +306,6 @@
 					{
 						"name": "FACT_PPTO_ECOMM",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -2945,6 +2943,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PRUEBAS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DIM_F_SEGMENT",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DIM_F_SEGMENT",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGFSUPERSTORESALESDATA": {},
+									"DIMFSEGMENT": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CSV_DWH_PPTO_ECOMM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3573,6 +3617,45 @@
 				"typeProperties": {
 					"schema": "error",
 					"table": "ER_DIM_F_CUSTOMER"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "FECHA_CARGUE",
+						"type": "timestamp"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "DIM_F_PRODUCT"
 				}
 			},
 			"dependsOn": [
@@ -5539,7 +5622,7 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     outputAssertFailedRows: true,",
 						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'FISICA',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_EVENT_TYPE = event_type",
 						"     )) ~> DIMEVENTTYPE"
@@ -7770,91 +7853,6 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_FISICA')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PRUEBAS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "DIM_F_SEGMENT",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_F_SEGMENT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGFSUPERSTORESALESDATA": {},
-									"DIMFSEGMENT": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_PRODUCT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_PRODUCT",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_SUBCATEGORY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "FECHA_CARGUE",
-						"type": "timestamp"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "DIM_F_PRODUCT"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
 			]
 		}
 	]
