@@ -1,0 +1,35 @@
+{
+	"name": "T_ER_DIM_F_SUBCATEGORY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DESC_SUB_CATEGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_SUBCATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_CATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FECHA_CARGA",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "error",
+			"table": "ER_DIM_F_SUB_CATEGORY"
+		}
+	}
+}
