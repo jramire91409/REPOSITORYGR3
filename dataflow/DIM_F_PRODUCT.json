@@ -166,7 +166,8 @@
 				"          ID_PRODUCT = Product_ID,",
 				"          ID_SUBCATEGORY,",
 				"          DESCRIPTION = Product_Name,",
-				"          FECHA_CARGUE",
+				"          FECHA_CARGUE,",
+				"          DESC_SUBCATEGORIA_H = Sub_Category",
 				"     )) ~> HERFANOS"
 			]
 		}
