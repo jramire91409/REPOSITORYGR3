@@ -13,6 +13,56 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CITY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_CITY",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_STATE",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_COUNTRY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_REGION",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_REGION",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_CITY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CUSTOMER')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -86,11 +136,57 @@
 					{
 						"name": "FECHA_CARGUE",
 						"type": "varchar"
+					},
+					{
+						"name": "DESC_SUBCATEGORIA_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
 					"table": "ER_DIM_F_PRODUCT"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_SUBCATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_SUB_CATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_CATEGORY_H",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_SUB_CATEGORY"
 				}
 			},
 			"dependsOn": []
@@ -135,11 +231,75 @@
 					{
 						"name": "FECHA_CARGA",
 						"type": "varchar"
+					},
+					{
+						"name": "DESC_BEAUTYCAT_H",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_BRAND_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
 					"table": "ER_DIM_PRODUCT"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_ECPOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "MONTH",
+						"type": "decimal",
+						"precision": 2,
+						"scale": 0
+					},
+					{
+						"name": "YEAR",
+						"type": "decimal",
+						"precision": 4,
+						"scale": 0
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_EVENT_TYPE_H",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_PPTO_ECOMM"
 				}
 			},
 			"dependsOn": []
@@ -183,11 +343,159 @@
 					{
 						"name": "YEAR",
 						"type": "char"
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_SHIP_MODE_H",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_REGION_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
 					"table": "ER_FACT_PPTO_FISICA"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_SALES_ECOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_USER_SESION",
+						"type": "char"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_USER",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EVENT_DATE",
+						"type": "date"
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_SALES_ECOMM"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FCAT_SALES_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "date"
+					},
+					{
+						"name": "SHIP_DATE",
+						"type": "date"
+					},
+					{
+						"name": "ID_SHIP_MODE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "IMPORTE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "QUANTITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DISCOUNT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "PROFIT",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_RETURNED",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRECIO_TOTAL",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_SALES_FISICA"
 				}
 			},
 			"dependsOn": []
@@ -671,276 +979,6 @@
 					"schema": "stage",
 					"table": "Stage_ecom_DATOS_DE_PRODUCTO_category"
 				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_F_PPTO_TIENDA_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "fec_ppto_month",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Ship_Mode",
-						"type": "varchar"
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					},
-					{
-						"name": "Product_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "imp_ppto_ganancia",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "stage_ppto_tienda_fisica"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_F_SUPERSTORE_SALES_DATA')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Order_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Order_Date",
-						"type": "varchar"
-					},
-					{
-						"name": "Ship_Date",
-						"type": "varchar"
-					},
-					{
-						"name": "Ship_Mode",
-						"type": "varchar"
-					},
-					{
-						"name": "Customer_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Customer_Name",
-						"type": "varchar"
-					},
-					{
-						"name": "Segment",
-						"type": "varchar"
-					},
-					{
-						"name": "Country",
-						"type": "varchar"
-					},
-					{
-						"name": "City",
-						"type": "varchar"
-					},
-					{
-						"name": "State",
-						"type": "varchar"
-					},
-					{
-						"name": "Postal_Code",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					},
-					{
-						"name": "Product_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Category",
-						"type": "varchar"
-					},
-					{
-						"name": "Sub_Category",
-						"type": "varchar"
-					},
-					{
-						"name": "Product_Name",
-						"type": "varchar"
-					},
-					{
-						"name": "Sales",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					},
-					{
-						"name": "Quantity",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Discount",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					},
-					{
-						"name": "Profit",
-						"type": "decimal",
-						"precision": 38,
-						"scale": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_Superstore_Sales_Data"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Returned",
-						"type": "varchar"
-					},
-					{
-						"name": "Order_ID",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_Superstore_Sales_Data_returns"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Person",
-						"type": "varchar"
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_Superstore_Sales_Data_people"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/XLS_2019_DEC_RETAIL_SALES')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "2019-Dec.csv",
-						"folderPath": "ECOMMERCE",
-						"container": "contenedor-gr3"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "event_time",
-						"type": "String"
-					},
-					{
-						"name": "event_type",
-						"type": "String"
-					},
-					{
-						"name": "product_id",
-						"type": "String"
-					},
-					{
-						"name": "category_id",
-						"type": "String"
-					},
-					{
-						"name": "category_code",
-						"type": "String"
-					},
-					{
-						"name": "brand",
-						"type": "String"
-					},
-					{
-						"name": "price",
-						"type": "String"
-					},
-					{
-						"name": "user_id",
-						"type": "String"
-					},
-					{
-						"name": "user_session",
-						"type": "String"
-					}
-				]
 			},
 			"dependsOn": []
 		}

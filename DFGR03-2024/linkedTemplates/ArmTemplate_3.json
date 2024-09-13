@@ -13,6 +13,87 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_E_BEAUTY_CAT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BEAUTY_CAT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(beauty_category = upper(beauty_category)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(beauty_category)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_BEAUTY_CAT as integer,",
+						"          DESC_BEAUTY_CAT as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESC_BEAUTY_CAT'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_BEAUTY_CAT = beauty_category",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_E_BRAND')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -472,7 +553,9 @@
 						"          DESCRIPTION as string,",
 						"          ID_BEAUTY_CAT as integer,",
 						"          ID_BRAND as integer,",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          DESC_BEAUTYCAT_H as string,",
+						"          DESC_BRAND_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -491,7 +574,9 @@
 						"          DESCRIPTION = product_desc,",
 						"          ID_BEAUTY_CAT,",
 						"          ID_BRAND,",
-						"          FECHA_CARGA",
+						"          FECHA_CARGA,",
+						"          DESC_BEAUTYCAT_H = beauty_category,",
+						"          DESC_BRAND_H = brand",
 						"     )) ~> sink1"
 					]
 				}
@@ -1110,7 +1195,8 @@
 						"          ID_PRODUCT as string,",
 						"          ID_SUBCATEGORY as integer,",
 						"          DESCRIPTION as string,",
-						"          FECHA_CARGUE as string",
+						"          FECHA_CARGUE as string,",
+						"          DESC_SUBCATEGORIA_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1127,7 +1213,8 @@
 						"          ID_PRODUCT = Product_ID,",
 						"          ID_SUBCATEGORY,",
 						"          DESCRIPTION = Product_Name,",
-						"          FECHA_CARGUE",
+						"          FECHA_CARGUE,",
+						"          DESC_SUBCATEGORIA_H = Sub_Category",
 						"     )) ~> HERFANOS"
 					]
 				}
@@ -1797,7 +1884,8 @@
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> TDIMFCATEGORY",
 						"IDCATEGORY aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
-						"          ID_CATEGORY),",
+						"          ID_CATEGORY,",
+						"          DESCRIPTION),",
 						"     COUNT = count()) ~> aggregate2",
 						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
 						"source1, TDIMFCATEGORY join(upper(Category) == upper(DESCRIPTION),",
@@ -1836,7 +1924,8 @@
 						"          DESC_SUB_CATEGORY as string,",
 						"          ID_SUBCATEGORY as integer,",
 						"          ID_CATEGORY as integer,",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          DESC_CATEGORY_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -1847,7 +1936,13 @@
 						"     skipDuplicateMapOutputs: true,",
 						"     outputAssertFailedRows: true,",
 						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES') ~> sink1"
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
+						"          ID_CATEGORY,",
+						"          FECHA_CARGA,",
+						"          DESC_CATEGORY_H = DESCRIPTION",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -1985,7 +2080,8 @@
 						"          ID_PRODUCT as integer,",
 						"          ID_EVENT_TYPE as integer,",
 						"          PRICE as decimal(24,10),",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          DESC_EVENT_TYPE_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -2004,7 +2100,8 @@
 						"          ID_PRODUCT = product_id,",
 						"          ID_EVENT_TYPE,",
 						"          PRICE = IMPORTE_PRECIO,",
-						"          FECHA_CARGA",
+						"          FECHA_CARGA,",
+						"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
 						"     )) ~> sink1"
 					]
 				}
@@ -2333,7 +2430,7 @@
 						"     errors: true) ~> cast1",
 						"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
 						"     disjoint: false) ~> split1@(LlavesLlenas, llavesNULL)",
-						"split1@llavesNULL derive(FECHA = currentUTC()) ~> derivedColumn3",
+						"split1@llavesNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
 						"split1@LlavesLlenas sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -2370,7 +2467,10 @@
 						"          ID_REGION as integer,",
 						"          ID_SHIP_MODE as integer,",
 						"          MONTH as string,",
-						"          YEAR as string",
+						"          YEAR as string,",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string,",
+						"          DESC_REGION_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -2378,7 +2478,18 @@
 						"     upsertable:false,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> ERROR"
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR,",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = DESC_SHIP_MODE,",
+						"          DESC_REGION_H = NAME_REGION",
+						"     )) ~> ERROR"
 					]
 				}
 			},
@@ -2644,7 +2755,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/HUER_DIM_F_CITY')]",
+			"name": "[concat(parameters('factoryName'), '/HUER_DIM_E_PRODUCT')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -2653,26 +2764,33 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "T_ER_DIM_F_CITY",
+								"referenceName": "T_ER_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "STGDIMSALESDATS"
+							"name": "DATOSDEPRODUCTO"
 						},
 						{
 							"dataset": {
-								"referenceName": "T_DIM_F_REGION",
+								"referenceName": "T_DIM_BEAUTY_CAT",
 								"type": "DatasetReference"
 							},
-							"name": "DIMFREGION"
+							"name": "DIMBEAUTYCAT"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BRAND",
+								"type": "DatasetReference"
+							},
+							"name": "DIMBRAND"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "T_DIM_F_CITY",
+								"referenceName": "T_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "dimfcity",
+							"name": "DIMPRODUCTO",
 							"rejectedDataLinkedService": {
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
@@ -2680,158 +2798,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "T_ER_DIM_F_CITY",
-								"type": "DatasetReference"
-							},
-							"name": "huerfanos",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "Modificarfila1"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "split1"
-						},
-						{
-							"name": "derivedColumn2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          DESC_CITY as string,",
-						"          DESC_STATE as string,",
-						"          DESC_COUNTRY as string,",
-						"          ID_POSTAL_CODE as integer,",
-						"          ID_REGION as integer,",
-						"          FECHA_CARGA as string,",
-						"          DESC_REGION as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGDIMSALESDATS",
-						"source(output(",
-						"          ID_REGION as integer,",
-						"          NAME_REGION as string,",
-						"          DESC_MANAGER as string,",
-						"          FEC_INI as date,",
-						"          FEC_FIN as date",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMFREGION",
-						"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && DESC_REGION == NAME_REGION,",
-						"     joinType:'cross',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"split1@llavesllenas alterRow(upsertIf(isNull(ID_POSTAL_CODE)==false())) ~> Modificarfila1",
-						"STGDIMSALESDATS derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
-						"join1 split(isNull(DIMFREGION@ID_REGION) == false(),",
-						"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
-						"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          DESC_CITY as string,",
-						"          DESC_STATE as string,",
-						"          DESC_COUNTRY as string,",
-						"          ID_POSTAL_CODE as integer,",
-						"          ID_REGION as integer",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['ID_POSTAL_CODE'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_CITY,",
-						"          DESC_STATE,",
-						"          DESC_COUNTRY,",
-						"          ID_POSTAL_CODE,",
-						"          ID_REGION = split1@llavesllenas@ID_REGION",
-						"     )) ~> dimfcity",
-						"derivedColumn2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          DESC_CITY as string,",
-						"          DESC_STATE as string,",
-						"          DESC_COUNTRY as string,",
-						"          ID_POSTAL_CODE as integer,",
-						"          ID_REGION as integer,",
-						"          FECHA_CARGA as string,",
-						"          DESC_REGION as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_CITY,",
-						"          DESC_STATE,",
-						"          DESC_COUNTRY,",
-						"          ID_POSTAL_CODE,",
-						"          ID_REGION = split1@LLAVEREGIONNULL@ID_REGION,",
-						"          DESC_REGION,",
-						"          FECHA_CARGA",
-						"     )) ~> huerfanos"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/HUER_DIM_F_CUSTOMER')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_ER_DIM_F_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "SUPERSTORESALESDATA"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_SEGMENT",
-								"type": "DatasetReference"
-							},
-							"name": "DIMFSEGMENT"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_CUSTOMER",
+								"referenceName": "T_ER_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
 							"name": "sink1",
@@ -2839,25 +2806,17 @@
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
 							}
-						},
-						{
-							"dataset": {
-								"referenceName": "T_ER_DIM_F_CUSTOMER",
-								"type": "DatasetReference"
-							},
-							"name": "HUERFANOS",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
 						}
 					],
 					"transformations": [
 						{
-							"name": "aggregate1"
+							"name": "CONBEAUTY"
 						},
 						{
 							"name": "join1"
+						},
+						{
+							"name": "cast2"
 						},
 						{
 							"name": "Modificarfila1"
@@ -2867,56 +2826,93 @@
 						},
 						{
 							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          ID_CUSTOMER as string,",
-						"          DESC_CUSTOMER as string,",
-						"          ID_SEGMENT as integer,",
-						"          ID_POSTAL_CODE as integer,",
-						"          fecha_carga as string,",
-						"          DESC_SEGMENT_H as string",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_BEAUTYCAT_H as string,",
+						"          DESC_BRAND_H as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> SUPERSTORESALESDATA",
+						"     format: 'table') ~> DATOSDEPRODUCTO",
 						"source(output(",
-						"          ID_SEGMENT as integer,",
-						"          DESC_SEGMENT as string",
+						"          ID_BEAUTY_CAT as integer,",
+						"          DESC_BEAUTY_CAT as string",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMFSEGMENT",
-						"SUPERSTORESALESDATA aggregate(groupBy(Customer_ID = ID_CUSTOMER,",
-						"          Customer_Name = upper(DESC_CUSTOMER),",
-						"          Segment = upper(DESC_SEGMENT_H),",
-						"          Postal_Code = ID_POSTAL_CODE),",
-						"     count = count()) ~> aggregate1",
-						"aggregate1, DIMFSEGMENT join(Segment == DESC_SEGMENT,",
+						"     format: 'table') ~> DIMBEAUTYCAT",
+						"source(output(",
+						"          ID_BRAND as integer,",
+						"          DESC_BRAND as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMBRAND",
+						"select1, DIMBEAUTYCAT join(upper(beauty_category) == upper(DESC_BEAUTY_CAT),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> CONBEAUTY",
+						"CONBEAUTY, DIMBRAND join(upper(brand) == upper(DESC_BRAND),",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"split1@LLAVESLLENAS alterRow(upsertIf(isNull(Customer_ID)==false())) ~> Modificarfila1",
-						"join1 split(isNull(ID_SEGMENT) == false(),",
-						"     disjoint: false) ~> split1@(LLAVESLLENAS, LLAVESNULL)",
-						"split1@LLAVESNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"join1 cast(output(",
+						"          category_id as long '000,000,000'",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"split1@llavesllenas alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+						"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
+						"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
+						"Modificarfila1 aggregate(groupBy(product_id,",
+						"          category_id,",
+						"          product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND),",
+						"     count = count()) ~> aggregate1",
+						"DATOSDEPRODUCTO select(mapColumn(",
+						"          product_id = ID_PRODUCT,",
+						"          category_id = ID_CATEGORY,",
+						"          category_code = ID_CATEGORY,",
+						"          beauty_category = DESC_BEAUTYCAT_H,",
+						"          brand = DESC_BRAND_H,",
+						"          product_desc = DESCRIPTION",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"aggregate1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_CUSTOMER as string,",
-						"          DESC_CUSTOMER as string,",
-						"          ID_SEGMENT as integer,",
-						"          ID_POSTAL_CODE as integer",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer",
 						"     ),",
 						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:true,",
+						"     insertable:false,",
+						"     updateable:false,",
 						"     upsertable:true,",
-						"     keys:['ID_CUSTOMER'],",
+						"     keys:['ID_PRODUCT'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -2924,20 +2920,23 @@
 						"     assertFailure_container: 'contenedor-gr3',",
 						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
-						"          ID_CUSTOMER = Customer_ID,",
-						"          DESC_CUSTOMER = Customer_Name,",
-						"          ID_SEGMENT,",
-						"          ID_POSTAL_CODE = Postal_Code",
-						"     )) ~> sink1",
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND",
+						"     )) ~> DIMPRODUCTO",
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          ID_CUSTOMER as string,",
-						"          DESC_CUSTOMER as string,",
-						"          ID_SEGMENT as integer,",
-						"          ID_POSTAL_CODE as integer,",
-						"          fecha_carga as string,",
-						"          DESC_SEGMENT_H as string",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_BEAUTYCAT_H as string,",
+						"          DESC_BRAND_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -2951,13 +2950,15 @@
 						"     assertFailure_container: 'contenedor-gr3',",
 						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
-						"          ID_CUSTOMER = Customer_ID,",
-						"          DESC_CUSTOMER = Customer_Name,",
-						"          ID_SEGMENT,",
-						"          ID_POSTAL_CODE = Postal_Code,",
-						"          fecha_carga = FECHA_CARGA,",
-						"          DESC_SEGMENT_H = Segment",
-						"     )) ~> HUERFANOS"
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND,",
+						"          FECHA_CARGA,",
+						"          DESC_BEAUTYCAT_H = beauty_category,",
+						"          DESC_BRAND_H = brand",
+						"     )) ~> sink1"
 					]
 				}
 			},

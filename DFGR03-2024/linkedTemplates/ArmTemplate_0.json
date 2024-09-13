@@ -169,6 +169,41 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/HUER_T_DIM_F_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_F_PRODUCT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_DIM_BEAUTY_CAT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -659,58 +694,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "DIM_PRODUCT"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_CITY')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "DESC_CITY",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_STATE",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_COUNTRY",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_POSTAL_CODE",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_REGION",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "FECHA_CARGA",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_REGION",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "error",
-					"table": "ER_DIM_F_CITY"
 				}
 			},
 			"dependsOn": [
