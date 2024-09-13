@@ -18,7 +18,11 @@
 						"referenceName": "T_DIM_F_RETURNED",
 						"type": "DatasetReference"
 					},
-					"name": "DIMFRETURNED"
+					"name": "DIMFRETURNED",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [

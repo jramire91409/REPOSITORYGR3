@@ -25,14 +25,14 @@
 						"referenceName": "T_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "dimfcity"
 				},
 				{
 					"dataset": {
 						"referenceName": "T_ER_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "huerfanos"
 				}
 			],
 			"transformations": [
@@ -144,7 +144,7 @@
 				"          DESC_COUNTRY = Country,",
 				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION",
-				"     )) ~> sink1",
+				"     )) ~> dimfcity",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -159,6 +159,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -169,7 +170,7 @@
 				"          ID_POSTAL_CODE = Postal_Code,",
 				"          ID_REGION,",
 				"          FECHA_CARGA",
-				"     )) ~> sink2"
+				"     )) ~> huerfanos"
 			]
 		}
 	}
