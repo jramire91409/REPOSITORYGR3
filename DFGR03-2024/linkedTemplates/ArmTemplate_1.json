@@ -130,12 +130,12 @@
 					},
 					{
 						"name": "FECHA_CARGA",
-						"type": "timestamp"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "DIM_PRODUCT"
+					"table": "ER_DIM_PRODUCT"
 				}
 			},
 			"dependsOn": []

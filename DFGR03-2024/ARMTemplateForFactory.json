@@ -3701,12 +3701,12 @@
 					},
 					{
 						"name": "FECHA_CARGA",
-						"type": "timestamp"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "DIM_PRODUCT"
+					"table": "ER_DIM_PRODUCT"
 				}
 			},
 			"dependsOn": [
@@ -5803,7 +5803,7 @@
 						"          DESCRIPTION as string,",
 						"          ID_BEAUTY_CAT as integer,",
 						"          ID_BRAND as integer,",
-						"          FECHA_CARGA as binary",
+						"          FECHA_CARGA as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",

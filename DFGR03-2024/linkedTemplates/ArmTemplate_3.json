@@ -179,7 +179,7 @@
 						"          DESCRIPTION as string,",
 						"          ID_BEAUTY_CAT as integer,",
 						"          ID_BRAND as integer,",
-						"          FECHA_CARGA as binary",
+						"          FECHA_CARGA as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
