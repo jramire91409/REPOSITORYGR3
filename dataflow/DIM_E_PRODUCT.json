@@ -184,7 +184,9 @@
 				"          DESCRIPTION = product_desc,",
 				"          ID_BEAUTY_CAT,",
 				"          ID_BRAND,",
-				"          FECHA_CARGA",
+				"          FECHA_CARGA,",
+				"          DESC_BEAUTYCAT_H = beauty_category,",
+				"          DESC_BRAND_H = brand",
 				"     )) ~> sink1"
 			]
 		}
