@@ -40,6 +40,68 @@
 					},
 					"waitOnCompletion": true
 				}
+			},
+			{
+				"name": "HUER_DIM_F_CITY",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "PHYSICAL_1_DIMMENSION_LOAD",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HUER_DIM_F_CITY",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "HUER_DIM_F_CUSTOMER",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "HUER_DIM_F_CITY",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HUER_DIM_F_CUSTOMER",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
