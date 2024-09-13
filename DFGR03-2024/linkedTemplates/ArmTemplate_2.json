@@ -694,7 +694,150 @@
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "FACT_SALES_FISICA"
+					"table": "ER_FACT_SALES_FISICA"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_SUBCATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_SUB_CATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_SUB_CATEGORY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_ECPOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "MONTH",
+						"type": "decimal",
+						"precision": 2,
+						"scale": 0
+					},
+					{
+						"name": "YEAR",
+						"type": "decimal",
+						"precision": 4,
+						"scale": 0
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_PPTO_ECOMM"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_SALES_ECOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_USER_SESION",
+						"type": "char"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_USER",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EVENT_DATE",
+						"type": "date"
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_SALES_ECOMM"
 				}
 			},
 			"dependsOn": []
@@ -2760,299 +2903,6 @@
 						"     mapColumn(",
 						"          DESC_BEAUTY_CAT = beauty_category",
 						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_E_BRAND')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
-								"type": "DatasetReference"
-							},
-							"name": "STGDATOSPRODUCTO"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_BRAND",
-								"type": "DatasetReference"
-							},
-							"name": "DIMBRAND",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "Modificarfila1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGDATOSPRODUCTO",
-						"STGDATOSPRODUCTO aggregate(groupBy(brand = upper(brand)),",
-						"     COUNT = count()) ~> aggregate1",
-						"aggregate1 alterRow(upsertIf(isNull(brand)==false())) ~> Modificarfila1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_BRAND as integer,",
-						"          DESC_BRAND as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['DESC_BRAND'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_BRAND = brand",
-						"     )) ~> DIMBRAND"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_E_CATEGORY')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Modificarfila1"
-						},
-						{
-							"name": "cast1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          Column3 as string,",
-						"          category_code as string,",
-						"          beauty_category as string,",
-						"          brand as string,",
-						"          product_desc as string,",
-						"          category_desc as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source1 aggregate(groupBy(category_id,",
-						"          category_code,",
-						"          category_desc),",
-						"     COUNT = count()) ~> aggregate2",
-						"cast1 alterRow(upsertIf(isNull(category_id)==false())) ~> Modificarfila1",
-						"aggregate2 cast(output(",
-						"          category_id as long '000,000,000'",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_CATEGORY as decimal(25,0),",
-						"          DESCRIPTION as string,",
-						"          CATEGORY_CODE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['ID_CATEGORY'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          ID_CATEGORY = category_id,",
-						"          DESCRIPTION = category_desc,",
-						"          CATEGORY_CODE = category_code",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_E_EVENT_TYPE')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STAGE_E_DWH_PPTO",
-								"type": "DatasetReference"
-							},
-							"name": "STGEDWHPPTO"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_STAGE_E_REAL_SALES",
-								"type": "DatasetReference"
-							},
-							"name": "STAGEEREALSALES"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_EVENT_TYPE",
-								"type": "DatasetReference"
-							},
-							"name": "DIMEVENTTYPE",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "Modificarfila1"
-						},
-						{
-							"name": "union1"
-						},
-						{
-							"name": "select1"
-						},
-						{
-							"name": "select2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          fec_ppto_month as string,",
-						"          event_type as string,",
-						"          product_id as integer,",
-						"          imp_precio as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGEDWHPPTO",
-						"source(output(",
-						"          event_time as string,",
-						"          event_type as string,",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          category_code as string,",
-						"          brand as string,",
-						"          price as decimal(38,10),",
-						"          user_id as integer,",
-						"          user_session as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STAGEEREALSALES",
-						"union1 aggregate(groupBy(event_type = upper(event_type)),",
-						"     COUNT = count()) ~> aggregate1",
-						"aggregate1 alterRow(upsertIf(isNull(event_type)==false())) ~> Modificarfila1",
-						"select2, select1 union(byName: true)~> union1",
-						"STGEDWHPPTO select(mapColumn(",
-						"          event_type",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"STAGEEREALSALES select(mapColumn(",
-						"          event_type",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select2",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_EVENT_TYPE as integer,",
-						"          DESC_EVENT_TYPE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['DESC_EVENT_TYPE'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_EVENT_TYPE = event_type",
-						"     )) ~> DIMEVENTTYPE"
 					]
 				}
 			},

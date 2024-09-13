@@ -268,6 +268,8 @@
 					{
 						"name": "FACT_SALES_ECOMM",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "FACT_PPTO_ECOMM",
@@ -292,7 +294,8 @@
 								"datasetParameters": {
 									"STAGEREALSALES": {},
 									"DIMEVENTTYPE": {},
-									"FACTSALESECOMM": {}
+									"FACTSALESECOMM": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -323,7 +326,8 @@
 								"datasetParameters": {
 									"STAGEREALSALES": {},
 									"DIMEVENTTYPE": {},
-									"FACTPPTOECOMM": {}
+									"FACTPPTOECOMM": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -2540,7 +2544,8 @@
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
-									"source2": {},
+									"TDIMFCATEGORY": {},
+									"dimfsubcategory": {},
 									"sink1": {}
 								}
 							},
@@ -2940,52 +2945,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]",
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PRUEBAS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "DIM_F_SEGMENT",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_F_SEGMENT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGFSUPERSTORESALESDATA": {},
-									"DIMFSEGMENT": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
 			]
 		},
 		{
@@ -7095,13 +7054,24 @@
 								"referenceName": "T_DIM_F_CATEGORY",
 								"type": "DatasetReference"
 							},
-							"name": "source2"
+							"name": "TDIMFCATEGORY"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
 								"referenceName": "T_DIM_F_SUB_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "dimfsubcategory",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_SUBCATEGORY",
 								"type": "DatasetReference"
 							},
 							"name": "sink1",
@@ -7119,7 +7089,13 @@
 							"name": "Modificarfila1"
 						},
 						{
-							"name": "join1"
+							"name": "IDCATEGORY"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -7156,17 +7132,20 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source2",
-						"join1 aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
+						"     format: 'table') ~> TDIMFCATEGORY",
+						"IDCATEGORY aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
 						"          ID_CATEGORY),",
 						"     COUNT = count()) ~> aggregate2",
 						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
-						"source1, source2 join(upper(Category) == upper(DESCRIPTION),",
+						"source1, TDIMFCATEGORY join(upper(Category) == upper(DESCRIPTION),",
 						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     broadcast: 'auto')~> IDCATEGORY",
+						"Modificarfila1 split(isNull(ID_CATEGORY) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          DESC_SUB_CATEGORY as string,",
@@ -7187,7 +7166,25 @@
 						"     mapColumn(",
 						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
 						"          ID_CATEGORY",
-						"     )) ~> sink1"
+						"     )) ~> dimfsubcategory",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_SUB_CATEGORY as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          ID_CATEGORY as integer,",
+						"          FECHA_CARGA as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES') ~> sink1"
 					]
 				}
 			},
@@ -7195,7 +7192,8 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CATEGORY')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SUB_CATEGORY')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_F_SUBCATEGORY')]"
 			]
 		},
 		{
@@ -7232,6 +7230,17 @@
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_PPTO_ECPOM",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -7243,6 +7252,12 @@
 						},
 						{
 							"name": "aggregate1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -7276,7 +7291,10 @@
 						"          product_id,",
 						"          event_type),",
 						"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
-						"join1 sink(allowSchemaDrift: true,",
+						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          MONTH as decimal(2,0),",
@@ -7301,7 +7319,36 @@
 						"          ID_PRODUCT = product_id,",
 						"          ID_EVENT_TYPE,",
 						"          PRICE = IMPORTE_PRECIO",
-						"     )) ~> FACTPPTOECOMM"
+						"     )) ~> FACTPPTOECOMM",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          MONTH as decimal(2,0),",
+						"          YEAR as decimal(4,0),",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10),",
+						"          FECHA_CARGA as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          MONTH,",
+						"          YEAR,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = IMPORTE_PRECIO,",
+						"          FECHA_CARGA",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -7309,7 +7356,8 @@
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_DWH_PPTO')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_ECOMM')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_FACT_PPTO_ECPOM')]"
 			]
 		},
 		{
@@ -7346,6 +7394,17 @@
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_SALES_ECOM",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -7363,6 +7422,12 @@
 						},
 						{
 							"name": "select1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn2"
 						}
 					],
 					"scriptLines": [
@@ -7417,7 +7482,10 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"join1 sink(allowSchemaDrift: true,",
+						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ID_USER_SESION as string,",
@@ -7444,7 +7512,38 @@
 						"          PRICE = price,",
 						"          ID_USER = user_id,",
 						"          EVENT_DATE = FECHA",
-						"     )) ~> FACTSALESECOMM"
+						"     )) ~> FACTSALESECOMM",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_USER_SESION as string,",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10),",
+						"          ID_USER as integer,",
+						"          EVENT_DATE as date,",
+						"          FECHA_CARGA as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_USER_SESION = user_session,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = price,",
+						"          ID_USER = user_id,",
+						"          EVENT_DATE = FECHA,",
+						"          FECHA_CARGA",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -7452,7 +7551,8 @@
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_REAL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_ECOMM')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_FACT_SALES_ECOM')]"
 			]
 		},
 		{
@@ -7990,7 +8090,156 @@
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "FACT_SALES_FISICA"
+					"table": "ER_FACT_SALES_FISICA"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_DIM_F_SUBCATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DESC_SUB_CATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_SUBCATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_CATEGORY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_DIM_F_SUB_CATEGORY"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_PPTO_ECPOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "MONTH",
+						"type": "decimal",
+						"precision": 2,
+						"scale": 0
+					},
+					{
+						"name": "YEAR",
+						"type": "decimal",
+						"precision": 4,
+						"scale": 0
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_PPTO_ECOMM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_SALES_ECOM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_USER_SESION",
+						"type": "char"
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_EVENT_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PRICE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_USER",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EVENT_DATE",
+						"type": "date"
+					},
+					{
+						"name": "FECHA_CARGA",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "error",
+					"table": "ER_FACT_SALES_ECOMM"
 				}
 			},
 			"dependsOn": [
