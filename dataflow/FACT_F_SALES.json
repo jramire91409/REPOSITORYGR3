@@ -32,7 +32,11 @@
 						"referenceName": "T_FACT_SALES_FISICA",
 						"type": "DatasetReference"
 					},
-					"name": "TFACTSALESFISICA"
+					"name": "TFACTSALESFISICA",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -173,6 +177,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          ID_ORDER = Order_ID,",
 				"          ID_PRODUCT = Product_ID,",

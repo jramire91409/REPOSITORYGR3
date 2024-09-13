@@ -25,14 +25,22 @@
 						"referenceName": "T_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
-					"name": "dimfcity"
+					"name": "dimfcity",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "T_ER_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
-					"name": "huerfanos"
+					"name": "huerfanos",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -138,6 +146,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          DESC_CITY = City,",
 				"          DESC_STATE = State,",
@@ -163,6 +174,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          DESC_CITY = City,",
 				"          DESC_STATE = State,",

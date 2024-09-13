@@ -26,7 +26,11 @@
 						"referenceName": "T_DIM_EVENT_TYPE",
 						"type": "DatasetReference"
 					},
-					"name": "DIMEVENTTYPE"
+					"name": "DIMEVENTTYPE",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -100,6 +104,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'FISICA',",
 				"     mapColumn(",
 				"          DESC_EVENT_TYPE = event_type",
 				"     )) ~> DIMEVENTTYPE"

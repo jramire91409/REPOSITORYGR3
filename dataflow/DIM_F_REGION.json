@@ -25,14 +25,22 @@
 						"referenceName": "T_DIM_F_REGION",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "T_DIM_F_REGION",
 						"type": "DatasetReference"
 					},
-					"name": "UPDATEFECHAFIN"
+					"name": "UPDATEFECHAFIN",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -111,6 +119,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          NAME_REGION = Region,",
 				"          DESC_MANAGER = Person,",
@@ -133,6 +144,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          FEC_FIN = CURRENT_DATE,",
 				"          NAME_REGION = Region",

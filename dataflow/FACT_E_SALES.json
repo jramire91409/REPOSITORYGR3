@@ -25,7 +25,11 @@
 						"referenceName": "T_FACT_SALES_ECOMM",
 						"type": "DatasetReference"
 					},
-					"name": "FACTSALESECOMM"
+					"name": "FACTSALESECOMM",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -114,6 +118,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          ID_USER_SESION = user_session,",
 				"          ID_PRODUCT = product_id,",

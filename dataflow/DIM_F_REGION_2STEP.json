@@ -25,7 +25,11 @@
 						"referenceName": "T_DIM_F_REGION",
 						"type": "DatasetReference"
 					},
-					"name": "INSERT"
+					"name": "INSERT",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -88,6 +92,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          NAME_REGION = Region,",
 				"          DESC_MANAGER = Person,",

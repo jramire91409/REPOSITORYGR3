@@ -25,14 +25,22 @@
 						"referenceName": "T_DIM_F_CUSTOMER",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				},
 				{
 					"dataset": {
 						"referenceName": "T_ER_DIM_F_CUSTOMER",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "sink2",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -117,6 +125,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          ID_CUSTOMER = Customer_ID,",
 				"          DESC_CUSTOMER = Customer_Name,",
@@ -139,6 +150,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          ID_CUSTOMER = Customer_ID,",
 				"          DESC_CUSTOMER = Customer_Name,",

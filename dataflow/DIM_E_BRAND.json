@@ -19,7 +19,11 @@
 						"referenceName": "T_DIM_BRAND",
 						"type": "DatasetReference"
 					},
-					"name": "DIMBRAND"
+					"name": "DIMBRAND",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -62,6 +66,9 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          DESC_BRAND = brand",
 				"     )) ~> DIMBRAND"
