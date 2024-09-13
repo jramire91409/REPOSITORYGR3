@@ -1,12 +1,12 @@
 {
-	"name": "DIM_F_CITY",
+	"name": "HUER_DIM_F_CITY",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+						"referenceName": "T_ER_DIM_F_CITY",
 						"type": "DatasetReference"
 					},
 					"name": "STGDIMSALESDATS"
@@ -45,12 +45,6 @@
 			],
 			"transformations": [
 				{
-					"name": "aggregate1"
-				},
-				{
-					"name": "select1"
-				},
-				{
 					"name": "join1"
 				},
 				{
@@ -68,26 +62,13 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          Order_ID as string,",
-				"          Order_Date as string,",
-				"          Ship_Date as string,",
-				"          Ship_Mode as string,",
-				"          Customer_ID as string,",
-				"          Customer_Name as string,",
-				"          Segment as string,",
-				"          Country as string,",
-				"          City as string,",
-				"          State as string,",
-				"          Postal_Code as integer,",
-				"          Region as string,",
-				"          Product_ID as string,",
-				"          Category as string,",
-				"          Sub_Category as string,",
-				"          Product_Name as string,",
-				"          Sales as decimal(38,10),",
-				"          Quantity as integer,",
-				"          Discount as decimal(38,10),",
-				"          Profit as decimal(38,10)",
+				"          DESC_CITY as string,",
+				"          DESC_STATE as string,",
+				"          DESC_COUNTRY as string,",
+				"          ID_POSTAL_CODE as integer,",
+				"          ID_REGION as integer,",
+				"          FECHA_CARGA as string,",
+				"          DESC_REGION as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -104,29 +85,14 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> DIMFREGION",
-				"select1 aggregate(groupBy(City = upper(City),",
-				"          State = upper(State),",
-				"          Country = upper(Country),",
-				"          Postal_Code,",
-				"          Region = upper(Region)),",
-				"     count = count()) ~> aggregate1",
-				"STGDIMSALESDATS select(mapColumn(",
-				"          Country,",
-				"          City,",
-				"          State,",
-				"          Postal_Code,",
-				"          Region",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
 				"derivedColumn1, DIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
 				"     joinType:'cross',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"split1@llavesllenas alterRow(upsertIf(isNull(Postal_Code)==false())) ~> Modificarfila1",
-				"aggregate1 derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
-				"join1 split(isNull(ID_REGION) == false(),",
+				"STGDIMSALESDATS derive(FECHATOREGION = currentDate()) ~> derivedColumn1",
+				"join1 split(isNull(DIMFREGION@ID_REGION) == false(),",
 				"     disjoint: false) ~> split1@(llavesllenas, LLAVEREGIONNULL)",
 				"split1@LLAVEREGIONNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
