@@ -41,14 +41,22 @@
 								"referenceName": "T_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "dimfcity"
+							"name": "dimfcity",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "huerfanos"
+							"name": "huerfanos",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -154,6 +162,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_CITY = City,",
 						"          DESC_STATE = State,",
@@ -179,6 +190,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_CITY = City,",
 						"          DESC_STATE = State,",
@@ -221,14 +235,22 @@
 								"referenceName": "T_DIM_F_CUSTOMER",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_F_CUSTOMER",
 								"type": "DatasetReference"
 							},
-							"name": "sink2"
+							"name": "sink2",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -313,6 +335,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_CUSTOMER = Customer_ID,",
 						"          DESC_CUSTOMER = Customer_Name,",
@@ -335,6 +360,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_CUSTOMER = Customer_ID,",
 						"          DESC_CUSTOMER = Customer_Name,",
@@ -376,7 +404,11 @@
 								"referenceName": "T_DIM_F_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "DIMPRODUCTO"
+							"name": "DIMPRODUCTO",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -461,6 +493,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = Product_ID,",
 						"          ID_SUBCATEGORY,",
@@ -500,14 +535,22 @@
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "UPDATEFECHAFIN"
+							"name": "UPDATEFECHAFIN",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -586,6 +629,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          NAME_REGION = Region,",
 						"          DESC_MANAGER = Person,",
@@ -608,6 +654,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          FEC_FIN = CURRENT_DATE,",
 						"          NAME_REGION = Region",
@@ -646,7 +695,11 @@
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "INSERT"
+							"name": "INSERT",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -709,6 +762,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          NAME_REGION = Region,",
 						"          DESC_MANAGER = Person,",
@@ -777,6 +833,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_RETURNED = Returned",
 						"     )) ~> DIMFRETURNED"
@@ -908,7 +967,11 @@
 								"referenceName": "T_DIM_F_SHIP_MODE",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -994,6 +1057,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_SHIP_MODE = ship_mode",
 						"     )) ~> sink1"
@@ -1032,7 +1098,11 @@
 								"referenceName": "T_DIM_F_SUB_CATEGORY",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -1105,6 +1175,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
 						"          ID_CATEGORY",
@@ -1143,7 +1216,11 @@
 								"referenceName": "T_FACT_PPTO_ECOMM",
 								"type": "DatasetReference"
 							},
-							"name": "FACTPPTOECOMM"
+							"name": "FACTPPTOECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -1204,6 +1281,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          MONTH,",
 						"          YEAR,",
@@ -1245,7 +1325,11 @@
 								"referenceName": "T_FACT_SALES_ECOMM",
 								"type": "DatasetReference"
 							},
-							"name": "FACTSALESECOMM"
+							"name": "FACTSALESECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -1334,6 +1418,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_USER_SESION = user_session,",
 						"          ID_PRODUCT = product_id,",
@@ -1383,7 +1470,11 @@
 								"referenceName": "T_FACT_PPTO_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "FACTPPTOTIENDAFISICA"
+							"name": "FACTPPTOTIENDAFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
@@ -1494,6 +1585,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = Product_ID,",
 						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
@@ -1560,7 +1654,11 @@
 								"referenceName": "T_FACT_SALES_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "TFACTSALESFISICA"
+							"name": "TFACTSALESFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -1701,6 +1799,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_ORDER = Order_ID,",
 						"          ID_PRODUCT = Product_ID,",

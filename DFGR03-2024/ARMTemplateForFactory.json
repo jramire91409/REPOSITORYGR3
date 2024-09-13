@@ -5231,6 +5231,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_BEAUTY_CAT = beauty_category",
 						"     )) ~> sink1"
@@ -5266,7 +5269,11 @@
 								"referenceName": "T_DIM_BRAND",
 								"type": "DatasetReference"
 							},
-							"name": "DIMBRAND"
+							"name": "DIMBRAND",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5309,6 +5316,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_BRAND = brand",
 						"     )) ~> DIMBRAND"
@@ -5317,7 +5327,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_BRAND')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_BRAND')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -5343,7 +5354,11 @@
 								"referenceName": "T_DIM_CATEGORY",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5396,6 +5411,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_CATEGORY = category_id,",
 						"          DESCRIPTION = category_desc,",
@@ -5406,7 +5424,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_E_DATOS_DE_PRODUCTO')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_CATEGORY')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_CATEGORY')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -5439,7 +5458,11 @@
 								"referenceName": "T_DIM_EVENT_TYPE",
 								"type": "DatasetReference"
 							},
-							"name": "DIMEVENTTYPE"
+							"name": "DIMEVENTTYPE",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5513,6 +5536,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'FISICA',",
 						"     mapColumn(",
 						"          DESC_EVENT_TYPE = event_type",
 						"     )) ~> DIMEVENTTYPE"
@@ -5522,7 +5548,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_DWH_PPTO')]",
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_REAL_SALES')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -5561,14 +5588,22 @@
 								"referenceName": "T_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "DIMPRODUCTO"
+							"name": "DIMPRODUCTO",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5666,6 +5701,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = product_id,",
 						"          ID_CATEGORY = category_id,",
@@ -5690,6 +5728,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = product_id,",
 						"          ID_CATEGORY = category_id,",
@@ -5706,6 +5747,7 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_BEAUTY_CAT')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_BRAND')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCT')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
 				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_PRODUCT')]"
 			]
 		},
@@ -5732,7 +5774,11 @@
 								"referenceName": "T_DIM_F_CATEGORY",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5787,6 +5833,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESCRIPTION = category",
 						"     )) ~> sink1"
@@ -5795,7 +5844,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CATEGORY')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CATEGORY')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -5827,14 +5877,22 @@
 								"referenceName": "T_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "dimfcity"
+							"name": "dimfcity",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_F_CITY",
 								"type": "DatasetReference"
 							},
-							"name": "huerfanos"
+							"name": "huerfanos",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -5940,6 +5998,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_CITY = City,",
 						"          DESC_STATE = State,",
@@ -5965,6 +6026,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_CITY = City,",
 						"          DESC_STATE = State,",
@@ -5980,6 +6044,7 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CITY')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
 				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_F_CITY')]"
 			]
 		},
@@ -6012,14 +6077,22 @@
 								"referenceName": "T_DIM_F_CUSTOMER",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_ER_DIM_F_CUSTOMER",
 								"type": "DatasetReference"
 							},
-							"name": "sink2"
+							"name": "sink2",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6104,6 +6177,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_CUSTOMER = Customer_ID,",
 						"          DESC_CUSTOMER = Customer_Name,",
@@ -6126,6 +6202,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_CUSTOMER = Customer_ID,",
 						"          DESC_CUSTOMER = Customer_Name,",
@@ -6140,6 +6219,7 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SEGMENT')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CUSTOMER')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
 				"[concat(variables('factoryId'), '/datasets/T_ER_DIM_F_CUSTOMER')]"
 			]
 		},
@@ -6172,7 +6252,11 @@
 								"referenceName": "T_DIM_F_PRODUCT",
 								"type": "DatasetReference"
 							},
-							"name": "DIMPRODUCTO"
+							"name": "DIMPRODUCTO",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6257,6 +6341,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = Product_ID,",
 						"          ID_SUBCATEGORY,",
@@ -6268,7 +6355,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SUB_CATEGORY')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_PRODUCT')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_PRODUCT')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -6300,14 +6388,22 @@
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "UPDATEFECHAFIN"
+							"name": "UPDATEFECHAFIN",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6386,6 +6482,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          NAME_REGION = Region,",
 						"          DESC_MANAGER = Person,",
@@ -6408,6 +6507,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          FEC_FIN = CURRENT_DATE,",
 						"          NAME_REGION = Region",
@@ -6417,7 +6519,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STAGESUPERSTORE_PEOLPLE')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -6449,7 +6552,11 @@
 								"referenceName": "T_DIM_F_REGION",
 								"type": "DatasetReference"
 							},
-							"name": "INSERT"
+							"name": "INSERT",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6512,6 +6619,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          NAME_REGION = Region,",
 						"          DESC_MANAGER = Person,",
@@ -6522,7 +6632,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STAGESUPERSTORE_PEOLPLE')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -6583,6 +6694,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_RETURNED = Returned",
 						"     )) ~> DIMFRETURNED"
@@ -6722,7 +6836,11 @@
 								"referenceName": "T_DIM_F_SHIP_MODE",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6808,6 +6926,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_SHIP_MODE = ship_mode",
 						"     )) ~> sink1"
@@ -6817,7 +6938,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_PPTO_TIENDA_FISICA')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -6850,7 +6972,11 @@
 								"referenceName": "T_DIM_F_SUB_CATEGORY",
 								"type": "DatasetReference"
 							},
-							"name": "sink1"
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -6923,6 +7049,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
 						"          ID_CATEGORY",
@@ -6933,7 +7062,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_CATEGORY')]",
-				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SUB_CATEGORY')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SUB_CATEGORY')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -6965,7 +7095,11 @@
 								"referenceName": "T_FACT_PPTO_ECOMM",
 								"type": "DatasetReference"
 							},
-							"name": "FACTPPTOECOMM"
+							"name": "FACTPPTOECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -7026,6 +7160,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          MONTH,",
 						"          YEAR,",
@@ -7039,7 +7176,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_DWH_PPTO')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
-				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_ECOMM')]"
+				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_ECOMM')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -7071,7 +7209,11 @@
 								"referenceName": "T_FACT_SALES_ECOMM",
 								"type": "DatasetReference"
 							},
-							"name": "FACTSALESECOMM"
+							"name": "FACTSALESECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -7160,6 +7302,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_USER_SESION = user_session,",
 						"          ID_PRODUCT = product_id,",
@@ -7174,7 +7319,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_STAGE_E_REAL_SALES')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
-				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_ECOMM')]"
+				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_ECOMM')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
@@ -7213,7 +7359,11 @@
 								"referenceName": "T_FACT_PPTO_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "FACTPPTOTIENDAFISICA"
+							"name": "FACTPPTOTIENDAFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						},
 						{
 							"dataset": {
@@ -7324,6 +7474,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_PRODUCT = Product_ID,",
 						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
@@ -7357,6 +7510,7 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_FISICA')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]",
 				"[concat(variables('factoryId'), '/datasets/T_ER_FACT_PPTO_FISICA')]"
 			]
 		},
@@ -7396,7 +7550,11 @@
 								"referenceName": "T_FACT_SALES_FISICA",
 								"type": "DatasetReference"
 							},
-							"name": "TFACTSALESFISICA"
+							"name": "TFACTSALESFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -7537,6 +7695,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          ID_ORDER = Order_ID,",
 						"          ID_PRODUCT = Product_ID,",
@@ -7558,7 +7719,8 @@
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
 				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
-				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_FISICA')]"
+				"[concat(variables('factoryId'), '/datasets/T_FACT_SALES_FISICA')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
 		{
