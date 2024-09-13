@@ -37,6 +37,13 @@
 						"referenceName": "AzureBlobStoragegr3",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_FCAT_SALES_FISICA",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -63,6 +70,12 @@
 				},
 				{
 					"name": "cast1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -154,7 +167,10 @@
 				"          Ship_Date as date 'yyyy-MM-dd'",
 				"     ),",
 				"     errors: true) ~> cast1",
-				"cast1 sink(allowSchemaDrift: true,",
+				"cast1 split(isNull(ID_SHIP_MODE) == false(),",
+				"     disjoint: false) ~> split1@(LLAVESOK, HUERFANOS)",
+				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+				"split1@LLAVESOK sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_ORDER as string,",
@@ -193,7 +209,47 @@
 				"          PROFIT = Profit,",
 				"          ID_RETURNED,",
 				"          PRECIO_TOTAL = Precio_Total",
-				"     )) ~> TFACTSALESFISICA"
+				"     )) ~> TFACTSALESFISICA",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_ORDER as string,",
+				"          ID_PRODUCT as string,",
+				"          ORDER_DATE as date,",
+				"          SHIP_DATE as date,",
+				"          ID_SHIP_MODE as integer,",
+				"          ID_CUSTOMER as string,",
+				"          IMPORTE as decimal(24,10),",
+				"          QUANTITY as integer,",
+				"          DISCOUNT as decimal(24,10),",
+				"          PROFIT as decimal(24,10),",
+				"          ID_RETURNED as integer,",
+				"          PRECIO_TOTAL as decimal(24,10),",
+				"          FECHA_CARGA as binary",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ID_ORDER = Order_ID,",
+				"          ID_PRODUCT = Product_ID,",
+				"          ORDER_DATE = Order_Date,",
+				"          SHIP_DATE = Ship_Date,",
+				"          ID_SHIP_MODE,",
+				"          ID_CUSTOMER = Customer_ID,",
+				"          IMPORTE = Importe,",
+				"          QUANTITY = Quantity,",
+				"          DISCOUNT = Discount,",
+				"          PROFIT = Profit,",
+				"          ID_RETURNED,",
+				"          PRECIO_TOTAL = Precio_Total,",
+				"          FECHA_CARGA",
+				"     )) ~> sink1"
 			]
 		}
 	}
