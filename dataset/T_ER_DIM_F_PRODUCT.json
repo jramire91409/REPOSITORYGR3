@@ -24,6 +24,10 @@
 			{
 				"name": "FECHA_CARGUE",
 				"type": "varchar"
+			},
+			{
+				"name": "DESC_SUBCATEGORIA_H",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
