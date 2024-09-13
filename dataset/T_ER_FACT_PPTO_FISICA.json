@@ -35,6 +35,18 @@
 			{
 				"name": "YEAR",
 				"type": "char"
+			},
+			{
+				"name": "FECHA_CARGA",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_SHIP_MODE_H",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_REGION_H",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
