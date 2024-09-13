@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DIM_F_RETURNED",
+				"name": "DIM_F_SEGMENT",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_F_RETURNED",
+						"referenceName": "DIM_F_SEGMENT",
 						"type": "DataFlowReference"
 					},
 					"compute": {
