@@ -13,6 +13,99 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source1 aggregate(groupBy(category = upper(Category)),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(category)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESCRIPTION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESCRIPTION = category",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_CITY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -409,6 +502,17 @@
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "HERFANOS",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -423,6 +527,12 @@
 						},
 						{
 							"name": "aggregate1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
 						}
 					],
 					"scriptLines": [
@@ -474,10 +584,13 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"join1 aggregate(groupBy(Product_ID,",
+						"split1@llavescompletas aggregate(groupBy(Product_ID,",
 						"          ID_SUBCATEGORY),",
 						"     COUNT = count(),",
 						"          Product_Name_2 = max(Product_Name)) ~> aggregate1",
+						"join1 split(isNull(ID_SUBCATEGORY) == false(),",
+						"     disjoint: false) ~> split1@(llavescompletas, huerfanos)",
+						"split1@huerfanos derive(FECHA_CARGUE = currentTimestamp()) ~> derivedColumn1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -500,7 +613,32 @@
 						"          ID_PRODUCT = Product_ID,",
 						"          ID_SUBCATEGORY,",
 						"          DESCRIPTION = Product_Name_2",
-						"     )) ~> DIMPRODUCTO"
+						"     )) ~> DIMPRODUCTO",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          DESCRIPTION as string,",
+						"          FECHA_CARGUE as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          ID_SUBCATEGORY,",
+						"          DESCRIPTION = Product_Name,",
+						"          FECHA_CARGUE",
+						"     )) ~> HERFANOS"
 					]
 				}
 			},
@@ -2349,7 +2487,8 @@
 								"datasetParameters": {
 									"SUPERSTORESALESDATA": {},
 									"DIMFSUBCATEGORIA": {},
-									"DIMPRODUCTO": {}
+									"DIMPRODUCTO": {},
+									"HERFANOS": {}
 								}
 							},
 							"staging": {},
@@ -2607,6 +2746,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_PRODUCT')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_SHIP_MODE')]",
