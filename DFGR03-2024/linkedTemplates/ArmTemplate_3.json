@@ -808,7 +808,11 @@
 								"referenceName": "T_DIM_F_SEGMENT",
 								"type": "DatasetReference"
 							},
-							"name": "DIMFSEGMENT"
+							"name": "DIMFSEGMENT",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
 						}
 					],
 					"transformations": [
@@ -863,6 +867,9 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
 						"     mapColumn(",
 						"          DESC_SEGMENT = Segment",
 						"     )) ~> DIMFSEGMENT"
