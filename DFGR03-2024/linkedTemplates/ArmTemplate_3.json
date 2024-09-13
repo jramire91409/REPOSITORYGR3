@@ -13,6 +13,199 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_E_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "DATOSDEPRODUCTO"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BEAUTY_CAT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMBEAUTYCAT"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BRAND",
+								"type": "DatasetReference"
+							},
+							"name": "DIMBRAND"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMPRODUCTO",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "CONBEAUTY"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "cast2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          Column3 as string,",
+						"          category_code as string,",
+						"          beauty_category as string,",
+						"          brand as string,",
+						"          product_desc as string,",
+						"          category_desc as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DATOSDEPRODUCTO",
+						"source(output(",
+						"          ID_BEAUTY_CAT as integer,",
+						"          DESC_BEAUTY_CAT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMBEAUTYCAT",
+						"source(output(",
+						"          ID_BRAND as integer,",
+						"          DESC_BRAND as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMBRAND",
+						"DATOSDEPRODUCTO, DIMBEAUTYCAT join(upper(beauty_category) == upper(DESC_BEAUTY_CAT),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> CONBEAUTY",
+						"CONBEAUTY, DIMBRAND join(upper(brand) == upper(DESC_BRAND),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 cast(output(",
+						"          category_id as long '000,000,000'",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"split1@llavesllenas alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+						"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
+						"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
+						"Modificarfila1 aggregate(groupBy(product_id,",
+						"          category_id,",
+						"          product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND),",
+						"     count = count()) ~> aggregate1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_PRODUCT'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND",
+						"     )) ~> DIMPRODUCTO",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer,",
+						"          FECHA_CARGA as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND,",
+						"          FECHA_CARGA",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DIM_F_CATEGORY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1798,6 +1991,13 @@
 								"referenceName": "AzureBlobStoragegr3",
 								"type": "LinkedServiceReference"
 							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FCAT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
 						}
 					],
 					"transformations": [
@@ -1824,6 +2024,12 @@
 						},
 						{
 							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn3"
 						}
 					],
 					"scriptLines": [
@@ -1915,7 +2121,10 @@
 						"          Ship_Date as date 'yyyy-MM-dd'",
 						"     ),",
 						"     errors: true) ~> cast1",
-						"cast1 sink(allowSchemaDrift: true,",
+						"cast1 split(isNull(ID_SHIP_MODE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESOK, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"split1@LLAVESOK sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          ID_ORDER as string,",
@@ -1954,7 +2163,47 @@
 						"          PROFIT = Profit,",
 						"          ID_RETURNED,",
 						"          PRECIO_TOTAL = Precio_Total",
-						"     )) ~> TFACTSALESFISICA"
+						"     )) ~> TFACTSALESFISICA",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10),",
+						"          FECHA_CARGA as binary",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED,",
+						"          PRECIO_TOTAL = Precio_Total,",
+						"          FECHA_CARGA",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -2163,7 +2412,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_E_PRODUCT')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ECOMM_2_FACT_TABLES')]",
@@ -2825,7 +3076,8 @@
 									"source1": {},
 									"RETURNS": {},
 									"DIMSHIPMODE": {},
-									"TFACTSALESFISICA": {}
+									"TFACTSALESFISICA": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -2845,52 +3097,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]",
 				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PRUEBAS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "DIM_F_SEGMENT",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DIM_F_SEGMENT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGFSUPERSTORESALESDATA": {},
-									"DIMFSEGMENT": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
 			]
 		}
 	]
