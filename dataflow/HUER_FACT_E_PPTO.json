@@ -1,0 +1,167 @@
+{
+	"name": "HUER_FACT_E_PPTO",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_ER_FACT_PPTO_ECPOM",
+						"type": "DatasetReference"
+					},
+					"name": "STAGEREALSALES"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_EVENT_TYPE",
+						"type": "DatasetReference"
+					},
+					"name": "DIMEVENTTYPE"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_FACT_PPTO_ECOMM",
+						"type": "DatasetReference"
+					},
+					"name": "FACTPPTOECOMM",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_FACT_PPTO_ECPOM",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          MONTH as decimal(2,0),",
+				"          YEAR as decimal(4,0),",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10),",
+				"          FECHA_CARGA as string,",
+				"          DESC_EVENT_TYPE_H as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STAGEREALSALES",
+				"source(output(",
+				"          ID_EVENT_TYPE as integer,",
+				"          DESC_EVENT_TYPE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMEVENTTYPE",
+				"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"select1 aggregate(groupBy(YEAR,",
+				"          MONTH,",
+				"          product_id,",
+				"          event_type),",
+				"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
+				"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+				"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+				"STAGEREALSALES select(mapColumn(",
+				"          MONTH,",
+				"          YEAR,",
+				"          event_type = DESC_EVENT_TYPE_H,",
+				"          product_id = ID_PRODUCT,",
+				"          imp_precio = PRICE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MONTH as decimal(2,0),",
+				"          YEAR as decimal(4,0),",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          MONTH,",
+				"          YEAR,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = IMPORTE_PRECIO",
+				"     )) ~> FACTPPTOECOMM",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MONTH as decimal(2,0),",
+				"          YEAR as decimal(4,0),",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10),",
+				"          FECHA_CARGA as string,",
+				"          DESC_EVENT_TYPE_H as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          MONTH,",
+				"          YEAR,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = IMPORTE_PRECIO,",
+				"          FECHA_CARGA,",
+				"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
