@@ -1,0 +1,34 @@
+{
+	"name": "T_ER_DIM_F_PRODUCT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_SUBCATEGORY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "FECHA_CARGUE",
+				"type": "timestamp"
+			}
+		],
+		"typeProperties": {
+			"schema": "error",
+			"table": "DIM_F_PRODUCT"
+		}
+	}
+}

@@ -30,6 +30,17 @@
 						"referenceName": "AzureBlobStoragegr3",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_DIM_F_PRODUCT",
+						"type": "DatasetReference"
+					},
+					"name": "HERFANOS",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -44,6 +55,12 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -95,10 +112,13 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 aggregate(groupBy(Product_ID,",
+				"split1@llavescompletas aggregate(groupBy(Product_ID,",
 				"          ID_SUBCATEGORY),",
 				"     COUNT = count(),",
 				"          Product_Name_2 = max(Product_Name)) ~> aggregate1",
+				"join1 split(isNull(ID_SUBCATEGORY) == false(),",
+				"     disjoint: false) ~> split1@(llavescompletas, huerfanos)",
+				"split1@huerfanos derive(FECHA_CARGUE = currentTimestamp()) ~> derivedColumn1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -121,7 +141,30 @@
 				"          ID_PRODUCT = Product_ID,",
 				"          ID_SUBCATEGORY,",
 				"          DESCRIPTION = Product_Name_2",
-				"     )) ~> DIMPRODUCTO"
+				"     )) ~> DIMPRODUCTO",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as string,",
+				"          ID_SUBCATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          FECHA_CARGUE as binary",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          ID_PRODUCT = Product_ID,",
+				"          ID_SUBCATEGORY",
+				"     )) ~> HERFANOS"
 			]
 		}
 	}
