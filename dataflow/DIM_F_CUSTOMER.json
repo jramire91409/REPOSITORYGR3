@@ -36,7 +36,7 @@
 						"referenceName": "T_ER_DIM_F_CUSTOMER",
 						"type": "DatasetReference"
 					},
-					"name": "sink2",
+					"name": "HUERFANOS",
 					"rejectedDataLinkedService": {
 						"referenceName": "AzureBlobStoragegr3",
 						"type": "LinkedServiceReference"
@@ -147,6 +147,7 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
+				"     truncate:true,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
@@ -159,7 +160,7 @@
 				"          ID_SEGMENT,",
 				"          ID_POSTAL_CODE = Postal_Code,",
 				"          fecha_carga = FECHA_CARGA",
-				"     )) ~> sink2"
+				"     )) ~> HUERFANOS"
 			]
 		}
 	}
