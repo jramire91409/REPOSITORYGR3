@@ -163,7 +163,9 @@
 				"     assertFailure_folderPath: 'ERRORES',",
 				"     mapColumn(",
 				"          ID_PRODUCT = Product_ID,",
-				"          ID_SUBCATEGORY",
+				"          ID_SUBCATEGORY,",
+				"          DESCRIPTION = Product_Name,",
+				"          FECHA_CARGUE",
 				"     )) ~> HERFANOS"
 			]
 		}
