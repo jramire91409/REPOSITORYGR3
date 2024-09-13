@@ -97,7 +97,8 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TDIMFCATEGORY",
 				"IDCATEGORY aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
-				"          ID_CATEGORY),",
+				"          ID_CATEGORY,",
+				"          DESCRIPTION),",
 				"     COUNT = count()) ~> aggregate2",
 				"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
 				"source1, TDIMFCATEGORY join(upper(Category) == upper(DESCRIPTION),",
@@ -148,7 +149,13 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     outputAssertFailedRows: true,",
 				"     assertFailure_container: 'contenedor-gr3',",
-				"     assertFailure_folderPath: 'ERRORES') ~> sink1"
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
+				"          ID_CATEGORY,",
+				"          FECHA_CARGA,",
+				"          DESC_CATEGORY_H = DESCRIPTION",
+				"     )) ~> sink1"
 			]
 		}
 	}
