@@ -30,6 +30,13 @@
 						"referenceName": "AzureBlobStoragegr3",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_FACT_PPTO_ECPOM",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -41,6 +48,12 @@
 				},
 				{
 					"name": "aggregate1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -74,7 +87,10 @@
 				"          product_id,",
 				"          event_type),",
 				"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
-				"join1 sink(allowSchemaDrift: true,",
+				"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+				"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+				"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          MONTH as decimal(2,0),",
@@ -99,7 +115,24 @@
 				"          ID_PRODUCT = product_id,",
 				"          ID_EVENT_TYPE,",
 				"          PRICE = IMPORTE_PRECIO",
-				"     )) ~> FACTPPTOECOMM"
+				"     )) ~> FACTPPTOECOMM",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MONTH as decimal(2,0),",
+				"          YEAR as decimal(4,0),",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10),",
+				"          FECHA_CARGA as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
