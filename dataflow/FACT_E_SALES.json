@@ -30,6 +30,17 @@
 						"referenceName": "AzureBlobStoragegr3",
 						"type": "LinkedServiceReference"
 					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_FACT_SALES_ECOM",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
@@ -47,6 +58,12 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -101,7 +118,10 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 sink(allowSchemaDrift: true,",
+				"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+				"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
+				"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_USER_SESION as string,",
@@ -128,7 +148,38 @@
 				"          PRICE = price,",
 				"          ID_USER = user_id,",
 				"          EVENT_DATE = FECHA",
-				"     )) ~> FACTSALESECOMM"
+				"     )) ~> FACTSALESECOMM",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_USER_SESION as string,",
+				"          ID_PRODUCT as integer,",
+				"          ID_EVENT_TYPE as integer,",
+				"          PRICE as decimal(24,10),",
+				"          ID_USER as integer,",
+				"          EVENT_DATE as date,",
+				"          FECHA_CARGA as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          ID_USER_SESION = user_session,",
+				"          ID_PRODUCT = product_id,",
+				"          ID_EVENT_TYPE,",
+				"          PRICE = price,",
+				"          ID_USER = user_id,",
+				"          EVENT_DATE = FECHA,",
+				"          FECHA_CARGA",
+				"     )) ~> sink1"
 			]
 		}
 	}
