@@ -1,0 +1,207 @@
+{
+	"name": "HUER_DIM_E_PRODUCT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_ER_DIM_PRODUCT",
+						"type": "DatasetReference"
+					},
+					"name": "DATOSDEPRODUCTO"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_BEAUTY_CAT",
+						"type": "DatasetReference"
+					},
+					"name": "DIMBEAUTYCAT"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_BRAND",
+						"type": "DatasetReference"
+					},
+					"name": "DIMBRAND"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_PRODUCT",
+						"type": "DatasetReference"
+					},
+					"name": "DIMPRODUCTO",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "T_ER_DIM_PRODUCT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "CONBEAUTY"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "cast2"
+				},
+				{
+					"name": "Modificarfila1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as decimal(25,0),",
+				"          DESCRIPTION as string,",
+				"          ID_BEAUTY_CAT as integer,",
+				"          ID_BRAND as integer,",
+				"          FECHA_CARGA as string,",
+				"          DESC_BEAUTYCAT_H as string,",
+				"          DESC_BRAND_H as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DATOSDEPRODUCTO",
+				"source(output(",
+				"          ID_BEAUTY_CAT as integer,",
+				"          DESC_BEAUTY_CAT as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMBEAUTYCAT",
+				"source(output(",
+				"          ID_BRAND as integer,",
+				"          DESC_BRAND as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMBRAND",
+				"select1, DIMBEAUTYCAT join(upper(beauty_category) == upper(DESC_BEAUTY_CAT),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> CONBEAUTY",
+				"CONBEAUTY, DIMBRAND join(upper(brand) == upper(DESC_BRAND),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 cast(output(",
+				"          category_id as long '000,000,000'",
+				"     ),",
+				"     errors: true) ~> cast2",
+				"split1@llavesllenas alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+				"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
+				"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
+				"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
+				"Modificarfila1 aggregate(groupBy(product_id,",
+				"          category_id,",
+				"          product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND),",
+				"     count = count()) ~> aggregate1",
+				"DATOSDEPRODUCTO select(mapColumn(",
+				"          product_id = ID_PRODUCT,",
+				"          category_id = ID_CATEGORY,",
+				"          category_code = ID_CATEGORY,",
+				"          beauty_category = DESC_BEAUTYCAT_H,",
+				"          brand = DESC_BRAND_H,",
+				"          product_desc = DESCRIPTION",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as integer,",
+				"          DESCRIPTION as string,",
+				"          ID_BEAUTY_CAT as integer,",
+				"          ID_BRAND as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['ID_PRODUCT'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          ID_PRODUCT = product_id,",
+				"          ID_CATEGORY = category_id,",
+				"          DESCRIPTION = product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND",
+				"     )) ~> DIMPRODUCTO",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          ID_CATEGORY as decimal(25,0),",
+				"          DESCRIPTION as string,",
+				"          ID_BEAUTY_CAT as integer,",
+				"          ID_BRAND as integer,",
+				"          FECHA_CARGA as string,",
+				"          DESC_BEAUTYCAT_H as string,",
+				"          DESC_BRAND_H as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          ID_PRODUCT = product_id,",
+				"          ID_CATEGORY = category_id,",
+				"          DESCRIPTION = product_desc,",
+				"          ID_BEAUTY_CAT,",
+				"          ID_BRAND,",
+				"          FECHA_CARGA,",
+				"          DESC_BEAUTYCAT_H = beauty_category,",
+				"          DESC_BRAND_H = brand",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
