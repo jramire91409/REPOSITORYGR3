@@ -814,7 +814,7 @@
 						"          ID_PRODUCT as string,",
 						"          ID_SUBCATEGORY as integer,",
 						"          DESCRIPTION as string,",
-						"          FECHA_CARGUE as binary",
+						"          FECHA_CARGUE as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",

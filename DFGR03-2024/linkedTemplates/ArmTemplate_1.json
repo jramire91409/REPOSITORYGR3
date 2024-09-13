@@ -81,12 +81,12 @@
 					},
 					{
 						"name": "FECHA_CARGUE",
-						"type": "timestamp"
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "error",
-					"table": "DIM_F_PRODUCT"
+					"table": "ER_DIM_F_PRODUCT"
 				}
 			},
 			"dependsOn": []
