@@ -118,7 +118,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false()) ~> filter1",
+				"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false() && filtrofecha == 1) ~> filter1",
 				"select1 derive(filtrofecha = iif(Order_Date>Ship_Date,0,1),",
 				"          Precio_Total = Importe*Quantity) ~> derivedColumn1",
 				"filter1, RETURNS join(select1@Order_ID == RETURNS@Order_ID,",
