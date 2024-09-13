@@ -164,6 +164,37 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "HUER_DIM_E_PRODUCT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "HUER_DIM_F_PRODUCT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "HUER_DIM_E_PRODUCT",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
