@@ -160,7 +160,8 @@
 				"          DESC_CUSTOMER = Customer_Name,",
 				"          ID_SEGMENT,",
 				"          ID_POSTAL_CODE = Postal_Code,",
-				"          fecha_carga = FECHA_CARGA",
+				"          fecha_carga = FECHA_CARGA,",
+				"          DESC_SEGMENT_H = Segment",
 				"     )) ~> HUERFANOS"
 			]
 		}
