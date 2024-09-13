@@ -7560,7 +7560,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "DIM_F_RETURNED",
+						"name": "DIM_F_SEGMENT",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -7573,12 +7573,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "DIM_F_RETURNED",
+								"referenceName": "DIM_F_SEGMENT",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"STGSUPERSTORESALESDATARETURNED": {},
-									"DIMFRETURNED": {}
+									"STGFSUPERSTORESALESDATA": {},
+									"DIMFSEGMENT": {}
 								}
 							},
 							"staging": {},
@@ -7596,7 +7596,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DIM_F_RETURNED')]"
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SEGMENT')]"
 			]
 		}
 	]
