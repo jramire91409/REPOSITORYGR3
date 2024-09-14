@@ -1,5 +1,5 @@
 {
-	"name": "CA_LOAD_STAGE_SUPERSTORE_SALES_DATA",
+	"name": "LOAD_STAGE_SUPERSTORE_SALES_DATA_PEOPLE",
 	"properties": {
 		"activities": [
 			{
