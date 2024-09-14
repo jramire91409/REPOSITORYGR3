@@ -155,7 +155,8 @@
 				"          ID_SHIP_MODE,",
 				"          Customer_ID = upper(Customer_ID),",
 				"          Returned = upper(Returned),",
-				"          ID_RETURNED),",
+				"          ID_RETURNED,",
+				"          Ship_Mode),",
 				"     Importe = sum(Importe),",
 				"          Quantity = sum(Quantity),",
 				"          Discount = sum(Discount),",
@@ -249,7 +250,8 @@
 				"          PROFIT = Profit,",
 				"          ID_RETURNED,",
 				"          PRECIO_TOTAL = Precio_Total,",
-				"          FECHA_CARGA",
+				"          FECHA_CARGA,",
+				"          DESC_SHIP_MODE_H = Ship_Mode",
 				"     )) ~> sink1"
 			]
 		}
