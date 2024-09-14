@@ -1455,8 +1455,6 @@
 					{
 						"name": "DIM_BRAND",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -1487,8 +1485,6 @@
 					{
 						"name": "DIM_CATEGORY",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_BRAND",
@@ -1526,8 +1522,6 @@
 					{
 						"name": "DIM_BEAUTY_CAT",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_CATEGORY",
@@ -1565,8 +1559,6 @@
 					{
 						"name": "DIM_PRODUCTO",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_BEAUTY_CAT",
@@ -1659,8 +1651,6 @@
 					{
 						"name": "FACT_SALES_ECOMM",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "FACT_PPTO_ECOMM",
@@ -1874,8 +1864,6 @@
 					{
 						"name": "DIM_F_CATEGORY",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -1906,8 +1894,6 @@
 					{
 						"name": "DIM_F_SUB_CATEGORY",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_CATEGORY",
@@ -1947,8 +1933,6 @@
 					{
 						"name": "DIM_F_PRODUCT",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SUB_CATEGORY",
@@ -1988,8 +1972,6 @@
 					{
 						"name": "DIM_F_SHIP_MODE",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_PRODUCT",
@@ -2028,8 +2010,6 @@
 					{
 						"name": "DIM_F_SEGMENT",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SHIP_MODE",
@@ -2067,8 +2047,6 @@
 					{
 						"name": "DIM_F_REGION",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_CUSTOMER",
@@ -2108,8 +2086,6 @@
 					{
 						"name": "DIM_F_REGION_2STEP",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_REGION",
@@ -2187,8 +2163,6 @@
 					{
 						"name": "DIM_F_CUSTOMER",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_F_SEGMENT",
@@ -2329,8 +2303,6 @@
 					{
 						"name": "ECOMM_1_DIMMENSION_LOAD",
 						"type": "ExecutePipeline",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"secureInput": false
@@ -2348,8 +2320,6 @@
 					{
 						"name": "PHYSICAL_1_DIMMENSION_LOAD",
 						"type": "ExecutePipeline",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ECOMM_1_DIMMENSION_LOAD",
