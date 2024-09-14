@@ -6,8 +6,6 @@
 			{
 				"name": "DIM_BRAND",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -32,8 +30,6 @@
 			{
 				"name": "DIM_CATEGORY",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DIM_BRAND",
@@ -65,8 +61,6 @@
 			{
 				"name": "DIM_BEAUTY_CAT",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DIM_CATEGORY",
@@ -98,8 +92,6 @@
 			{
 				"name": "DIM_PRODUCTO",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DIM_BEAUTY_CAT",

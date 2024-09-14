@@ -5,8 +5,6 @@
 			{
 				"name": "FACT_SALES_ECOMM",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "FACT_PPTO_ECOMM",

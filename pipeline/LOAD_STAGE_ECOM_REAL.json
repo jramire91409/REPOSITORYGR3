@@ -6,8 +6,6 @@
 				"name": "XLS_RETAIL_SALES_DEC2019",
 				"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -174,8 +172,6 @@
 				"name": "XLS_RETAIL_SALES_NOV2019",
 				"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_RETAIL_SALES_DEC2019",
@@ -348,8 +344,6 @@
 				"name": "XLS_RETAIL_SALES_OCT2019",
 				"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_RETAIL_SALES_NOV2019",
@@ -522,8 +516,6 @@
 				"name": "XLS_RETAIL_SALES_FEB2020",
 				"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_RETAIL_SALES_OCT2019",
@@ -696,8 +688,6 @@
 				"name": "XLS_RETAIL_SALES_JAN2020",
 				"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "XLS_RETAIL_SALES_FEB2020",
