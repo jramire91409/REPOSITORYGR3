@@ -3,50 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ECOMM_1_DIMMENSION_LOAD",
-				"type": "ExecutePipeline",
-				"dependsOn": [],
-				"policy": {
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
-				"name": "PHYSICAL_1_DIMMENSION_LOAD",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "ECOMM_1_DIMMENSION_LOAD",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "CARGA_DIMENSIONES_FISICA",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
-			},
-			{
 				"name": "HUER_DIM_F_CITY",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "PHYSICAL_1_DIMMENSION_LOAD",
+						"activity": "CARGA_DIMENSIONES_FISICA",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -318,6 +279,45 @@
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CARGA_DIMENSIONES_ECOMMERCE",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "CARGA_DIMENSIONES_FISICA",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "CARGA_DIMENSIONES_ECOMMERCE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "CARGA_DIMENSIONES_FISICA",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
 				}
 			}
 		],

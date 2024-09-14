@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ECOMM_1_DIMMENSION_LOAD",
+				"name": "CARGA_DIMENSIONES_ECOMMERCE",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -19,30 +19,42 @@
 				}
 			},
 			{
-				"name": "ECOMM_2_FACT_TABLES",
-				"type": "ExecutePipeline",
+				"name": "FACT_E_SALES",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "ECOMM_1_DIMMENSION_LOAD",
+						"activity": "CARGA_DIMENSIONES_ECOMMERCE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
 				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
 					"secureInput": false
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"waitOnCompletion": true
+					"dataflow": {
+						"referenceName": "FACT_E_SALES",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
 				}
 			},
 			{
-				"name": "GESTION_HUERFANOS",
+				"name": "GESTION_HUERFANOS1",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "ECOMM_2_FACT_TABLES",
+						"activity": "FACT_E_SALES",
 						"dependencyConditions": [
 							"Succeeded"
 						]
