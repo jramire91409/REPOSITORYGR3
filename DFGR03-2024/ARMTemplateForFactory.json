@@ -49,7 +49,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ECOMM_1_DIMMENSION_LOAD')]",
+			"name": "[concat(parameters('factoryName'), '/CARGA_DIMENSIONES_ECOMMERCE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -252,146 +252,17 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ECOMM_2_FACT_TABLES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "FACT_SALES_ECOMM",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "FACT_PPTO_ECOMM",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_E_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTSALESECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "FACT_PPTO_ECOMM",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_E_PPTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTPPTOECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]",
-				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/GESTION_HUERFANOS')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "ECOMM_1_DIMMENSION_LOAD",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ECOMM_1_DIMMENSION_LOAD",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "PHYSICAL_1_DIMMENSION_LOAD",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "ECOMM_1_DIMMENSION_LOAD",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PHYSICAL_1_DIMMENSION_LOAD",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
 						"name": "HUER_DIM_F_CITY",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "PHYSICAL_1_DIMMENSION_LOAD",
+								"activity": "CARGA_DIMENSIONES_FISICA",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -739,35 +610,9 @@
 							},
 							"traceLevel": "Fine"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ECOMM_1_DIMMENSION_LOAD')]",
-				"[concat(variables('factoryId'), '/pipelines/PHYSICAL_1_DIMMENSION_LOAD')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CITY')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CUSTOMER')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_SUB_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_E_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_PPTO')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_SALES')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_SALES')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LOAD_FULL_STAGE')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
+					},
 					{
-						"name": "LOAD_STAGE_PRODUCT",
+						"name": "CARGA_DIMENSIONES_ECOMMERCE",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"policy": {
@@ -776,7 +621,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "LOAD_STAGE_PRODUCT",
+								"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -784,11 +629,11 @@
 						}
 					},
 					{
-						"name": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
+						"name": "CARGA_DIMENSIONES_FISICA",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "LOAD_STAGE_PRODUCT",
+								"activity": "CARGA_DIMENSIONES_ECOMMERCE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -800,80 +645,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_SUPERSTORE_SALES_DATA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_ECOMM_PPTO",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_PPTO_TIENDA_FISICA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_ECOMM_PPTO",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "LOAD_STAGE_ECOM_REAL",
-						"description": "CARGA DE TODOS LOS STAGE",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "LOAD_STAGE_ECOMM_PPTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "LOAD_STAGE_ECOM_REAL",
+								"referenceName": "CARGA_DIMENSIONES_FISICA",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -887,11 +659,17 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_PRODUCT')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_SUPERSTORE_SALES_DATA')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_PPTO_TIENDA_FISICA')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_ECOMM_PPTO')]",
-				"[concat(variables('factoryId'), '/pipelines/LOAD_STAGE_ECOM_REAL')]"
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CITY')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CUSTOMER')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_SUB_CATEGORY')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_PRODUCT')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_E_PRODUCT')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_PPTO')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_SALES')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_SALES')]",
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]",
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]"
 			]
 		},
 		{
@@ -2702,7 +2480,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PHYSICAL_1_DIMMENSION_LOAD')]",
+			"name": "[concat(parameters('factoryName'), '/CARGA_DIMENSIONES_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3061,96 +2839,6 @@
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_REGION_2STEP')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_CITY')]",
 				"[concat(variables('factoryId'), '/dataflows/DIM_F_CUSTOMER')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PHYSICAL_2_FACT_TABLES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "FACT_F_PPTO",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_F_PPTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGPPTOTIENDAFISICA": {},
-									"DIMFSHIPMODE": {},
-									"TDIMFREGION": {},
-									"FACTPPTOTIENDAFISICA": {},
-									"ERROR": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "FACT_F_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "FACT_F_PPTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_F_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"RETURNS": {},
-									"DIMSHIPMODE": {},
-									"TFACTSALESFISICA": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]",
-				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
 			]
 		},
 		{
@@ -10582,14 +10270,88 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CA_LOAD_STAGE_SUPERSTORE_SALES_DATA_DEVOLUCIONES')]",
+			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-						"type": "Copy",
+						"name": "CARGA_DIMENSIONES_FISICA",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CARGA_DIMENSIONES_FISICA",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "FACT_F_SALES",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "CARGA_DIMENSIONES_FISICA",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FACT_F_SALES",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"RETURNS": {},
+									"DIMSHIPMODE": {},
+									"TFACTSALESFISICA": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CARGA_PRESUPUESTOS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FACT_E_PPTO",
+						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -10600,92 +10362,36 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
+							"dataflow": {
+								"referenceName": "FACT_E_PPTO",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STAGEREALSALES": {},
+									"DIMEVENTTYPE": {},
+									"FACTPPTOECOMM": {},
+									"sink1": {}
 								}
 							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_RETURNS",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Order ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Order_ID",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "FACT_F_PPTO",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
 							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
+								"activity": "FACT_E_PPTO",
+								"dependencyConditions": [
+									"Succeeded"
+								]
 							}
 						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_RETURNS')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CA_DATOS_DE_CLIENTES')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-						"type": "Copy",
-						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -10695,70 +10401,25 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
+							"dataflow": {
+								"referenceName": "FACT_F_PPTO",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGPPTOTIENDAFISICA": {},
+									"DIMFSHIPMODE": {},
+									"TDIMFREGION": {},
+									"FACTPPTOTIENDAFISICA": {},
+									"ERROR": {}
 								}
 							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_PEOPLE",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -10767,18 +10428,18 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_PEOPLE')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE')]"
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/CARGA_DIARIA')]",
+			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_ECOMMERCE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "ECOMM_1_DIMMENSION_LOAD",
+						"name": "CARGA_DIMENSIONES_ECOMMERCE",
 						"type": "ExecutePipeline",
 						"dependsOn": [],
 						"policy": {
@@ -10787,7 +10448,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"pipeline": {
-								"referenceName": "ECOMM_1_DIMMENSION_LOAD",
+								"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
 								"type": "PipelineReference"
 							},
 							"waitOnCompletion": true,
@@ -10795,99 +10456,42 @@
 						}
 					},
 					{
-						"name": "PHYSICAL_1_DIMMENSION_LOAD",
-						"type": "ExecutePipeline",
+						"name": "FACT_E_SALES",
+						"type": "ExecuteDataFlow",
 						"dependsOn": [
 							{
-								"activity": "ECOMM_1_DIMMENSION_LOAD",
+								"activity": "CARGA_DIMENSIONES_ECOMMERCE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
 							}
 						],
 						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
 							"secureInput": false
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PHYSICAL_1_DIMMENSION_LOAD",
-								"type": "PipelineReference"
+							"dataflow": {
+								"referenceName": "FACT_E_SALES",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STAGEREALSALES": {},
+									"DIMEVENTTYPE": {},
+									"FACTSALESECOMM": {},
+									"sink1": {}
+								}
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "ECOMM_2_FACT_TABLES",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "PHYSICAL_1_DIMMENSION_LOAD",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "ECOMM_2_FACT_TABLES",
-								"type": "PipelineReference"
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
 							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "PHYSICAL_2_FACT_TABLES",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "ECOMM_2_FACT_TABLES",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "PHYSICAL_2_FACT_TABLES",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "GESTION_HUERFANOS",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "PHYSICAL_2_FACT_TABLES",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "GESTION_HUERFANOS",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -10897,11 +10501,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/ECOMM_1_DIMMENSION_LOAD')]",
-				"[concat(variables('factoryId'), '/pipelines/PHYSICAL_1_DIMMENSION_LOAD')]",
-				"[concat(variables('factoryId'), '/pipelines/ECOMM_2_FACT_TABLES')]",
-				"[concat(variables('factoryId'), '/pipelines/PHYSICAL_2_FACT_TABLES')]",
-				"[concat(variables('factoryId'), '/pipelines/GESTION_HUERFANOS')]"
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]"
 			]
 		}
 	]
