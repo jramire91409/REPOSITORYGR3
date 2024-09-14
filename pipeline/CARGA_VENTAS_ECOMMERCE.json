@@ -12,7 +12,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "ECOMM_1_DIMMENSION_LOAD",
+						"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -34,10 +34,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"pipeline": {
-						"referenceName": "ECOMM_2_FACT_TABLES",
-						"type": "PipelineReference"
-					},
 					"waitOnCompletion": true
 				}
 			},
