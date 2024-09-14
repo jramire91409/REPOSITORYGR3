@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "STG_ECOM_DATIOS_DE_PRODUCTO",
+				"name": "STG_ECOM_DATOS_DE_PRODUCTO",
 				"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
 				"type": "Copy",
 				"dependsOn": [],
