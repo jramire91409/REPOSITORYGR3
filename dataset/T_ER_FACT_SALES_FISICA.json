@@ -1,5 +1,5 @@
 {
-	"name": "T_ER_FCAT_SALES_FISICA",
+	"name": "T_ER_FACT_SALES_FISICA",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",

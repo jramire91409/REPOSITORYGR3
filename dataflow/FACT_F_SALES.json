@@ -40,7 +40,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "T_ER_FCAT_SALES_FISICA",
+						"referenceName": "T_ER_FACT_SALES_FISICA",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
