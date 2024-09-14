@@ -2211,7 +2211,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "STG_ECOM_DATIOS_DE_PRODUCTO",
+						"name": "STG_ECOM_DATOS_DE_PRODUCTO",
 						"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
 						"type": "Copy",
 						"dependsOn": [],
@@ -2676,176 +2676,6 @@
 								"parameters": {}
 							}
 						]
-					},
-					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "XLS_SUPER_STORE_SALES_DATA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_PEOPLE",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_RETURNS",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Order ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Order_ID",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
 					}
 				],
 				"policy": {
@@ -2855,11 +2685,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]",
-				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_PEOPLE')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_F__SUPERSTORE_SALES_DATA_PEOPLE')]",
-				"[concat(variables('factoryId'), '/datasets/XLS_SUPER_STORE_SALES_DATA_RETURNS')]",
-				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA_RETURNS')]"
+				"[concat(variables('factoryId'), '/datasets/T_STG_F_SUPERSTORE_SALES_DATA')]"
 			]
 		}
 	]
