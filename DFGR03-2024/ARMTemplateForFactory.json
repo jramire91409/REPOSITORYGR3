@@ -358,6 +358,8 @@
 					{
 						"name": "ECOMM_1_DIMMENSION_LOAD",
 						"type": "ExecutePipeline",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"secureInput": false
@@ -375,6 +377,8 @@
 					{
 						"name": "PHYSICAL_1_DIMMENSION_LOAD",
 						"type": "ExecutePipeline",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ECOMM_1_DIMMENSION_LOAD",
