@@ -179,7 +179,8 @@
 				"          PRICE = price,",
 				"          ID_USER = user_id,",
 				"          EVENT_DATE = FECHA,",
-				"          FECHA_CARGA",
+				"          FECHA_CARGA,",
+				"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
 				"     )) ~> sink1"
 			]
 		}
