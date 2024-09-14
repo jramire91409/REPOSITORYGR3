@@ -70,6 +70,10 @@
 			{
 				"name": "FECHA_CARGA",
 				"type": "varchar"
+			},
+			{
+				"name": "DESC_SHIP_MODE_H",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
