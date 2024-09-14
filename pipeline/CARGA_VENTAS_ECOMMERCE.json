@@ -1,9 +1,9 @@
 {
-	"name": "CARGA_VENTAS_FISICA",
+	"name": "CARGA_VENTAS_ECOMMERCE",
 	"properties": {
 		"activities": [
 			{
-				"name": "PHYSICAL_1_DIMMENSION_LOAD",
+				"name": "ECOMM_1_DIMMENSION_LOAD",
 				"type": "ExecutePipeline",
 				"dependsOn": [],
 				"policy": {
@@ -12,18 +12,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "PHYSICAL_1_DIMMENSION_LOAD",
+						"referenceName": "ECOMM_1_DIMMENSION_LOAD",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
 				}
 			},
 			{
-				"name": "PHYSICAL_2_FACT_TABLES",
+				"name": "ECOMM_2_FACT_TABLES",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "PHYSICAL_1_DIMMENSION_LOAD",
+						"activity": "ECOMM_1_DIMMENSION_LOAD",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -35,7 +35,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "PHYSICAL_2_FACT_TABLES",
+						"referenceName": "ECOMM_2_FACT_TABLES",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
@@ -46,7 +46,7 @@
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
-						"activity": "PHYSICAL_2_FACT_TABLES",
+						"activity": "ECOMM_2_FACT_TABLES",
 						"dependencyConditions": [
 							"Succeeded"
 						]
