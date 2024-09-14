@@ -630,6 +630,46 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "HUER_FACT_F_PPTO",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "HUER_FACT_E_PPTO",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "HUER_FACT_F_PPTO",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STGPPTOTIENDAFISICA": {},
+									"DIMFSHIPMODE": {},
+									"TDIMFREGION": {},
+									"FACTPPTOTIENDAFISICA": {},
+									"ERROR": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -645,7 +685,8 @@
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_PRODUCT')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_E_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]"
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_PPTO')]"
 			]
 		},
 		{
@@ -4232,6 +4273,10 @@
 					},
 					{
 						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_EVENT_TYPE_H",
 						"type": "varchar"
 					}
 				],
@@ -8148,7 +8193,8 @@
 						"          PRICE as decimal(24,10),",
 						"          ID_USER as integer,",
 						"          EVENT_DATE as date,",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          DESC_EVENT_TYPE_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -8313,8 +8359,8 @@
 						"     ),",
 						"     errors: true) ~> cast1",
 						"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
-						"     disjoint: false) ~> split1@(LlavesLlenas, llavesNULL)",
-						"split1@llavesNULL derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
 						"split1@LlavesLlenas sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -9693,6 +9739,209 @@
 				"[concat(variables('factoryId'), '/datasets/T_ER_FACT_PPTO_ECPOM')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_EVENT_TYPE')]",
 				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_ECOMM')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HUER_FACT_F_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "STGPPTOTIENDAFISICA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSHIPMODE"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "TDIMFREGION"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "FACTPPTOTIENDAFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "ERROR"
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string,",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string,",
+						"          DESC_REGION_H as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGPPTOTIENDAFISICA",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSHIPMODE",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TDIMFREGION",
+						"derivedColumn2 aggregate(groupBy(Product_ID = ID_PRODUCT,",
+						"          Region = upper(DESC_REGION_H),",
+						"          Ship_Mode = upper(DESC_SHIP_MODE_H),",
+						"          YEAR,",
+						"          MONTH,",
+						"          FECHATOREGION),",
+						"     IMPORTE_PPTO_GANANCIA = sum(IMP_PPTO_GANANCIA)) ~> aggregate1",
+						"aggregate1, DIMFSHIPMODE join(Ship_Mode == DESC_SHIP_MODE,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"cast1, TDIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"STGPPTOTIENDAFISICA derive(FECHATOREGION = concat(YEAR,'-',MONTH,'-01')) ~> derivedColumn2",
+						"join1 cast(output(",
+						"          FECHATOREGION as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
+						"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"split1@LlavesLlenas sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR",
+						"     )) ~> FACTPPTOTIENDAFISICA",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string,",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string,",
+						"          DESC_REGION_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR,",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = DESC_SHIP_MODE,",
+						"          DESC_REGION_H = NAME_REGION",
+						"     )) ~> ERROR"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_ER_FACT_PPTO_FISICA')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_SHIP_MODE')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_F_REGION')]",
+				"[concat(variables('factoryId'), '/datasets/T_FACT_PPTO_FISICA')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		}

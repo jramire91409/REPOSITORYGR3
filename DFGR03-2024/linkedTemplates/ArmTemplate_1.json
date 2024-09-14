@@ -408,6 +408,10 @@
 					{
 						"name": "FECHA_CARGA",
 						"type": "varchar"
+					},
+					{
+						"name": "DESC_EVENT_TYPE_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
