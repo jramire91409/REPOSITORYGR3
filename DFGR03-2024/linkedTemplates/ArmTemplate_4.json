@@ -1190,6 +1190,262 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/HUER_FACT_F_SALES')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
+								"type": "DatasetReference"
+							},
+							"name": "RETURNS"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMSHIPMODE"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "TFACTSALESFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "RETURNS1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10),",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          Returned as string,",
+						"          Order_ID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> RETURNS",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMSHIPMODE",
+						"source1 select(mapColumn(",
+						"          Order_ID = ID_ORDER,",
+						"          Order_Date = ORDER_DATE,",
+						"          Ship_Date = SHIP_DATE,",
+						"          Ship_Mode = DESC_SHIP_MODE_H,",
+						"          Customer_ID = ID_CUSTOMER,",
+						"          Product_ID = ID_PRODUCT,",
+						"          Importe = IMPORTE,",
+						"          Quantity = QUANTITY,",
+						"          Discount = DISCOUNT,",
+						"          Profit = PROFIT",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false() && filtrofecha == 1) ~> filter1",
+						"select1 derive(filtrofecha = iif(Order_Date>Ship_Date,0,1),",
+						"          Precio_Total = Importe*Quantity) ~> derivedColumn1",
+						"filter1, RETURNS join(select1@Order_ID == RETURNS@Order_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> RETURNS1",
+						"RETURNS1, DIMSHIPMODE join(upper(Ship_Mode) == upper(DESC_SHIP_MODE),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"derivedColumn2 aggregate(groupBy(Order_ID = upper(select1@Order_ID),",
+						"          Product_ID = upper(Product_ID),",
+						"          Order_Date,",
+						"          Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          Customer_ID = upper(Customer_ID),",
+						"          Returned = upper(Returned),",
+						"          ID_RETURNED,",
+						"          Ship_Mode),",
+						"     Importe = sum(Importe),",
+						"          Quantity = sum(Quantity),",
+						"          Discount = sum(Discount),",
+						"          Profit = sum(Profit),",
+						"          Precio_Total = sum(Precio_Total)) ~> aggregate1",
+						"join2 derive(ID_RETURNED = iif(upper(Returned)=='YES',1,0)) ~> derivedColumn2",
+						"aggregate1 cast(output(",
+						"          Order_Date as date 'yyyy-MM-dd',",
+						"          Ship_Date as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 split(isNull(ID_SHIP_MODE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESOK, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"split1@LLAVESOK sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED,",
+						"          PRECIO_TOTAL = Precio_Total",
+						"     )) ~> TFACTSALESFISICA",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10),",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED,",
+						"          PRECIO_TOTAL = Precio_Total,",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = Ship_Mode",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ECOMM_1_DIMMENSION_LOAD')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",

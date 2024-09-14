@@ -422,7 +422,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/T_ER_FCAT_SALES_FISICA')]",
+			"name": "[concat(parameters('factoryName'), '/T_ER_FACT_SALES_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -494,6 +494,10 @@
 					},
 					{
 						"name": "FECHA_CARGA",
+						"type": "varchar"
+					},
+					{
+						"name": "DESC_SHIP_MODE_H",
 						"type": "varchar"
 					}
 				],

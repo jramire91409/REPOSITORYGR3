@@ -2541,7 +2541,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "T_ER_FCAT_SALES_FISICA",
+								"referenceName": "T_ER_FACT_SALES_FISICA",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
@@ -2656,7 +2656,8 @@
 						"          ID_SHIP_MODE,",
 						"          Customer_ID = upper(Customer_ID),",
 						"          Returned = upper(Returned),",
-						"          ID_RETURNED),",
+						"          ID_RETURNED,",
+						"          Ship_Mode),",
 						"     Importe = sum(Importe),",
 						"          Quantity = sum(Quantity),",
 						"          Discount = sum(Discount),",
@@ -2726,7 +2727,8 @@
 						"          PROFIT as decimal(24,10),",
 						"          ID_RETURNED as integer,",
 						"          PRECIO_TOTAL as decimal(24,10),",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -2749,7 +2751,8 @@
 						"          PROFIT = Profit,",
 						"          ID_RETURNED,",
 						"          PRECIO_TOTAL = Precio_Total,",
-						"          FECHA_CARGA",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = Ship_Mode",
 						"     )) ~> sink1"
 					]
 				}
