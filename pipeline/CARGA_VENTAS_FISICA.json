@@ -48,29 +48,6 @@
 					},
 					"traceLevel": "Fine"
 				}
-			},
-			{
-				"name": "GESTION_HUERFANOS1",
-				"type": "ExecutePipeline",
-				"dependsOn": [
-					{
-						"activity": "FACT_F_SALES",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"pipeline": {
-						"referenceName": "GESTION_HUERFANOS",
-						"type": "PipelineReference"
-					},
-					"waitOnCompletion": true
-				}
 			}
 		],
 		"annotations": []
