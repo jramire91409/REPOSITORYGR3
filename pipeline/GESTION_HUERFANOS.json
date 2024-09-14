@@ -35,7 +35,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "PHYSICAL_1_DIMMENSION_LOAD",
+						"referenceName": "CARGA_DIMENSIONES_FISICA",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
