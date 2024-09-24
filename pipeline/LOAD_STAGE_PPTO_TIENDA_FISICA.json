@@ -93,10 +93,8 @@
 								},
 								"sink": {
 									"name": "imp_ppto_ganancia",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 10,
-									"precision": 38
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							}
 						],
