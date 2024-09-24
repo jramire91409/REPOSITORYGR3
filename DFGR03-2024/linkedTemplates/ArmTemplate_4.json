@@ -13,6 +13,478 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/FACT_F_SALES')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
+								"type": "DatasetReference"
+							},
+							"name": "RETURNS"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMSHIPMODE"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "TFACTSALESFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_SALES_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "RETURNS1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          Returned as string,",
+						"          Order_ID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> RETURNS",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMSHIPMODE",
+						"source1 select(mapColumn(",
+						"          Order_ID,",
+						"          Order_Date,",
+						"          Ship_Date,",
+						"          Ship_Mode,",
+						"          Customer_ID,",
+						"          Product_ID,",
+						"          Importe = Sales,",
+						"          Quantity,",
+						"          Discount,",
+						"          Profit",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumn1 filter(isNull(Order_ID)==false() && isNull(Quantity)==false() && Quantity >=1 && isNull(Product_ID)==false() && isNull(Customer_ID)==false() && filtrofecha == 1) ~> filter1",
+						"select1 derive(filtrofecha = iif(Order_Date>Ship_Date,0,1),",
+						"          Precio_Total = Importe*Quantity) ~> derivedColumn1",
+						"filter1, RETURNS join(select1@Order_ID == RETURNS@Order_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> RETURNS1",
+						"RETURNS1, DIMSHIPMODE join(upper(Ship_Mode) == upper(DESC_SHIP_MODE),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"derivedColumn2 aggregate(groupBy(Order_ID = upper(select1@Order_ID),",
+						"          Product_ID = upper(Product_ID),",
+						"          Order_Date,",
+						"          Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          Customer_ID = upper(Customer_ID),",
+						"          Returned = upper(Returned),",
+						"          ID_RETURNED,",
+						"          Ship_Mode),",
+						"     Importe = sum(Importe),",
+						"          Quantity = sum(Quantity),",
+						"          Discount = sum(Discount),",
+						"          Profit = sum(Profit),",
+						"          Precio_Total = sum(Precio_Total)) ~> aggregate1",
+						"join2 derive(ID_RETURNED = iif(upper(Returned)=='YES',1,0)) ~> derivedColumn2",
+						"aggregate1 cast(output(",
+						"          Order_Date as date 'yyyy-MM-dd',",
+						"          Ship_Date as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 split(isNull(ID_SHIP_MODE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESOK, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"split1@LLAVESOK sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED,",
+						"          PRECIO_TOTAL = Precio_Total",
+						"     )) ~> TFACTSALESFISICA",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_ORDER as string,",
+						"          ID_PRODUCT as string,",
+						"          ORDER_DATE as date,",
+						"          SHIP_DATE as date,",
+						"          ID_SHIP_MODE as integer,",
+						"          ID_CUSTOMER as string,",
+						"          IMPORTE as decimal(24,10),",
+						"          QUANTITY as integer,",
+						"          DISCOUNT as decimal(24,10),",
+						"          PROFIT as decimal(24,10),",
+						"          ID_RETURNED as integer,",
+						"          PRECIO_TOTAL as decimal(24,10),",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_ORDER = Order_ID,",
+						"          ID_PRODUCT = Product_ID,",
+						"          ORDER_DATE = Order_Date,",
+						"          SHIP_DATE = Ship_Date,",
+						"          ID_SHIP_MODE,",
+						"          ID_CUSTOMER = Customer_ID,",
+						"          IMPORTE = Importe,",
+						"          QUANTITY = Quantity,",
+						"          DISCOUNT = Discount,",
+						"          PROFIT = Profit,",
+						"          ID_RETURNED,",
+						"          PRECIO_TOTAL = Precio_Total,",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = Ship_Mode",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HUER_DIM_E_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "DATOSDEPRODUCTO"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BEAUTY_CAT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMBEAUTYCAT"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_BRAND",
+								"type": "DatasetReference"
+							},
+							"name": "DIMBRAND"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "DIMPRODUCTO",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_PRODUCT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "CONBEAUTY"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "cast2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_BEAUTYCAT_H as string,",
+						"          DESC_BRAND_H as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DATOSDEPRODUCTO",
+						"source(output(",
+						"          ID_BEAUTY_CAT as integer,",
+						"          DESC_BEAUTY_CAT as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMBEAUTYCAT",
+						"source(output(",
+						"          ID_BRAND as integer,",
+						"          DESC_BRAND as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMBRAND",
+						"select1, DIMBEAUTYCAT join(upper(beauty_category) == upper(DESC_BEAUTY_CAT),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> CONBEAUTY",
+						"CONBEAUTY, DIMBRAND join(upper(brand) == upper(DESC_BRAND),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 cast(output(",
+						"          category_id as long '000,000,000'",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"split1@llavesllenas alterRow(upsertIf(isNull(product_id)==false())) ~> Modificarfila1",
+						"cast2 split(isNull(ID_BEAUTY_CAT) == false() || isNull(ID_BRAND) == false(),",
+						"     disjoint: false) ~> split1@(llavesllenas, llavesnulas)",
+						"split1@llavesnulas derive(FECHA_CARGA = currentDate()) ~> derivedColumn1",
+						"Modificarfila1 aggregate(groupBy(product_id,",
+						"          category_id,",
+						"          product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND),",
+						"     count = count()) ~> aggregate1",
+						"DATOSDEPRODUCTO select(mapColumn(",
+						"          product_id = ID_PRODUCT,",
+						"          category_id = ID_CATEGORY,",
+						"          category_code = ID_CATEGORY,",
+						"          beauty_category = DESC_BEAUTYCAT_H,",
+						"          brand = DESC_BRAND_H,",
+						"          product_desc = DESCRIPTION",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"aggregate1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_PRODUCT'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND",
+						"     )) ~> DIMPRODUCTO",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as integer,",
+						"          ID_CATEGORY as decimal(25,0),",
+						"          DESCRIPTION as string,",
+						"          ID_BEAUTY_CAT as integer,",
+						"          ID_BRAND as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_BEAUTYCAT_H as string,",
+						"          DESC_BRAND_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = product_id,",
+						"          ID_CATEGORY = category_id,",
+						"          DESCRIPTION = product_desc,",
+						"          ID_BEAUTY_CAT,",
+						"          ID_BRAND,",
+						"          FECHA_CARGA,",
+						"          DESC_BEAUTYCAT_H = beauty_category,",
+						"          DESC_BRAND_H = brand",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/HUER_DIM_F_CITY')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1446,190 +1918,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_SUPERSTORE_SALES_DATA_PEOPLE')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_people",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Person",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Region",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_PEOPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STAGESUPERSTORE_PEOLPLE",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_SUPERSTORE_SALES_DATA_RETURNS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"sink": {
-								"type": "SqlServerSink",
-								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data_returns",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Returned",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "Order ID",
-											"type": "String",
-											"physicalType": "String"
-										},
-										"sink": {
-											"name": "Order_ID",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "XLS_SUPER_STORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA_RETURNS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/CARGA_DIMENSIONES_ECOMMERCE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2187,6 +2475,8 @@
 					{
 						"name": "FACT_E_PPTO",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -2263,6 +2553,152 @@
 				"annotations": []
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_ECOMMERCE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CARGA_DIMENSIONES_ECOMMERCE",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "FACT_E_SALES",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "CARGA_DIMENSIONES_ECOMMERCE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FACT_E_SALES",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STAGEREALSALES": {},
+									"DIMEVENTTYPE": {},
+									"FACTSALESECOMM": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CARGA_DIMENSIONES_FISICA",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "CARGA_DIMENSIONES_FISICA",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "FACT_F_SALES",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "CARGA_DIMENSIONES_FISICA",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "FACT_F_SALES",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"RETURNS": {},
+									"DIMSHIPMODE": {},
+									"TFACTSALESFISICA": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/GESTION_HUERFANOS')]",
@@ -2676,157 +3112,13 @@
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CUSTOMER')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_SUB_CATEGORY')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_PRODUCT')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_E_PRODUCT')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_PPTO')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_SALES')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_SALES')]",
 				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]",
 				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "CARGA_DIMENSIONES_FISICA",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CARGA_DIMENSIONES_FISICA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "FACT_F_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "CARGA_DIMENSIONES_FISICA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_F_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"RETURNS": {},
-									"DIMSHIPMODE": {},
-									"TFACTSALESFISICA": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_ECOMMERCE')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "CARGA_DIMENSIONES_ECOMMERCE",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "FACT_E_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "CARGA_DIMENSIONES_ECOMMERCE",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_E_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTSALESECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]"
 			]
 		}
 	]
