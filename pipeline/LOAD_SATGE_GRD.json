@@ -37,7 +37,7 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "TransactionID;CustomerID;TransactionDate;TransactionTime;ProductCategory;ProductSubcategory;ProductDetail;TransactionValue;PaymentMethod;CustomerAge",
+									"name": "TransactionID",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -48,6 +48,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "CustomerID",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "ID_CUSTOMER",
 									"type": "String",
@@ -55,6 +60,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TransactionDate",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "FEC_TRANSACTION_DATE",
 									"type": "DateTime",
@@ -62,6 +72,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TransactionTime",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TIM_TRANSACTION_TIME",
 									"type": "TimeSpan",
@@ -69,6 +84,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ProductCategory",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "PRODUCTCATEGORY",
 									"type": "String",
@@ -76,6 +96,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ProductSubcategory",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "PRODUCT_SUBCATEGORY",
 									"type": "String",
@@ -83,6 +108,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "ProductDetail",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "PRODUCTDETAIL",
 									"type": "String",
@@ -90,6 +120,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "TransactionValue",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "TRANSACTIONVAUE",
 									"type": "Decimal",
@@ -99,6 +134,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "PaymentMethod",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "PAYMENTMETHOD",
 									"type": "String",
@@ -106,6 +146,11 @@
 								}
 							},
 							{
+								"source": {
+									"name": "CustomerAge",
+									"type": "String",
+									"physicalType": "String"
+								},
 								"sink": {
 									"name": "CUSTOMERAGE",
 									"type": "Int32",
