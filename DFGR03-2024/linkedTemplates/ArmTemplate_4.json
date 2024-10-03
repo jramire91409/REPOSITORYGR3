@@ -3026,7 +3026,7 @@
 						"          DESC_CUSTOMER,",
 						"          ID_SEGMENT,",
 						"          ID_POSTAL_CODE,",
-						"          AGE",
+						"          AGE = CUSTOMERAGE",
 						"     )) ~> sink1"
 					]
 				}
