@@ -94,7 +94,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "SqlServerTable2",
+						"referenceName": "backup_dim_f_customer",
 						"type": "DatasetReference"
 					}
 				]
