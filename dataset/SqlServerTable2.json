@@ -1,0 +1,35 @@
+{
+	"name": "SqlServerTable2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "DESC_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_SEGMENT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ID_POSTAL_CODE",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "BACKUP_DIM_F_CUSTOMER"
+		}
+	}
+}

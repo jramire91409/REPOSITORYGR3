@@ -1,5 +1,5 @@
 {
-	"name": "GRD_DIM_MEDIO_PAGO",
+	"name": "GRD_UPDATE_AGE_CUSTOMER",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,26 +10,30 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_CUSTOMER",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "SqlServerTable1",
+						"referenceName": "T_DIM_F_CUSTOMER",
 						"type": "DatasetReference"
 					},
-					"name": "TGRDMEDOPAGO"
+					"name": "sink1"
 				}
 			],
 			"transformations": [
 				{
-					"name": "cast1"
-				},
-				{
-					"name": "aggregate1"
-				},
-				{
 					"name": "select1"
+				},
+				{
+					"name": "join1"
 				},
 				{
 					"name": "Modificarfila1"
@@ -52,35 +56,50 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
-				"select1 cast(output(",
-				"          PAYMENTMETHOD as string",
+				"source(output(",
+				"          ID_CUSTOMER as string,",
+				"          DESC_CUSTOMER as string,",
+				"          ID_SEGMENT as integer,",
+				"          ID_POSTAL_CODE as integer",
 				"     ),",
-				"     errors: true) ~> cast1",
-				"cast1 aggregate(groupBy(PAYMENTMETHOD = upper(PAYMENTMETHOD)),",
-				"     COUNT = count()) ~> aggregate1",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
 				"source1 select(mapColumn(",
-				"          PAYMENTMETHOD",
+				"          ID_CUSTOMER,",
+				"          CUSTOMERAGE",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"aggregate1 alterRow(upsertIf(isNull(PAYMENTMETHOD)== false())) ~> Modificarfila1",
+				"select1, source2 join(select1@ID_CUSTOMER == source2@ID_CUSTOMER,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 alterRow(updateIf(isNull(CUSTOMERAGE) == false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          ID_MEDIO_PAGO as integer,",
-				"          TXT_MEDIO_PAGO as string",
+				"          ID_CUSTOMER as string,",
+				"          DESC_CUSTOMER as string,",
+				"          ID_SEGMENT as integer,",
+				"          ID_POSTAL_CODE as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
-				"     updateable:false,",
-				"     upsertable:true,",
-				"     keys:['TXT_MEDIO_PAGO'],",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ID_CUSTOMER'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          TXT_MEDIO_PAGO = PAYMENTMETHOD",
-				"     )) ~> TGRDMEDOPAGO"
+				"          ID_CUSTOMER = select1@ID_CUSTOMER,",
+				"          DESC_CUSTOMER,",
+				"          ID_SEGMENT,",
+				"          ID_POSTAL_CODE",
+				"     )) ~> sink1"
 			]
 		}
 	}

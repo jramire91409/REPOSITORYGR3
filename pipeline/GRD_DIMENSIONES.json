@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DIM_GRD_MEDIO_PAGO",
+						"referenceName": "GRD_DIM_MEDIO_PAGO",
 						"type": "DataFlowReference"
 					},
 					"compute": {
