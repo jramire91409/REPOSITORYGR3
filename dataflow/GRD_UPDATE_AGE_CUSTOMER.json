@@ -100,7 +100,8 @@
 				"          ID_CUSTOMER = select1@ID_CUSTOMER,",
 				"          DESC_CUSTOMER,",
 				"          ID_SEGMENT,",
-				"          ID_POSTAL_CODE",
+				"          ID_POSTAL_CODE,",
+				"          AGE",
 				"     )) ~> sink1"
 			]
 		}
