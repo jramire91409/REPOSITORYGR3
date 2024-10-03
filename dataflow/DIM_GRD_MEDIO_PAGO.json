@@ -1,0 +1,87 @@
+{
+	"name": "DIM_GRD_MEDIO_PAGO",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "TGRDMEDOPAGO"
+				}
+			],
+			"transformations": [
+				{
+					"name": "cast1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID_TRANSACTION as string,",
+				"          ID_CUSTOMER as string,",
+				"          FEC_TRANSACTION_DATE as string,",
+				"          TIM_TRANSACTION_TIME as string,",
+				"          PRODUCTCATEGORY as string,",
+				"          PRODUCT_SUBCATEGORY as string,",
+				"          PRODUCTDETAIL as string,",
+				"          TRANSACTIONVAUE as decimal(24,10),",
+				"          PAYMENTMETHOD as string,",
+				"          CUSTOMERAGE as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"select1 cast(output(",
+				"          PAYMENTMETHOD as string",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 aggregate(groupBy(PAYMENTMETHOD = upper(PAYMENTMETHOD)),",
+				"     COUNT = count()) ~> aggregate1",
+				"source1 select(mapColumn(",
+				"          PAYMENTMETHOD",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"aggregate1 alterRow(upsertIf(isNull(PAYMENTMETHOD)== false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_MEDIO_PAGO as integer,",
+				"          TXT_MEDIO_PAGO as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['TXT_MEDIO_PAGO'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          TXT_MEDIO_PAGO = PAYMENTMETHOD",
+				"     )) ~> TGRDMEDOPAGO"
+			]
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "SqlServerTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_MEDIO_PAGO",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TXT_MEDIO_PAGO",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_MEDIO_PAGO"
+		}
+	}
+}
