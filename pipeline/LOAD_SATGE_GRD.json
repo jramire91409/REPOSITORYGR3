@@ -67,8 +67,8 @@
 								},
 								"sink": {
 									"name": "FEC_TRANSACTION_DATE",
-									"type": "DateTime",
-									"physicalType": "date"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
@@ -79,8 +79,8 @@
 								},
 								"sink": {
 									"name": "TIM_TRANSACTION_TIME",
-									"type": "TimeSpan",
-									"physicalType": "time"
+									"type": "String",
+									"physicalType": "varchar"
 								}
 							},
 							{
