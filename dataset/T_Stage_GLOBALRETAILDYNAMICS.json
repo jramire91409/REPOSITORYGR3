@@ -1,0 +1,61 @@
+{
+	"name": "T_Stage_GLOBALRETAILDYNAMICS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_TRANSACTION",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_CUSTOMER",
+				"type": "varchar"
+			},
+			{
+				"name": "FEC_TRANSACTION_DATE",
+				"type": "date"
+			},
+			{
+				"name": "TIM_TRANSACTION_TIME",
+				"type": "time",
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTCATEGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCT_SUBCATEGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCTDETAIL",
+				"type": "varchar"
+			},
+			{
+				"name": "TRANSACTIONVAUE",
+				"type": "decimal",
+				"precision": 24,
+				"scale": 10
+			},
+			{
+				"name": "PAYMENTMETHOD",
+				"type": "varchar"
+			},
+			{
+				"name": "CUSTOMERAGE",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stage",
+			"table": "Stage_GLOBALRETAILDYNAMICS"
+		}
+	}
+}
