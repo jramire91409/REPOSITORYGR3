@@ -13,6 +13,1669 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_ECOM_REAL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "XLS_RETAIL_SALES_DEC2019",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE stage.Stage_ecomm_real_sales",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_2019_DEC_RETAIL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_NOV2019",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_DEC2019",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_2019_NOV_RETAIL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_OCT2019",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_NOV2019",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_2019_OCT_RETAIL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_FEB2020",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_OCT2019",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_2020_FEB_RETAIL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_JAN2020",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_FEB2020",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_2020_JAN_RETAIL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "XLS_RETAIL_SALES_JAN2020_copy1",
+						"description": "CARGA DE LOS VALORES REALES AL STAGE DE ECOMM",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "XLS_RETAIL_SALES_JAN2020",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_time",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "price",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "price",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "user_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "user_session",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_REAL_MES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_PPTO_TIENDA_FISICA')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "XLS_PPTO_SALES_TIENDA_FISICA",
+						"description": "Carga desde el excel de ppto_sales_tienda_fisica a el area stage",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE stage.stage_ppto_tienda_fisica",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "fec_ppto_month",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fec_ppto_month",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ship Mode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Ship_Mode",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Product ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Product_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "imp_ppto_ganancia",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "imp_ppto_ganancia",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "xls_ppto_sales_tienda_fisica",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_PRODUCT')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "STG_ECOM_DATOS_DE_PRODUCTO",
+						"description": "Llenado de la stage de DAGTOS DE PRODUCTO comm desde archivo excel",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_DATOS_DE_PRODUCTO",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_id",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "COLUMNA1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Column3",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_code",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "beauty_category",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "beauty_category",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "brand",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_desc",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_desc",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "category_desc",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "category_desc",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STG_E_DATOS_DE_PRODUCTO",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_SUPERSTORE_SALES_DATA')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "XLS_SUPER_STORE_SALES_DATA",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE stage.Stage_Superstore_Sales_Data",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Order ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Order Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Order_Date",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ship Date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Ship_Date",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Ship Mode",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Ship_Mode",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Customer ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Customer_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Customer Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Customer_Name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Segment",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Segment",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Country",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Country",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "City",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "City",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "State",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "State",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Postal Code",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Postal_Code",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Region",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Product ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Product_ID",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Category",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Category",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Sub-Category",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Sub_Category",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Product Name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Product_Name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Sales",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Sales",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "Quantity",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Quantity",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Discount",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Discount",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									},
+									{
+										"source": {
+											"name": "Profit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "Profit",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "XLS_SUPER_STORE_SALES_DATA",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_SUPERSTORE_SALES_DATA_PEOPLE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1962,727 +3625,6 @@
 						"     mapColumn(",
 						"          DESC_SHIP_MODE = ship_mode",
 						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_F_SUB_CATEGORY')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "TDIMFCATEGORY"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_SUB_CATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "dimfsubcategory",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"dataset": {
-								"referenceName": "T_ER_DIM_F_SUBCATEGORY",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Modificarfila1"
-						},
-						{
-							"name": "IDCATEGORY"
-						},
-						{
-							"name": "split1"
-						},
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Order_ID as string,",
-						"          Order_Date as string,",
-						"          Ship_Date as string,",
-						"          Ship_Mode as string,",
-						"          Customer_ID as string,",
-						"          Customer_Name as string,",
-						"          Segment as string,",
-						"          Country as string,",
-						"          City as string,",
-						"          State as string,",
-						"          Postal_Code as integer,",
-						"          Region as string,",
-						"          Product_ID as string,",
-						"          Category as string,",
-						"          Sub_Category as string,",
-						"          Product_Name as string,",
-						"          Sales as decimal(38,10),",
-						"          Quantity as integer,",
-						"          Discount as decimal(38,10),",
-						"          Profit as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source1",
-						"source(output(",
-						"          ID_CATEGORY as integer,",
-						"          DESCRIPTION as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> TDIMFCATEGORY",
-						"IDCATEGORY aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
-						"          ID_CATEGORY,",
-						"          DESCRIPTION),",
-						"     COUNT = count()) ~> aggregate2",
-						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
-						"source1, TDIMFCATEGORY join(upper(Category) == upper(DESCRIPTION),",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> IDCATEGORY",
-						"Modificarfila1 split(isNull(ID_CATEGORY) == false(),",
-						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
-						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
-						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          DESC_SUB_CATEGORY as string,",
-						"          ID_SUBCATEGORY as integer,",
-						"          ID_CATEGORY as integer",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['DESC_SUB_CATEGORY'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
-						"          ID_CATEGORY",
-						"     )) ~> dimfsubcategory",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          DESC_SUB_CATEGORY as string,",
-						"          ID_SUBCATEGORY as integer,",
-						"          ID_CATEGORY as integer,",
-						"          FECHA_CARGA as string,",
-						"          DESC_CATEGORY_H as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
-						"          ID_CATEGORY,",
-						"          FECHA_CARGA,",
-						"          DESC_CATEGORY_H = DESCRIPTION",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FACT_E_PPTO')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STAGE_E_DWH_PPTO",
-								"type": "DatasetReference"
-							},
-							"name": "STAGEREALSALES"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_EVENT_TYPE",
-								"type": "DatasetReference"
-							},
-							"name": "DIMEVENTTYPE"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_FACT_PPTO_ECOMM",
-								"type": "DatasetReference"
-							},
-							"name": "FACTPPTOECOMM",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"dataset": {
-								"referenceName": "T_ER_FACT_PPTO_ECPOM",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "MONTHANDYEAR"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "split1"
-						},
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          fec_ppto_month as string,",
-						"          event_type as string,",
-						"          product_id as integer,",
-						"          imp_precio as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STAGEREALSALES",
-						"source(output(",
-						"          ID_EVENT_TYPE as integer,",
-						"          DESC_EVENT_TYPE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMEVENTTYPE",
-						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
-						"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
-						"MONTHANDYEAR aggregate(groupBy(YEAR,",
-						"          MONTH,",
-						"          product_id,",
-						"          event_type),",
-						"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
-						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
-						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
-						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
-						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          MONTH as decimal(2,0),",
-						"          YEAR as decimal(4,0),",
-						"          ID_PRODUCT as integer,",
-						"          ID_EVENT_TYPE as integer,",
-						"          PRICE as decimal(24,10)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          MONTH,",
-						"          YEAR,",
-						"          ID_PRODUCT = product_id,",
-						"          ID_EVENT_TYPE,",
-						"          PRICE = IMPORTE_PRECIO",
-						"     )) ~> FACTPPTOECOMM",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          MONTH as decimal(2,0),",
-						"          YEAR as decimal(4,0),",
-						"          ID_PRODUCT as integer,",
-						"          ID_EVENT_TYPE as integer,",
-						"          PRICE as decimal(24,10),",
-						"          FECHA_CARGA as string,",
-						"          DESC_EVENT_TYPE_H as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          MONTH,",
-						"          YEAR,",
-						"          ID_PRODUCT = product_id,",
-						"          ID_EVENT_TYPE,",
-						"          PRICE = IMPORTE_PRECIO,",
-						"          FECHA_CARGA,",
-						"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FACT_E_SALES')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STAGE_E_REAL_SALES",
-								"type": "DatasetReference"
-							},
-							"name": "STAGEREALSALES"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_EVENT_TYPE",
-								"type": "DatasetReference"
-							},
-							"name": "DIMEVENTTYPE"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_FACT_SALES_ECOMM",
-								"type": "DatasetReference"
-							},
-							"name": "FACTSALESECOMM",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"dataset": {
-								"referenceName": "T_ER_FACT_SALES_ECOM",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "join1"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "cast1"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "select1"
-						},
-						{
-							"name": "split1"
-						},
-						{
-							"name": "derivedColumn2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          event_time as string,",
-						"          event_type as string,",
-						"          product_id as string,",
-						"          category_id as string,",
-						"          category_code as string,",
-						"          brand as string,",
-						"          price as decimal(38,10),",
-						"          user_id as integer,",
-						"          user_session as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STAGEREALSALES",
-						"source(output(",
-						"          ID_EVENT_TYPE as integer,",
-						"          DESC_EVENT_TYPE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMEVENTTYPE",
-						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"STAGEREALSALES derive(FECHA = left(event_time,10),",
-						"          user_session_NULL = coalesce(user_session,\"NA\")) ~> derivedColumn1",
-						"derivedColumn1 cast(output(",
-						"          product_id as integer '000',",
-						"          FECHA as date 'yyyy-MM-dd'",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"select1 aggregate(groupBy(event_type,",
-						"          product_id,",
-						"          user_session,",
-						"          user_id,",
-						"          FECHA),",
-						"     price = sum(price)) ~> aggregate1",
-						"cast1 select(mapColumn(",
-						"          event_type,",
-						"          product_id,",
-						"          price,",
-						"          user_id,",
-						"          user_session = user_session_NULL,",
-						"          FECHA",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
-						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
-						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
-						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_USER_SESION as string,",
-						"          ID_PRODUCT as integer,",
-						"          ID_EVENT_TYPE as integer,",
-						"          PRICE as decimal(24,10),",
-						"          ID_USER as integer,",
-						"          EVENT_DATE as date",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          ID_USER_SESION = user_session,",
-						"          ID_PRODUCT = product_id,",
-						"          ID_EVENT_TYPE,",
-						"          PRICE = price,",
-						"          ID_USER = user_id,",
-						"          EVENT_DATE = FECHA",
-						"     )) ~> FACTSALESECOMM",
-						"derivedColumn2 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_USER_SESION as string,",
-						"          ID_PRODUCT as integer,",
-						"          ID_EVENT_TYPE as integer,",
-						"          PRICE as decimal(24,10),",
-						"          ID_USER as integer,",
-						"          EVENT_DATE as date,",
-						"          FECHA_CARGA as string,",
-						"          DESC_EVENT_TYPE_H as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          ID_USER_SESION = user_session,",
-						"          ID_PRODUCT = product_id,",
-						"          ID_EVENT_TYPE,",
-						"          PRICE = price,",
-						"          ID_USER = user_id,",
-						"          EVENT_DATE = FECHA,",
-						"          FECHA_CARGA,",
-						"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FACT_F_PPTO')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
-								"type": "DatasetReference"
-							},
-							"name": "STGPPTOTIENDAFISICA"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_SHIP_MODE",
-								"type": "DatasetReference"
-							},
-							"name": "DIMFSHIPMODE"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_REGION",
-								"type": "DatasetReference"
-							},
-							"name": "TDIMFREGION"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_FACT_PPTO_FISICA",
-								"type": "DatasetReference"
-							},
-							"name": "FACTPPTOTIENDAFISICA",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						},
-						{
-							"dataset": {
-								"referenceName": "T_ER_FACT_PPTO_FISICA",
-								"type": "DatasetReference"
-							},
-							"name": "ERROR"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "aggregate1"
-						},
-						{
-							"name": "join1"
-						},
-						{
-							"name": "join2"
-						},
-						{
-							"name": "derivedColumn2"
-						},
-						{
-							"name": "cast1"
-						},
-						{
-							"name": "split1"
-						},
-						{
-							"name": "derivedColumn3"
-						},
-						{
-							"name": "cast2"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          fec_ppto_month as string,",
-						"          Ship_Mode as string,",
-						"          Region as string,",
-						"          Product_ID as string,",
-						"          imp_ppto_ganancia as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGPPTOTIENDAFISICA",
-						"source(output(",
-						"          ID_SHIP_MODE as integer,",
-						"          DESC_SHIP_MODE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> DIMFSHIPMODE",
-						"source(output(",
-						"          ID_REGION as integer,",
-						"          NAME_REGION as string,",
-						"          DESC_MANAGER as string,",
-						"          FEC_INI as date,",
-						"          FEC_FIN as date",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> TDIMFREGION",
-						"cast2 derive(YEAR = left(fec_ppto_month,4),",
-						"          MONTH = right(fec_ppto_month,2)) ~> derivedColumn1",
-						"derivedColumn2 aggregate(groupBy(Product_ID,",
-						"          Region = upper(Region),",
-						"          Ship_Mode = upper(Ship_Mode),",
-						"          YEAR,",
-						"          MONTH,",
-						"          FECHATOREGION),",
-						"     IMPORTE_PPTO_GANANCIA = sum(imp_ppto_ganancia)) ~> aggregate1",
-						"aggregate1, DIMFSHIPMODE join(Ship_Mode == DESC_SHIP_MODE,",
-						"     joinType:'left',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join1",
-						"cast1, TDIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
-						"     joinType:'cross',",
-						"     matchType:'exact',",
-						"     ignoreSpaces: false,",
-						"     broadcast: 'auto')~> join2",
-						"derivedColumn1 derive(FECHATOREGION = concat(YEAR,'-',MONTH,'-01')) ~> derivedColumn2",
-						"join1 cast(output(",
-						"          FECHATOREGION as date 'yyyy-MM-dd'",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
-						"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
-						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
-						"STGPPTOTIENDAFISICA cast(output(",
-						"          imp_ppto_ganancia as decimal(30,5) '###,###,000.###'",
-						"     ),",
-						"     errors: true) ~> cast2",
-						"split1@LlavesLlenas sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_PRODUCT as string,",
-						"          IMP_PPTO_GANANCIA as decimal(24,10),",
-						"          ID_REGION as integer,",
-						"          ID_SHIP_MODE as integer,",
-						"          MONTH as string,",
-						"          YEAR as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          ID_PRODUCT = Product_ID,",
-						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
-						"          ID_REGION,",
-						"          ID_SHIP_MODE,",
-						"          MONTH,",
-						"          YEAR",
-						"     )) ~> FACTPPTOTIENDAFISICA",
-						"derivedColumn3 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_PRODUCT as string,",
-						"          IMP_PPTO_GANANCIA as decimal(24,10),",
-						"          ID_REGION as integer,",
-						"          ID_SHIP_MODE as integer,",
-						"          MONTH as string,",
-						"          YEAR as string,",
-						"          FECHA_CARGA as string,",
-						"          DESC_SHIP_MODE_H as string,",
-						"          DESC_REGION_H as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     mapColumn(",
-						"          ID_PRODUCT = Product_ID,",
-						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
-						"          ID_REGION,",
-						"          ID_SHIP_MODE,",
-						"          MONTH,",
-						"          YEAR,",
-						"          FECHA_CARGA,",
-						"          DESC_SHIP_MODE_H = DESC_SHIP_MODE,",
-						"          DESC_REGION_H = NAME_REGION",
-						"     )) ~> ERROR"
 					]
 				}
 			},

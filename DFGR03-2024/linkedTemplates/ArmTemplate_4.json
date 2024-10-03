@@ -13,6 +13,727 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DIM_F_SUB_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Carga de la DIM_BRAND",
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "TDIMFCATEGORY"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SUB_CATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "dimfsubcategory",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_DIM_F_SUBCATEGORY",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "aggregate2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "IDCATEGORY"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Order_ID as string,",
+						"          Order_Date as string,",
+						"          Ship_Date as string,",
+						"          Ship_Mode as string,",
+						"          Customer_ID as string,",
+						"          Customer_Name as string,",
+						"          Segment as string,",
+						"          Country as string,",
+						"          City as string,",
+						"          State as string,",
+						"          Postal_Code as integer,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          Category as string,",
+						"          Sub_Category as string,",
+						"          Product_Name as string,",
+						"          Sales as decimal(38,10),",
+						"          Quantity as integer,",
+						"          Discount as decimal(38,10),",
+						"          Profit as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          ID_CATEGORY as integer,",
+						"          DESCRIPTION as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TDIMFCATEGORY",
+						"IDCATEGORY aggregate(groupBy(SUB_CATEGORY = upper(Sub_Category),",
+						"          ID_CATEGORY,",
+						"          DESCRIPTION),",
+						"     COUNT = count()) ~> aggregate2",
+						"aggregate2 alterRow(upsertIf(isNull(SUB_CATEGORY)==false())) ~> Modificarfila1",
+						"source1, TDIMFCATEGORY join(upper(Category) == upper(DESCRIPTION),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> IDCATEGORY",
+						"Modificarfila1 split(isNull(ID_CATEGORY) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_SUB_CATEGORY as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          ID_CATEGORY as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['DESC_SUB_CATEGORY'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
+						"          ID_CATEGORY",
+						"     )) ~> dimfsubcategory",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          DESC_SUB_CATEGORY as string,",
+						"          ID_SUBCATEGORY as integer,",
+						"          ID_CATEGORY as integer,",
+						"          FECHA_CARGA as string,",
+						"          DESC_CATEGORY_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          DESC_SUB_CATEGORY = SUB_CATEGORY,",
+						"          ID_CATEGORY,",
+						"          FECHA_CARGA,",
+						"          DESC_CATEGORY_H = DESCRIPTION",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_E_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STAGE_E_DWH_PPTO",
+								"type": "DatasetReference"
+							},
+							"name": "STAGEREALSALES"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_EVENT_TYPE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMEVENTTYPE"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_ECOMM",
+								"type": "DatasetReference"
+							},
+							"name": "FACTPPTOECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_PPTO_ECPOM",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "MONTHANDYEAR"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          event_type as string,",
+						"          product_id as integer,",
+						"          imp_precio as decimal(38,10)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STAGEREALSALES",
+						"source(output(",
+						"          ID_EVENT_TYPE as integer,",
+						"          DESC_EVENT_TYPE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMEVENTTYPE",
+						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"STAGEREALSALES derive(YEAR = left(fec_ppto_month,4),",
+						"          MONTH = right(fec_ppto_month,2)) ~> MONTHANDYEAR",
+						"MONTHANDYEAR aggregate(groupBy(YEAR,",
+						"          MONTH,",
+						"          product_id,",
+						"          event_type),",
+						"     IMPORTE_PRECIO = sum(imp_precio)) ~> aggregate1",
+						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          MONTH as decimal(2,0),",
+						"          YEAR as decimal(4,0),",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          MONTH,",
+						"          YEAR,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = IMPORTE_PRECIO",
+						"     )) ~> FACTPPTOECOMM",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          MONTH as decimal(2,0),",
+						"          YEAR as decimal(4,0),",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10),",
+						"          FECHA_CARGA as string,",
+						"          DESC_EVENT_TYPE_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          MONTH,",
+						"          YEAR,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = IMPORTE_PRECIO,",
+						"          FECHA_CARGA,",
+						"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_E_SALES')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STAGE_E_REAL_SALES",
+								"type": "DatasetReference"
+							},
+							"name": "STAGEREALSALES"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_EVENT_TYPE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMEVENTTYPE"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_SALES_ECOMM",
+								"type": "DatasetReference"
+							},
+							"name": "FACTSALESECOMM",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_SALES_ECOM",
+								"type": "DatasetReference"
+							},
+							"name": "sink1",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          event_time as string,",
+						"          event_type as string,",
+						"          product_id as string,",
+						"          category_id as string,",
+						"          category_code as string,",
+						"          brand as string,",
+						"          price as decimal(38,10),",
+						"          user_id as integer,",
+						"          user_session as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STAGEREALSALES",
+						"source(output(",
+						"          ID_EVENT_TYPE as integer,",
+						"          DESC_EVENT_TYPE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMEVENTTYPE",
+						"aggregate1, DIMEVENTTYPE join(upper(event_type) == upper(DESC_EVENT_TYPE),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"STAGEREALSALES derive(FECHA = left(event_time,10),",
+						"          user_session_NULL = coalesce(user_session,\"NA\")) ~> derivedColumn1",
+						"derivedColumn1 cast(output(",
+						"          product_id as integer '000',",
+						"          FECHA as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"select1 aggregate(groupBy(event_type,",
+						"          product_id,",
+						"          user_session,",
+						"          user_id,",
+						"          FECHA),",
+						"     price = sum(price)) ~> aggregate1",
+						"cast1 select(mapColumn(",
+						"          event_type,",
+						"          product_id,",
+						"          price,",
+						"          user_id,",
+						"          user_session = user_session_NULL,",
+						"          FECHA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"join1 split(isNull(ID_EVENT_TYPE) == false(),",
+						"     disjoint: false) ~> split1@(LLAVESLLENAS, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn2",
+						"split1@LLAVESLLENAS sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_USER_SESION as string,",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10),",
+						"          ID_USER as integer,",
+						"          EVENT_DATE as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_USER_SESION = user_session,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = price,",
+						"          ID_USER = user_id,",
+						"          EVENT_DATE = FECHA",
+						"     )) ~> FACTSALESECOMM",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_USER_SESION as string,",
+						"          ID_PRODUCT as integer,",
+						"          ID_EVENT_TYPE as integer,",
+						"          PRICE as decimal(24,10),",
+						"          ID_USER as integer,",
+						"          EVENT_DATE as date,",
+						"          FECHA_CARGA as string,",
+						"          DESC_EVENT_TYPE_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_USER_SESION = user_session,",
+						"          ID_PRODUCT = product_id,",
+						"          ID_EVENT_TYPE,",
+						"          PRICE = price,",
+						"          ID_USER = user_id,",
+						"          EVENT_DATE = FECHA,",
+						"          FECHA_CARGA,",
+						"          DESC_EVENT_TYPE_H = DESC_EVENT_TYPE",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FACT_F_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "STGPPTOTIENDAFISICA"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_SHIP_MODE",
+								"type": "DatasetReference"
+							},
+							"name": "DIMFSHIPMODE"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_F_REGION",
+								"type": "DatasetReference"
+							},
+							"name": "TDIMFREGION"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "FACTPPTOTIENDAFISICA",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_FACT_PPTO_FISICA",
+								"type": "DatasetReference"
+							},
+							"name": "ERROR"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn3"
+						},
+						{
+							"name": "cast2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          fec_ppto_month as string,",
+						"          Ship_Mode as string,",
+						"          Region as string,",
+						"          Product_ID as string,",
+						"          imp_ppto_ganancia as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STGPPTOTIENDAFISICA",
+						"source(output(",
+						"          ID_SHIP_MODE as integer,",
+						"          DESC_SHIP_MODE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMFSHIPMODE",
+						"source(output(",
+						"          ID_REGION as integer,",
+						"          NAME_REGION as string,",
+						"          DESC_MANAGER as string,",
+						"          FEC_INI as date,",
+						"          FEC_FIN as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TDIMFREGION",
+						"cast2 derive(YEAR = left(fec_ppto_month,4),",
+						"          MONTH = right(fec_ppto_month,2)) ~> derivedColumn1",
+						"derivedColumn2 aggregate(groupBy(Product_ID,",
+						"          Region = upper(Region),",
+						"          Ship_Mode = upper(Ship_Mode),",
+						"          YEAR,",
+						"          MONTH,",
+						"          FECHATOREGION),",
+						"     IMPORTE_PPTO_GANANCIA = sum(imp_ppto_ganancia)) ~> aggregate1",
+						"aggregate1, DIMFSHIPMODE join(Ship_Mode == DESC_SHIP_MODE,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"cast1, TDIMFREGION join(FECHATOREGION >= FEC_INI && (FECHATOREGION <FEC_FIN || isNull(FEC_FIN)== true()) && Region == NAME_REGION,",
+						"     joinType:'cross',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"derivedColumn1 derive(FECHATOREGION = concat(YEAR,'-',MONTH,'-01')) ~> derivedColumn2",
+						"join1 cast(output(",
+						"          FECHATOREGION as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"join2 split(isNull(ID_SHIP_MODE) == false() || isNull(ID_REGION)==false(),",
+						"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn3",
+						"STGPPTOTIENDAFISICA cast(output(",
+						"          imp_ppto_ganancia as decimal(30,5) '###,###,000.###'",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"split1@LlavesLlenas sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     outputAssertFailedRows: true,",
+						"     assertFailure_container: 'contenedor-gr3',",
+						"     assertFailure_folderPath: 'ERRORES',",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR",
+						"     )) ~> FACTPPTOTIENDAFISICA",
+						"derivedColumn3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as string,",
+						"          IMP_PPTO_GANANCIA as decimal(24,10),",
+						"          ID_REGION as integer,",
+						"          ID_SHIP_MODE as integer,",
+						"          MONTH as string,",
+						"          YEAR as string,",
+						"          FECHA_CARGA as string,",
+						"          DESC_SHIP_MODE_H as string,",
+						"          DESC_REGION_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_PRODUCT = Product_ID,",
+						"          IMP_PPTO_GANANCIA = IMPORTE_PPTO_GANANCIA,",
+						"          ID_REGION,",
+						"          ID_SHIP_MODE,",
+						"          MONTH,",
+						"          YEAR,",
+						"          FECHA_CARGA,",
+						"          DESC_SHIP_MODE_H = DESC_SHIP_MODE,",
+						"          DESC_REGION_H = NAME_REGION",
+						"     )) ~> ERROR"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FACT_F_SALES')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1918,6 +2639,288 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_SATGE_GRD')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "CSVTOSTAGE_GRD",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "TransactionID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ID_TRANSACTION",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomerID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ID_CUSTOMER",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TransactionDate",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "FEC_TRANSACTION_DATE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TransactionTime",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TIM_TRANSACTION_TIME",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductCategory",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRODUCTCATEGORY",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductSubcategory",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRODUCT_SUBCATEGORY",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ProductDetail",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRODUCTDETAIL",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "TransactionValue",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TRANSACTIONVAUE",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 24
+										}
+									},
+									{
+										"source": {
+											"name": "PaymentMethod",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PAYMENTMETHOD",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "CustomerAge",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "CUSTOMERAGE",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "xls_globalretaildynamics",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DIM_GRD_MEDIO_PAGO')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SqlServerTable1",
+								"type": "DatasetReference"
+							},
+							"name": "TGRDMEDOPAGO"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as string,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          PRODUCTCATEGORY as string,",
+						"          PRODUCT_SUBCATEGORY as string,",
+						"          PRODUCTDETAIL as string,",
+						"          TRANSACTIONVAUE as decimal(24,10),",
+						"          PAYMENTMETHOD as string,",
+						"          CUSTOMERAGE as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"select1 cast(output(",
+						"          PAYMENTMETHOD as string",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 aggregate(groupBy(PAYMENTMETHOD = upper(PAYMENTMETHOD)),",
+						"     COUNT = count()) ~> aggregate1",
+						"source1 select(mapColumn(",
+						"          PAYMENTMETHOD",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"aggregate1 alterRow(upsertIf(isNull(PAYMENTMETHOD)== false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_MEDIO_PAGO as integer,",
+						"          TXT_MEDIO_PAGO as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['TXT_MEDIO_PAGO'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          TXT_MEDIO_PAGO = PAYMENTMETHOD",
+						"     )) ~> TGRDMEDOPAGO"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/CARGA_DIMENSIONES_ECOMMERCE')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2464,7 +3467,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DIM_F_SUB_CATEGORY')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/CARGA_PRESUPUESTOS')]",
@@ -2552,7 +3557,10 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_PPTO')]",
+				"[concat(variables('factoryId'), '/dataflows/FACT_F_PPTO')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_ECOMMERCE')]",
@@ -2623,502 +3631,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/CARGA_VENTAS_FISICA')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "CARGA_DIMENSIONES_FISICA",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CARGA_DIMENSIONES_FISICA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "FACT_F_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "CARGA_DIMENSIONES_FISICA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "FACT_F_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"RETURNS": {},
-									"DIMSHIPMODE": {},
-									"TFACTSALESFISICA": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]",
-				"[concat(variables('factoryId'), '/dataflows/FACT_F_SALES')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GESTION_HUERFANOS')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "HUER_DIM_F_CITY",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "CARGA_DIMENSIONES_FISICA",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_DIM_F_CITY",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGDIMSALESDATS": {},
-									"DIMFREGION": {},
-									"dimfcity": {},
-									"huerfanos": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_DIM_F_CUSTOMER",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_DIM_F_CITY",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_DIM_F_CUSTOMER",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SUPERSTORESALESDATA": {},
-									"DIMFSEGMENT": {},
-									"sink1": {},
-									"HUERFANOS": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_DIM_F_SUB_CATEGORY",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_DIM_F_CUSTOMER",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_DIM_F_SUB_CATEGORY",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"TDIMFCATEGORY": {},
-									"dimfsubcategory": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_DIM_F_PRODUCT",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_DIM_F_SUB_CATEGORY",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_DIM_F_PRODUCT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SUPERSTORESALESDATA": {},
-									"DIMFSUBCATEGORIA": {},
-									"DIMPRODUCTO": {},
-									"HERFANOS": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_DIM_E_PRODUCT",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_DIM_F_PRODUCT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_DIM_E_PRODUCT",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"DATOSDEPRODUCTO": {},
-									"DIMBEAUTYCAT": {},
-									"DIMBRAND": {},
-									"DIMPRODUCTO": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_FACT_E_PPTO",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_DIM_E_PRODUCT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_FACT_E_PPTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTPPTOECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_FACT_F_PPTO",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_FACT_E_PPTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_FACT_F_PPTO",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STGPPTOTIENDAFISICA": {},
-									"DIMFSHIPMODE": {},
-									"TDIMFREGION": {},
-									"FACTPPTOTIENDAFISICA": {},
-									"ERROR": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_FACT_E_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_FACT_F_PPTO",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_FACT_E_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"STAGEREALSALES": {},
-									"DIMEVENTTYPE": {},
-									"FACTSALESECOMM": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "HUER_FACT_F_SALES",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "HUER_FACT_E_SALES",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "HUER_FACT_F_SALES",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"RETURNS": {},
-									"DIMSHIPMODE": {},
-									"TFACTSALESFISICA": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					},
-					{
-						"name": "CARGA_DIMENSIONES_ECOMMERCE",
-						"type": "ExecutePipeline",
-						"dependsOn": [],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CARGA_DIMENSIONES_ECOMMERCE",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					},
-					{
-						"name": "CARGA_DIMENSIONES_FISICA",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "CARGA_DIMENSIONES_ECOMMERCE",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "CARGA_DIMENSIONES_FISICA",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CITY')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_CUSTOMER')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_SUB_CATEGORY')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_F_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_DIM_E_PRODUCT')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_PPTO')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_PPTO')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_SALES')]",
-				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_SALES')]",
 				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]",
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]"
+				"[concat(variables('factoryId'), '/dataflows/FACT_E_SALES')]"
 			]
 		}
 	]
