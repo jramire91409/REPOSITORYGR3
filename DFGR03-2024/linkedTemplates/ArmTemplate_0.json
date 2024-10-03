@@ -436,6 +436,11 @@
 						"name": "ID_POSTAL_CODE",
 						"type": "int",
 						"precision": 10
+					},
+					{
+						"name": "AGE",
+						"type": "int",
+						"precision": 10
 					}
 				],
 				"typeProperties": {
