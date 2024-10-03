@@ -18,12 +18,11 @@
 			},
 			{
 				"name": "FEC_TRANSACTION_DATE",
-				"type": "date"
+				"type": "varchar"
 			},
 			{
 				"name": "TIM_TRANSACTION_TIME",
-				"type": "time",
-				"scale": 0
+				"type": "varchar"
 			},
 			{
 				"name": "PRODUCTCATEGORY",
