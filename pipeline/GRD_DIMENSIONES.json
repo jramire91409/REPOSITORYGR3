@@ -31,6 +31,8 @@
 			{
 				"name": "GRD_UPDATE_AGE_CUSTOMER",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DIM_GRD_MEDIO_PAGO",

@@ -1,0 +1,34 @@
+{
+	"name": "TDIMPRODUCTO",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Servr_azure_gr3_2024",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ID_PRODUCT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TXT_PRODUCT",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCT_CATEFGORY",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCT_SUB_CATEGORY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_PRODUCTO"
+		}
+	}
+}

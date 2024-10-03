@@ -1,0 +1,88 @@
+{
+	"name": "GRD_DIM_PRODDUCT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+						"type": "DatasetReference"
+					},
+					"name": "STAGEGRD"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TDIMPRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "dimproducto"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "Modificarfila1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ID_TRANSACTION as string,",
+				"          ID_CUSTOMER as string,",
+				"          FEC_TRANSACTION_DATE as string,",
+				"          TIM_TRANSACTION_TIME as string,",
+				"          PRODUCTCATEGORY as string,",
+				"          PRODUCT_SUBCATEGORY as string,",
+				"          PRODUCTDETAIL as string,",
+				"          TRANSACTIONVAUE as decimal(24,10),",
+				"          PAYMENTMETHOD as string,",
+				"          CUSTOMERAGE as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STAGEGRD",
+				"STAGEGRD select(mapColumn(",
+				"          PRODUCTCATEGORY,",
+				"          PRODUCT_SUBCATEGORY,",
+				"          PRODUCTDETAIL",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(PRODUCTDETAIL = upper(PRODUCTDETAIL),",
+				"          PRODUCTCATEGORY = upper(PRODUCTCATEGORY),",
+				"          PRODUCT_SUBCATEGORY = upper(PRODUCT_SUBCATEGORY)),",
+				"     count = count()) ~> aggregate1",
+				"aggregate1 alterRow(upsertIf(isNull(PRODUCTDETAIL)== false())) ~> Modificarfila1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          TXT_PRODUCT as string,",
+				"          PRODUCT_CATEFGORY as string,",
+				"          PRODUCT_SUB_CATEGORY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['TXT_PRODUCT'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          TXT_PRODUCT = PRODUCTDETAIL,",
+				"          PRODUCT_CATEFGORY = PRODUCTCATEGORY,",
+				"          PRODUCT_SUB_CATEGORY = PRODUCT_SUBCATEGORY",
+				"     )) ~> dimproducto"
+			]
+		}
+	}
+}
