@@ -233,8 +233,8 @@
 						"     ),",
 						"     deletable:false,",
 						"     insertable:false,",
-						"     updateable:true,",
-						"     upsertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
 						"     keys:['ID_TRANSACTION'],",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
@@ -1043,7 +1043,8 @@
 									"mediodepago": {},
 									"DIMPRODUCTO": {},
 									"TGRDFACT": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
