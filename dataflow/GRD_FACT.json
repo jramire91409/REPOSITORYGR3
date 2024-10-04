@@ -32,7 +32,7 @@
 						"referenceName": "T_GRD_FACT",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "TGRDFACT"
 				}
 			],
 			"transformations": [
@@ -108,7 +108,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"cast1 alterRow(updateIf(isNull(ID_TRANSACTION)== false())) ~> Modificarfila1",
+				"cast1 alterRow(updateIf(isNull(ID_TRANSACTION)==false())) ~> Modificarfila1",
 				"join2 cast(output(",
 				"          ID_TRANSACTION as string,",
 				"          FEC_TRANSACTION_DATE as date 'dd/MM/yyyy'",
@@ -141,7 +141,7 @@
 				"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
 				"          ID_MEDIO_PAGO,",
 				"          ID_PRODUCT",
-				"     )) ~> sink1"
+				"     )) ~> TGRDFACT"
 			]
 		}
 	}
