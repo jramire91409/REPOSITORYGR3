@@ -22,8 +22,7 @@
 			},
 			{
 				"name": "TIM_TRANSACTION_TIME",
-				"type": "time",
-				"scale": 7
+				"type": "varchar"
 			},
 			{
 				"name": "TRANSACTION_VALUE",
