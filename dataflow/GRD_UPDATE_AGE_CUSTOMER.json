@@ -13,13 +13,10 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "T_DIM_MEDIO_PAGO",
+						"referenceName": "T_DIM_F_CUSTOMER",
 						"type": "DatasetReference"
 					},
-					"name": "MEDIODEPAGO"
-				},
-				{
-					"name": "source2"
+					"name": "dimfcustomer"
 				}
 			],
 			"sinks": [
@@ -60,27 +57,23 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> source1",
 				"source(output(",
-				"          ID_MEDIO_PAGO as integer,",
-				"          TXT_MEDIO_PAGO as string",
+				"          ID_CUSTOMER as string,",
+				"          DESC_CUSTOMER as string,",
+				"          ID_SEGMENT as integer,",
+				"          ID_POSTAL_CODE as integer,",
+				"          AGE as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> MEDIODEPAGO",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source2",
+				"     format: 'table') ~> dimfcustomer",
 				"source1 select(mapColumn(",
-				"          ID_TRANSACTION,",
 				"          ID_CUSTOMER,",
-				"          FEC_TRANSACTION_DATE,",
-				"          TIM_TRANSACTION_TIME,",
-				"          PRODUCTDETAIL,",
-				"          TRANSACTIONVAUE,",
-				"          PAYMENTMETHOD",
+				"          CUSTOMERAGE",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1, MEDIODEPAGO join(ERROR_FUNCTION('') == TXT_MEDIO_PAGO,",
+				"select1, dimfcustomer join(upper(select1@ID_CUSTOMER) == upper(dimfcustomer@ID_CUSTOMER),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -104,7 +97,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          ID_CUSTOMER,",
+				"          ID_CUSTOMER = select1@ID_CUSTOMER,",
 				"          DESC_CUSTOMER,",
 				"          ID_SEGMENT,",
 				"          ID_POSTAL_CODE,",
