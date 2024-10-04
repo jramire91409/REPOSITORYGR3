@@ -13,6 +13,180 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/T_GRD_FACT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_TRANSACTION",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "FEC_TRANSACTION_DATE",
+						"type": "date"
+					},
+					{
+						"name": "TIM_TRANSACTION_TIME",
+						"type": "varchar"
+					},
+					{
+						"name": "TRANSACTION_VALUE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_MEDIO_PAGO",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_GRD"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_ECOMM_PPTO')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "XLS_STG_E_PPTO",
+						"description": "Copia del presupuesto desde el XLS al área stage",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"preCopyScript": "TRUNCATE TABLE stage.Stage_ecom_dwh_ppto",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "fec_ppto_month",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "fec_ppto_month",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									},
+									{
+										"source": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "event_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "product_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "product_id",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "imp_precio",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "imp_precio",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 10,
+											"precision": 38
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "CSV_DWH_PPTO_ECOMM",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "T_STAGE_E_DWH_PPTO",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LOAD_STAGE_ECOM_REAL')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -3402,230 +3576,6 @@
 						"     mapColumn(",
 						"          DESC_RETURNED = Returned",
 						"     )) ~> DIMFRETURNED"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_F_SEGMENT')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
-								"type": "DatasetReference"
-							},
-							"name": "STGFSUPERSTORESALESDATA"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_SEGMENT",
-								"type": "DatasetReference"
-							},
-							"name": "DIMFSEGMENT",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Modificarfila1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Order_ID as string,",
-						"          Order_Date as string,",
-						"          Ship_Date as string,",
-						"          Ship_Mode as string,",
-						"          Customer_ID as string,",
-						"          Customer_Name as string,",
-						"          Segment as string,",
-						"          Country as string,",
-						"          City as string,",
-						"          State as string,",
-						"          Postal_Code as integer,",
-						"          Region as string,",
-						"          Product_ID as string,",
-						"          Category as string,",
-						"          Sub_Category as string,",
-						"          Product_Name as string,",
-						"          Sales as decimal(38,10),",
-						"          Quantity as integer,",
-						"          Discount as decimal(38,10),",
-						"          Profit as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGFSUPERSTORESALESDATA",
-						"STGFSUPERSTORESALESDATA aggregate(groupBy(Segment = upper(Segment)),",
-						"     COUNT = count()) ~> aggregate2",
-						"aggregate2 alterRow(upsertIf(isNull(Segment)==false())) ~> Modificarfila1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_SEGMENT as integer,",
-						"          DESC_SEGMENT as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['DESC_SEGMENT'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_SEGMENT = Segment",
-						"     )) ~> DIMFSEGMENT"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DIM_F_SHIP_MODE')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Carga de la DIM_BRAND",
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
-								"type": "DatasetReference"
-							},
-							"name": "STGFSUPERSTORESALESDATA"
-						},
-						{
-							"dataset": {
-								"referenceName": "T_STG_F_PPTO_TIENDA_FISICA",
-								"type": "DatasetReference"
-							},
-							"name": "STGPPTOTIENDAFISCA"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "T_DIM_F_SHIP_MODE",
-								"type": "DatasetReference"
-							},
-							"name": "sink1",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureBlobStoragegr3",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "aggregate2"
-						},
-						{
-							"name": "Modificarfila1"
-						},
-						{
-							"name": "select1"
-						},
-						{
-							"name": "select2"
-						},
-						{
-							"name": "union1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          Order_ID as string,",
-						"          Order_Date as string,",
-						"          Ship_Date as string,",
-						"          Ship_Mode as string,",
-						"          Customer_ID as string,",
-						"          Customer_Name as string,",
-						"          Segment as string,",
-						"          Country as string,",
-						"          City as string,",
-						"          State as string,",
-						"          Postal_Code as integer,",
-						"          Region as string,",
-						"          Product_ID as string,",
-						"          Category as string,",
-						"          Sub_Category as string,",
-						"          Product_Name as string,",
-						"          Sales as decimal(38,10),",
-						"          Quantity as integer,",
-						"          Discount as decimal(38,10),",
-						"          Profit as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGFSUPERSTORESALESDATA",
-						"source(output(",
-						"          fec_ppto_month as string,",
-						"          Ship_Mode as string,",
-						"          Region as string,",
-						"          Product_ID as string,",
-						"          imp_ppto_ganancia as decimal(38,10)",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> STGPPTOTIENDAFISCA",
-						"union1 aggregate(groupBy(ship_mode = upper(Ship_Mode)),",
-						"     COUNT = count()) ~> aggregate2",
-						"aggregate2 alterRow(upsertIf(isNull(ship_mode)==false())) ~> Modificarfila1",
-						"STGFSUPERSTORESALESDATA select(mapColumn(",
-						"          Ship_Mode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"STGPPTOTIENDAFISCA select(mapColumn(",
-						"          Ship_Mode",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select2",
-						"select1, select2 union(byName: true)~> union1",
-						"Modificarfila1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ID_SHIP_MODE as integer,",
-						"          DESC_SHIP_MODE as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:false,",
-						"     upsertable:true,",
-						"     keys:['DESC_SHIP_MODE'],",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     outputAssertFailedRows: true,",
-						"     assertFailure_container: 'contenedor-gr3',",
-						"     assertFailure_folderPath: 'ERRORES',",
-						"     mapColumn(",
-						"          DESC_SHIP_MODE = ship_mode",
-						"     )) ~> sink1"
 					]
 				}
 			},

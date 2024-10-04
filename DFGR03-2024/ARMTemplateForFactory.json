@@ -10741,7 +10741,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "SqlServerTable1",
+								"referenceName": "T_DIM_MEDIO_PAGO",
 								"type": "DatasetReference"
 							},
 							"name": "TGRDMEDOPAGO"
@@ -10789,7 +10789,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"aggregate1 alterRow(upsertIf(isNull(PAYMENTMETHOD)== false())) ~> Modificarfila1",
+						"aggregate1 alterRow(upsertIf(isNull(PAYMENTMETHOD)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -10812,11 +10812,11 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/T_Stage_GLOBALRETAILDYNAMICS')]",
-				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]"
+				"[concat(variables('factoryId'), '/datasets/T_DIM_MEDIO_PAGO')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SqlServerTable1')]",
+			"name": "[concat(parameters('factoryName'), '/T_DIM_MEDIO_PAGO')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -10887,6 +10887,8 @@
 					{
 						"name": "GRD_UPDATE_AGE_CUSTOMER",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "DIM_GRD_MEDIO_PAGO",
@@ -10910,8 +10912,45 @@
 								"parameters": {},
 								"datasetParameters": {
 									"source1": {},
-									"source2": {},
+									"dimfcustomer": {},
 									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "GRD_DIM_PRODDUCT",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "GRD_UPDATE_AGE_CUSTOMER",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "GRD_DIM_PRODDUCT",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"STAGEGRD": {},
+									"dimproducto": {}
 								}
 							},
 							"staging": {},
@@ -10930,7 +10969,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/GRD_DIM_MEDIO_PAGO')]",
-				"[concat(variables('factoryId'), '/dataflows/GRD_UPDATE_AGE_CUSTOMER')]"
+				"[concat(variables('factoryId'), '/dataflows/GRD_UPDATE_AGE_CUSTOMER')]",
+				"[concat(variables('factoryId'), '/dataflows/GRD_DIM_PRODDUCT')]"
 			]
 		},
 		{
@@ -10953,7 +10993,7 @@
 								"referenceName": "T_DIM_F_CUSTOMER",
 								"type": "DatasetReference"
 							},
-							"name": "source2"
+							"name": "dimfcustomer"
 						}
 					],
 					"sinks": [
@@ -11003,19 +11043,19 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> source2",
+						"     format: 'table') ~> dimfcustomer",
 						"source1 select(mapColumn(",
 						"          ID_CUSTOMER,",
 						"          CUSTOMERAGE",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1, source2 join(select1@ID_CUSTOMER == source2@ID_CUSTOMER,",
-						"     joinType:'inner',",
+						"select1, dimfcustomer join(upper(select1@ID_CUSTOMER) == upper(dimfcustomer@ID_CUSTOMER),",
+						"     joinType:'left',",
 						"     matchType:'exact',",
 						"     ignoreSpaces: false,",
 						"     broadcast: 'auto')~> join1",
-						"join1 alterRow(updateIf(isNull(CUSTOMERAGE) == false())) ~> Modificarfila1",
+						"join1 alterRow(updateIf(isNull(CUSTOMERAGE)==false())) ~> Modificarfila1",
 						"Modificarfila1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -11202,6 +11242,397 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GRD_DIM_PRODDUCT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+								"type": "DatasetReference"
+							},
+							"name": "STAGEGRD"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_DIM_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "dimproducto"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "aggregate1"
+						},
+						{
+							"name": "Modificarfila1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as string,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          PRODUCTCATEGORY as string,",
+						"          PRODUCT_SUBCATEGORY as string,",
+						"          PRODUCTDETAIL as string,",
+						"          TRANSACTIONVAUE as decimal(24,10),",
+						"          PAYMENTMETHOD as string,",
+						"          CUSTOMERAGE as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> STAGEGRD",
+						"STAGEGRD select(mapColumn(",
+						"          PRODUCTCATEGORY,",
+						"          PRODUCT_SUBCATEGORY,",
+						"          PRODUCTDETAIL",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 aggregate(groupBy(PRODUCTDETAIL = upper(PRODUCTDETAIL),",
+						"          PRODUCTCATEGORY = upper(PRODUCTCATEGORY),",
+						"          PRODUCT_SUBCATEGORY = upper(PRODUCT_SUBCATEGORY)),",
+						"     count = count()) ~> aggregate1",
+						"aggregate1 alterRow(upsertIf(isNull(PRODUCTDETAIL)==false())) ~> Modificarfila1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_PRODUCT as integer,",
+						"          TXT_PRODUCT as string,",
+						"          PRODUCT_CATEFGORY as string,",
+						"          PRODUCT_SUB_CATEGORY as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['TXT_PRODUCT'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          TXT_PRODUCT = PRODUCTDETAIL,",
+						"          PRODUCT_CATEFGORY = PRODUCTCATEGORY,",
+						"          PRODUCT_SUB_CATEGORY = PRODUCT_SUBCATEGORY",
+						"     )) ~> dimproducto"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_Stage_GLOBALRETAILDYNAMICS')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCTO')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_DIM_PRODUCTO')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TXT_PRODUCT",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCT_CATEFGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCT_SUB_CATEGORY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_PRODUCTO"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GRD_FACT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+								"type": "DatasetReference"
+							},
+							"name": "TSTAGEGRD"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_MEDIO_PAGO",
+								"type": "DatasetReference"
+							},
+							"name": "mediodepago"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "DIMPRODUCTO"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_GRD_FACT",
+								"type": "DatasetReference"
+							},
+							"name": "TGRDFACT"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as string,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          PRODUCTCATEGORY as string,",
+						"          PRODUCT_SUBCATEGORY as string,",
+						"          PRODUCTDETAIL as string,",
+						"          TRANSACTIONVAUE as decimal(24,10),",
+						"          PAYMENTMETHOD as string,",
+						"          CUSTOMERAGE as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TSTAGEGRD",
+						"source(output(",
+						"          ID_MEDIO_PAGO as integer,",
+						"          TXT_MEDIO_PAGO as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> mediodepago",
+						"source(output(",
+						"          ID_PRODUCT as integer,",
+						"          TXT_PRODUCT as string,",
+						"          PRODUCT_CATEFGORY as string,",
+						"          PRODUCT_SUB_CATEGORY as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMPRODUCTO",
+						"TSTAGEGRD select(mapColumn(",
+						"          ID_TRANSACTION,",
+						"          ID_CUSTOMER,",
+						"          FEC_TRANSACTION_DATE,",
+						"          TIM_TRANSACTION_TIME,",
+						"          TRANSACTIONVAUE,",
+						"          PAYMENTMETHOD,",
+						"          PRODUCTDETAIL",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1, mediodepago join(upper(PAYMENTMETHOD) == upper(TXT_MEDIO_PAGO),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, DIMPRODUCTO join(upper(PRODUCTDETAIL) == upper(TXT_PRODUCT),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"cast1 alterRow(updateIf(isNull(ID_TRANSACTION)==false())) ~> Modificarfila1",
+						"join2 cast(output(",
+						"          ID_TRANSACTION as string,",
+						"          FEC_TRANSACTION_DATE as date 'dd/MM/yyyy'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as date,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          TRANSACTION_VALUE as decimal(24,10),",
+						"          ID_MEDIO_PAGO as integer,",
+						"          ID_PRODUCT as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['ID_TRANSACTION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_TRANSACTION,",
+						"          ID_CUSTOMER,",
+						"          FEC_TRANSACTION_DATE,",
+						"          TIM_TRANSACTION_TIME,",
+						"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
+						"          ID_MEDIO_PAGO,",
+						"          ID_PRODUCT",
+						"     )) ~> TGRDFACT"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_Stage_GLOBALRETAILDYNAMICS')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_MEDIO_PAGO')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCTO')]",
+				"[concat(variables('factoryId'), '/datasets/T_GRD_FACT')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_GRD_FACT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_TRANSACTION",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "FEC_TRANSACTION_DATE",
+						"type": "date"
+					},
+					{
+						"name": "TIM_TRANSACTION_TIME",
+						"type": "varchar"
+					},
+					{
+						"name": "TRANSACTION_VALUE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "ID_MEDIO_PAGO",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ID_PRODUCT",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FACT_GRD"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GRD_FACT')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "GRD_FACT",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "GRD_FACT",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TSTAGEGRD": {},
+									"mediodepago": {},
+									"DIMPRODUCTO": {},
+									"TGRDFACT": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/GRD_FACT')]"
 			]
 		}
 	]
