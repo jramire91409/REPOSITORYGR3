@@ -1,5 +1,5 @@
 {
-	"name": "SqlServerTable1",
+	"name": "T_DIM_MEDIO_PAGO",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
