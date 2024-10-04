@@ -1,5 +1,5 @@
 {
-	"name": "TDIMPRODUCTO",
+	"name": "T_DIM_PRODUCTO",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
