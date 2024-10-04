@@ -12,16 +12,38 @@
 					"name": "TSTAGEGRD"
 				},
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "T_DIM_MEDIO_PAGO",
+						"type": "DatasetReference"
+					},
+					"name": "mediodepago"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "DIMPRODUCTO"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_GRD_FACT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "select1"
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "join2"
 				}
 			],
 			"scriptLines": [
@@ -41,23 +63,63 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> TSTAGEGRD",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
+				"source(output(",
+				"          ID_MEDIO_PAGO as integer,",
+				"          TXT_MEDIO_PAGO as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> mediodepago",
+				"source(output(",
+				"          ID_PRODUCT as integer,",
+				"          TXT_PRODUCT as string,",
+				"          PRODUCT_CATEFGORY as string,",
+				"          PRODUCT_SUB_CATEGORY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMPRODUCTO",
 				"TSTAGEGRD select(mapColumn(",
 				"          ID_TRANSACTION,",
 				"          ID_CUSTOMER,",
 				"          FEC_TRANSACTION_DATE,",
 				"          TIM_TRANSACTION_TIME,",
 				"          TRANSACTIONVAUE,",
-				"          PAYMENTMETHOD",
+				"          PAYMENTMETHOD,",
+				"          PRODUCTDETAIL",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"select1, mediodepago join(upper(PAYMENTMETHOD) == upper(TXT_MEDIO_PAGO),",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"join1, DIMPRODUCTO join(upper(PRODUCTDETAIL) == upper(TXT_PRODUCT),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_TRANSACTION as string,",
+				"          ID_CUSTOMER as string,",
+				"          FEC_TRANSACTION_DATE as date,",
+				"          TIM_TRANSACTION_TIME as timestamp,",
+				"          TRANSACTION_VALUE as decimal(24,10),",
+				"          ID_MEDIO_PAGO as integer,",
+				"          ID_PRODUCT as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
