@@ -37,7 +37,8 @@
 			},
 			{
 				"name": "ID_PRODUCT",
-				"type": "varchar"
+				"type": "int",
+				"precision": 10
 			}
 		],
 		"typeProperties": {

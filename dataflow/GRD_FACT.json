@@ -123,7 +123,7 @@
 				"          TIM_TRANSACTION_TIME as string,",
 				"          TRANSACTION_VALUE as decimal(24,10),",
 				"          ID_MEDIO_PAGO as integer,",
-				"          ID_PRODUCT as string",
+				"          ID_PRODUCT as integer",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
@@ -137,7 +137,10 @@
 				"          ID_TRANSACTION,",
 				"          ID_CUSTOMER,",
 				"          FEC_TRANSACTION_DATE,",
-				"          ID_MEDIO_PAGO",
+				"          TIM_TRANSACTION_TIME,",
+				"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
+				"          ID_MEDIO_PAGO,",
+				"          ID_PRODUCT",
 				"     )) ~> sink1"
 			]
 		}
