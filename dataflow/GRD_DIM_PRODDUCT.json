@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "TDIMPRODUCTO",
+						"referenceName": "T_DIM_PRODUCTO",
 						"type": "DatasetReference"
 					},
 					"name": "dimproducto"
@@ -60,14 +60,15 @@
 				"          PRODUCTCATEGORY = upper(PRODUCTCATEGORY),",
 				"          PRODUCT_SUBCATEGORY = upper(PRODUCT_SUBCATEGORY)),",
 				"     count = count()) ~> aggregate1",
-				"aggregate1 alterRow(upsertIf(isNull(PRODUCTDETAIL)== false())) ~> Modificarfila1",
+				"aggregate1 alterRow(upsertIf(isNull(PRODUCTDETAIL)==false())) ~> Modificarfila1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          ID_PRODUCT as integer,",
 				"          TXT_PRODUCT as string,",
 				"          PRODUCT_CATEFGORY as string,",
-				"          PRODUCT_SUB_CATEGORY as string",
+				"          PRODUCT_SUB_CATEGORY as string,",
+				"          ID_PRODUCT_F as string",
 				"     ),",
 				"     deletable:false,",
 				"     insertable:false,",
