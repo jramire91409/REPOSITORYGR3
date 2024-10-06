@@ -1540,7 +1540,8 @@
 									"DIMPRODUCTO": {},
 									"TGRDFACT": {},
 									"HUERFANOS": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
@@ -9831,7 +9832,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "HUER_GRD_FACT",
+								"referenceName": "T_ER_GRD_FACT",
 								"type": "DatasetReference"
 							},
 							"name": "HUERFANOS",
@@ -9904,9 +9905,12 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
+						"          PRODUCTCATEGORY,",
+						"          PRODUCT_SUBCATEGORY,",
+						"          PRODUCTDETAIL,",
 						"          TRANSACTIONVAUE,",
 						"          PAYMENTMETHOD,",
-						"          PRODUCTDETAIL",
+						"          CUSTOMERAGE",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -9952,9 +9956,7 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
-						"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-						"          ID_MEDIO_PAGO,",
-						"          ID_PRODUCT",
+						"          TRANSACTION_VALUE = TRANSACTIONVAUE",
 						"     )) ~> TGRDFACT",
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -9966,7 +9968,9 @@
 						"          TRANSACTION_VALUE as decimal(24,10),",
 						"          ID_MEDIO_PAGO as integer,",
 						"          ID_PRODUCT as integer,",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          TXT_PRODUCT_H as string,",
+						"          TXT_MEDIO_PAGO_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -9980,10 +9984,7 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
-						"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-						"          ID_MEDIO_PAGO,",
-						"          ID_PRODUCT,",
-						"          FECHA_CARGA",
+						"          TRANSACTION_VALUE = TRANSACTIONVAUE",
 						"     )) ~> HUERFANOS"
 					]
 				}
@@ -9993,7 +9994,7 @@
 				"[concat(variables('factoryId'), '/datasets/T_DIM_MEDIO_PAGO')]",
 				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCTO')]",
 				"[concat(variables('factoryId'), '/datasets/T_GRD_FACT')]",
-				"[concat(variables('factoryId'), '/datasets/HUER_GRD_FACT')]",
+				"[concat(variables('factoryId'), '/datasets/T_ER_GRD_FACT')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		},
@@ -11805,7 +11806,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/HUER_GRD_FACT')]",
+			"name": "[concat(parameters('factoryName'), '/T_ER_GRD_FACT')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -11851,6 +11852,14 @@
 					{
 						"name": "FECHA_CARGA",
 						"type": "varchar"
+					},
+					{
+						"name": "TXT_PRODUCT_H",
+						"type": "varchar"
+					},
+					{
+						"name": "TXT_MEDIO_PAGO_H",
+						"type": "varchar"
 					}
 				],
 				"typeProperties": {
@@ -11860,6 +11869,207 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Servr_azure_gr3_2024')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/HUER_GRD_FACT')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "T_ER_GRD_FACT",
+								"type": "DatasetReference"
+							},
+							"name": "TSTAGEGRD"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_MEDIO_PAGO",
+								"type": "DatasetReference"
+							},
+							"name": "mediodepago"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_DIM_PRODUCTO",
+								"type": "DatasetReference"
+							},
+							"name": "DIMPRODUCTO"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "T_GRD_FACT",
+								"type": "DatasetReference"
+							},
+							"name": "TGRDFACT"
+						},
+						{
+							"dataset": {
+								"referenceName": "T_ER_GRD_FACT",
+								"type": "DatasetReference"
+							},
+							"name": "HUERFANOS",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureBlobStoragegr3",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "Modificarfila1"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as date,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          TRANSACTION_VALUE as decimal(24,10),",
+						"          ID_MEDIO_PAGO as integer,",
+						"          ID_PRODUCT as integer,",
+						"          FECHA_CARGA as string,",
+						"          TXT_PRODUCT_H as string,",
+						"          TXT_MEDIO_PAGO_H as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> TSTAGEGRD",
+						"source(output(",
+						"          ID_MEDIO_PAGO as integer,",
+						"          TXT_MEDIO_PAGO as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> mediodepago",
+						"source(output(",
+						"          ID_PRODUCT as integer,",
+						"          TXT_PRODUCT as string,",
+						"          PRODUCT_CATEFGORY as string,",
+						"          PRODUCT_SUB_CATEGORY as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> DIMPRODUCTO",
+						"TSTAGEGRD select(mapColumn(",
+						"          ID_TRANSACTION,",
+						"          ID_CUSTOMER,",
+						"          FEC_TRANSACTION_DATE,",
+						"          TIM_TRANSACTION_TIME,",
+						"          TRANSACTION_VALUE,",
+						"          FECHA_CARGA,",
+						"          TXT_PRODUCT_H,",
+						"          TXT_MEDIO_PAGO_H",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1, mediodepago join(upper(TXT_MEDIO_PAGO_H) == upper(TXT_MEDIO_PAGO),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, DIMPRODUCTO join(upper(TXT_PRODUCT_H) == upper(TXT_PRODUCT),",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"split1@LlavesLlenas alterRow(upsertIf(isNull(ID_TRANSACTION)==false())) ~> Modificarfila1",
+						"join2 split(isNull(ID_MEDIO_PAGO) == false() && isNull(ID_PRODUCT)==false(),",
+						"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
+						"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
+						"Modificarfila1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as date,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          TRANSACTION_VALUE as decimal(24,10),",
+						"          ID_MEDIO_PAGO as integer,",
+						"          ID_PRODUCT as integer",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:true,",
+						"     keys:['ID_TRANSACTION'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_TRANSACTION,",
+						"          ID_CUSTOMER,",
+						"          FEC_TRANSACTION_DATE,",
+						"          TIM_TRANSACTION_TIME,",
+						"          TRANSACTION_VALUE,",
+						"          ID_MEDIO_PAGO,",
+						"          ID_PRODUCT",
+						"     )) ~> TGRDFACT",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ID_TRANSACTION as string,",
+						"          ID_CUSTOMER as string,",
+						"          FEC_TRANSACTION_DATE as date,",
+						"          TIM_TRANSACTION_TIME as string,",
+						"          TRANSACTION_VALUE as decimal(24,10),",
+						"          ID_MEDIO_PAGO as integer,",
+						"          ID_PRODUCT as integer,",
+						"          FECHA_CARGA as string,",
+						"          TXT_PRODUCT_H as string,",
+						"          TXT_MEDIO_PAGO_H as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     mapColumn(",
+						"          ID_TRANSACTION,",
+						"          ID_CUSTOMER,",
+						"          FEC_TRANSACTION_DATE,",
+						"          TIM_TRANSACTION_TIME,",
+						"          TRANSACTION_VALUE,",
+						"          ID_MEDIO_PAGO,",
+						"          ID_PRODUCT,",
+						"          FECHA_CARGA",
+						"     )) ~> HUERFANOS"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/T_ER_GRD_FACT')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_MEDIO_PAGO')]",
+				"[concat(variables('factoryId'), '/datasets/T_DIM_PRODUCTO')]",
+				"[concat(variables('factoryId'), '/datasets/T_GRD_FACT')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStoragegr3')]"
 			]
 		}
 	]

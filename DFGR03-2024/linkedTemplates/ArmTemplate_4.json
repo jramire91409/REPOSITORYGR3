@@ -1892,7 +1892,7 @@
 						},
 						{
 							"dataset": {
-								"referenceName": "HUER_GRD_FACT",
+								"referenceName": "T_ER_GRD_FACT",
 								"type": "DatasetReference"
 							},
 							"name": "HUERFANOS",
@@ -1965,9 +1965,12 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
+						"          PRODUCTCATEGORY,",
+						"          PRODUCT_SUBCATEGORY,",
+						"          PRODUCTDETAIL,",
 						"          TRANSACTIONVAUE,",
 						"          PAYMENTMETHOD,",
-						"          PRODUCTDETAIL",
+						"          CUSTOMERAGE",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
@@ -2013,9 +2016,7 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
-						"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-						"          ID_MEDIO_PAGO,",
-						"          ID_PRODUCT",
+						"          TRANSACTION_VALUE = TRANSACTIONVAUE",
 						"     )) ~> TGRDFACT",
 						"derivedColumn1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -2027,7 +2028,9 @@
 						"          TRANSACTION_VALUE as decimal(24,10),",
 						"          ID_MEDIO_PAGO as integer,",
 						"          ID_PRODUCT as integer,",
-						"          FECHA_CARGA as string",
+						"          FECHA_CARGA as string,",
+						"          TXT_PRODUCT_H as string,",
+						"          TXT_MEDIO_PAGO_H as string",
 						"     ),",
 						"     deletable:false,",
 						"     insertable:true,",
@@ -2041,10 +2044,7 @@
 						"          ID_CUSTOMER,",
 						"          FEC_TRANSACTION_DATE,",
 						"          TIM_TRANSACTION_TIME,",
-						"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-						"          ID_MEDIO_PAGO,",
-						"          ID_PRODUCT,",
-						"          FECHA_CARGA",
+						"          TRANSACTION_VALUE = TRANSACTIONVAUE",
 						"     )) ~> HUERFANOS"
 					]
 				}
