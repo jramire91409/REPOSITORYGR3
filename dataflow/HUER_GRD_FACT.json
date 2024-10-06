@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "T_Stage_GLOBALRETAILDYNAMICS",
+						"referenceName": "T_ER_GRD_FACT",
 						"type": "DatasetReference"
 					},
 					"name": "TSTAGEGRD"
@@ -60,9 +60,6 @@
 					"name": "Modificarfila1"
 				},
 				{
-					"name": "cast1"
-				},
-				{
 					"name": "split1"
 				},
 				{
@@ -73,14 +70,14 @@
 				"source(output(",
 				"          ID_TRANSACTION as string,",
 				"          ID_CUSTOMER as string,",
-				"          FEC_TRANSACTION_DATE as string,",
+				"          FEC_TRANSACTION_DATE as date,",
 				"          TIM_TRANSACTION_TIME as string,",
-				"          PRODUCTCATEGORY as string,",
-				"          PRODUCT_SUBCATEGORY as string,",
-				"          PRODUCTDETAIL as string,",
-				"          TRANSACTIONVAUE as decimal(24,10),",
-				"          PAYMENTMETHOD as string,",
-				"          CUSTOMERAGE as integer",
+				"          TRANSACTION_VALUE as decimal(24,10),",
+				"          ID_MEDIO_PAGO as integer,",
+				"          ID_PRODUCT as integer,",
+				"          FECHA_CARGA as string,",
+				"          TXT_PRODUCT_H as string,",
+				"          TXT_MEDIO_PAGO_H as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -109,28 +106,25 @@
 				"          ID_CUSTOMER,",
 				"          FEC_TRANSACTION_DATE,",
 				"          TIM_TRANSACTION_TIME,",
-				"          TRANSACTIONVAUE,",
-				"          PAYMENTMETHOD,",
-				"          PRODUCTDETAIL",
+				"          TRANSACTION_VALUE,",
+				"          FECHA_CARGA,",
+				"          TXT_PRODUCT_H,",
+				"          TXT_MEDIO_PAGO_H",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1, mediodepago join(upper(PAYMENTMETHOD) == upper(TXT_MEDIO_PAGO),",
+				"select1, mediodepago join(upper(TXT_MEDIO_PAGO_H) == upper(TXT_MEDIO_PAGO),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1, DIMPRODUCTO join(upper(PRODUCTDETAIL) == upper(TXT_PRODUCT),",
+				"join1, DIMPRODUCTO join(upper(TXT_PRODUCT_H) == upper(TXT_PRODUCT),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
 				"split1@LlavesLlenas alterRow(upsertIf(isNull(ID_TRANSACTION)==false())) ~> Modificarfila1",
-				"join2 cast(output(",
-				"          FEC_TRANSACTION_DATE as date 'dd/MM/yyyy'",
-				"     ),",
-				"     errors: true) ~> cast1",
-				"cast1 split(isNull(ID_MEDIO_PAGO) == false() && isNull(ID_PRODUCT)==false(),",
+				"join2 split(isNull(mediodepago@ID_MEDIO_PAGO) == false() && isNull(DIMPRODUCTO@ID_PRODUCT)==false(),",
 				"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
 				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",
