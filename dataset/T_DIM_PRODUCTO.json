@@ -24,6 +24,10 @@
 			{
 				"name": "PRODUCT_SUB_CATEGORY",
 				"type": "varchar"
+			},
+			{
+				"name": "ID_PRODUCT_F",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {

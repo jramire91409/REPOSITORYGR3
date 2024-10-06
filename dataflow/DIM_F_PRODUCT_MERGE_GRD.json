@@ -1,0 +1,120 @@
+{
+	"name": "DIM_F_PRODUCT_MERGE_GRD",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "T_STG_F_SUPERSTORE_SALES_DATA",
+						"type": "DatasetReference"
+					},
+					"name": "SUPERSTORESALESDATA"
+				},
+				{
+					"dataset": {
+						"referenceName": "T_DIM_F_SUB_CATEGORY",
+						"type": "DatasetReference"
+					},
+					"name": "DIMFSUBCATEGORIA"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "T_DIM_PRODUCTO",
+						"type": "DatasetReference"
+					},
+					"name": "DIMPRODUCTO",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStoragegr3",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "Modificarfila1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Order_ID as string,",
+				"          Order_Date as string,",
+				"          Ship_Date as string,",
+				"          Ship_Mode as string,",
+				"          Customer_ID as string,",
+				"          Customer_Name as string,",
+				"          Segment as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Postal_Code as integer,",
+				"          Region as string,",
+				"          Product_ID as string,",
+				"          Category as string,",
+				"          Sub_Category as string,",
+				"          Product_Name as string,",
+				"          Sales as decimal(38,10),",
+				"          Quantity as integer,",
+				"          Discount as decimal(38,10),",
+				"          Profit as decimal(38,10)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SUPERSTORESALESDATA",
+				"source(output(",
+				"          DESC_SUB_CATEGORY as string,",
+				"          ID_SUBCATEGORY as integer,",
+				"          ID_CATEGORY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DIMFSUBCATEGORIA",
+				"aggregate1 alterRow(upsertIf(isNull(Product_ID)==false())) ~> Modificarfila1",
+				"SUPERSTORESALESDATA select(mapColumn(",
+				"          Product_ID,",
+				"          Sub_Category,",
+				"          Product_Name,",
+				"          Category",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 aggregate(groupBy(Product_ID,",
+				"          Category,",
+				"          Sub_Category,",
+				"          Product_Name),",
+				"     COUNT = count(),",
+				"          Product_Name_2 = max(Product_Name)) ~> aggregate1",
+				"Modificarfila1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ID_PRODUCT as integer,",
+				"          TXT_PRODUCT as string,",
+				"          PRODUCT_CATEFGORY as string,",
+				"          PRODUCT_SUB_CATEGORY as string,",
+				"          ID_PRODUCT_F as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:false,",
+				"     upsertable:true,",
+				"     keys:['DESCRIPTION'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     outputAssertFailedRows: true,",
+				"     assertFailure_container: 'contenedor-gr3',",
+				"     assertFailure_folderPath: 'ERRORES') ~> DIMPRODUCTO"
+			]
+		}
+	}
+}
