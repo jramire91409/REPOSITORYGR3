@@ -43,6 +43,14 @@
 			{
 				"name": "FECHA_CARGA",
 				"type": "varchar"
+			},
+			{
+				"name": "TXT_PRODUCT_H",
+				"type": "varchar"
+			},
+			{
+				"name": "TXT_MEDIO_PAGO_H",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
