@@ -10,13 +10,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "SUPERSTORESALESDATA"
-				},
-				{
-					"dataset": {
-						"referenceName": "T_DIM_F_SUB_CATEGORY",
-						"type": "DatasetReference"
-					},
-					"name": "DIMFSUBCATEGORIA"
 				}
 			],
 			"sinks": [
@@ -70,15 +63,6 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SUPERSTORESALESDATA",
-				"source(output(",
-				"          DESC_SUB_CATEGORY as string,",
-				"          ID_SUBCATEGORY as integer,",
-				"          ID_CATEGORY as integer",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> DIMFSUBCATEGORIA",
 				"aggregate1 alterRow(upsertIf(isNull(Product_ID)==false())) ~> Modificarfila1",
 				"SUPERSTORESALESDATA select(mapColumn(",
 				"          Product_ID,",
@@ -107,13 +91,19 @@
 				"     insertable:false,",
 				"     updateable:false,",
 				"     upsertable:true,",
-				"     keys:['DESCRIPTION'],",
+				"     keys:['ID_PRODUCT_F'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     outputAssertFailedRows: true,",
 				"     assertFailure_container: 'contenedor-gr3',",
-				"     assertFailure_folderPath: 'ERRORES') ~> DIMPRODUCTO"
+				"     assertFailure_folderPath: 'ERRORES',",
+				"     mapColumn(",
+				"          TXT_PRODUCT = Product_Name_2,",
+				"          PRODUCT_CATEFGORY = Category,",
+				"          PRODUCT_SUB_CATEGORY = Sub_Category,",
+				"          ID_PRODUCT_F = Product_ID",
+				"     )) ~> DIMPRODUCTO"
 			]
 		}
 	}
