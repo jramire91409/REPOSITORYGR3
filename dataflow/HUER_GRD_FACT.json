@@ -124,7 +124,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
 				"split1@LlavesLlenas alterRow(upsertIf(isNull(ID_TRANSACTION)==false())) ~> Modificarfila1",
-				"join2 split(isNull(mediodepago@ID_MEDIO_PAGO) == false() && isNull(DIMPRODUCTO@ID_PRODUCT)==false(),",
+				"join2 split(isNull(ID_MEDIO_PAGO) == false() && isNull(ID_PRODUCT)==false(),",
 				"     disjoint: false) ~> split1@(LlavesLlenas, HUERFANOS)",
 				"split1@HUERFANOS derive(FECHA_CARGA = currentTimestamp()) ~> derivedColumn1",
 				"Modificarfila1 sink(allowSchemaDrift: true,",

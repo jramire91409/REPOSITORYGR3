@@ -158,9 +158,7 @@
 				"          ID_CUSTOMER,",
 				"          FEC_TRANSACTION_DATE,",
 				"          TIM_TRANSACTION_TIME,",
-				"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-				"          ID_MEDIO_PAGO,",
-				"          ID_PRODUCT",
+				"          TRANSACTION_VALUE",
 				"     )) ~> TGRDFACT",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -188,12 +186,7 @@
 				"          ID_CUSTOMER,",
 				"          FEC_TRANSACTION_DATE,",
 				"          TIM_TRANSACTION_TIME,",
-				"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
-				"          ID_MEDIO_PAGO,",
-				"          ID_PRODUCT,",
-				"          FECHA_CARGA,",
-				"          TXT_PRODUCT_H = TXT_PRODUCT,",
-				"          TXT_MEDIO_PAGO_H = TXT_MEDIO_PAGO",
+				"          TRANSACTION_VALUE",
 				"     )) ~> HUERFANOS"
 			]
 		}
