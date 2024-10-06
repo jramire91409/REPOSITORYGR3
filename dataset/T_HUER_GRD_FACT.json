@@ -1,5 +1,5 @@
 {
-	"name": "HUER_GRD_FACT",
+	"name": "T_HUER_GRD_FACT",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Servr_azure_gr3_2024",
