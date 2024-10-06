@@ -2356,6 +2356,46 @@
 							"waitOnCompletion": true,
 							"parameters": {}
 						}
+					},
+					{
+						"name": "HUER_GRD_FACT",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "HUER_FACT_F_SALES",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "HUER_GRD_FACT",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TSTAGEGRD": {},
+									"mediodepago": {},
+									"DIMPRODUCTO": {},
+									"TGRDFACT": {},
+									"HUERFANOS": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -2369,7 +2409,8 @@
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_E_SALES')]",
 				"[concat(variables('factoryId'), '/dataflows/HUER_FACT_F_SALES')]",
 				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_ECOMMERCE')]",
-				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]"
+				"[concat(variables('factoryId'), '/pipelines/CARGA_DIMENSIONES_FISICA')]",
+				"[concat(variables('factoryId'), '/dataflows/HUER_GRD_FACT')]"
 			]
 		}
 	]
