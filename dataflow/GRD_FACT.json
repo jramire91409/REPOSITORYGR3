@@ -190,7 +190,9 @@
 				"          TRANSACTION_VALUE = TRANSACTIONVAUE,",
 				"          ID_MEDIO_PAGO,",
 				"          ID_PRODUCT,",
-				"          FECHA_CARGA",
+				"          FECHA_CARGA,",
+				"          TXT_PRODUCT_H = TXT_PRODUCT,",
+				"          TXT_MEDIO_PAGO_H = TXT_MEDIO_PAGO",
 				"     )) ~> HUERFANOS"
 			]
 		}
