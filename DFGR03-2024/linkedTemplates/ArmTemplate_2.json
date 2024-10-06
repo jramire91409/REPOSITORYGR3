@@ -13,6 +13,86 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/T_STG_E_DATOS_DE_P_BEAUTY_CAT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Beauty_cat",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO_beauty_cat"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_STG_E_DATOS_DE_P_BRAND')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Column1",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO_brand"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_STG_E_DATOS_DE_P_CATEGORY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "category_id",
+						"type": "varchar"
+					},
+					{
+						"name": "category_code",
+						"type": "varchar"
+					},
+					{
+						"name": "category_desc",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_ecom_DATOS_DE_PRODUCTO_category"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/T_STG_F_PPTO_TIENDA_FISICA')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -214,6 +294,69 @@
 				"typeProperties": {
 					"schema": "stage",
 					"table": "Stage_Superstore_Sales_Data_people"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/T_Stage_GLOBALRETAILDYNAMICS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Servr_azure_gr3_2024",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID_TRANSACTION",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
+					},
+					{
+						"name": "FEC_TRANSACTION_DATE",
+						"type": "varchar"
+					},
+					{
+						"name": "TIM_TRANSACTION_TIME",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTCATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCT_SUBCATEGORY",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTDETAIL",
+						"type": "varchar"
+					},
+					{
+						"name": "TRANSACTIONVAUE",
+						"type": "decimal",
+						"precision": 24,
+						"scale": 10
+					},
+					{
+						"name": "PAYMENTMETHOD",
+						"type": "varchar"
+					},
+					{
+						"name": "CUSTOMERAGE",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "Stage_GLOBALRETAILDYNAMICS"
 				}
 			},
 			"dependsOn": []
@@ -839,50 +982,40 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/xls_ppto_sales_tienda_fisica')]",
+			"name": "[concat(parameters('factoryName'), '/backup_dim_f_customer')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureBlobStoragegr3",
+					"referenceName": "Servr_azure_gr3_2024",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "ppto_sales_tienda_fisica.csv",
-						"folderPath": "FISICA",
-						"container": "contenedor-gr3"
-					},
-					"columnDelimiter": ";",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
+				"type": "SqlServerTable",
 				"schema": [
 					{
-						"name": "fec_ppto_month",
-						"type": "String"
+						"name": "ID_CUSTOMER",
+						"type": "varchar"
 					},
 					{
-						"name": "Ship Mode",
-						"type": "String"
+						"name": "DESC_CUSTOMER",
+						"type": "varchar"
 					},
 					{
-						"name": "Region",
-						"type": "String"
+						"name": "ID_SEGMENT",
+						"type": "int",
+						"precision": 10
 					},
 					{
-						"name": "Product ID",
-						"type": "String"
-					},
-					{
-						"name": "imp_ppto_ganancia",
-						"type": "String"
+						"name": "ID_POSTAL_CODE",
+						"type": "int",
+						"precision": 10
 					}
-				]
+				],
+				"typeProperties": {
+					"schema": "stage",
+					"table": "BACKUP_DIM_F_CUSTOMER"
+				}
 			},
 			"dependsOn": []
 		},
@@ -951,173 +1084,6 @@
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_Stage_GLOBALRETAILDYNAMICS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_TRANSACTION",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "FEC_TRANSACTION_DATE",
-						"type": "varchar"
-					},
-					{
-						"name": "TIM_TRANSACTION_TIME",
-						"type": "varchar"
-					},
-					{
-						"name": "PRODUCTCATEGORY",
-						"type": "varchar"
-					},
-					{
-						"name": "PRODUCT_SUBCATEGORY",
-						"type": "varchar"
-					},
-					{
-						"name": "PRODUCTDETAIL",
-						"type": "varchar"
-					},
-					{
-						"name": "TRANSACTIONVAUE",
-						"type": "decimal",
-						"precision": 24,
-						"scale": 10
-					},
-					{
-						"name": "PAYMENTMETHOD",
-						"type": "varchar"
-					},
-					{
-						"name": "CUSTOMERAGE",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "Stage_GLOBALRETAILDYNAMICS"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_DIM_MEDIO_PAGO')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_MEDIO_PAGO",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TXT_MEDIO_PAGO",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DIM_MEDIO_PAGO"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/backup_dim_f_customer')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "DESC_CUSTOMER",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_SEGMENT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ID_POSTAL_CODE",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "stage",
-					"table": "BACKUP_DIM_F_CUSTOMER"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/T_DIM_PRODUCTO')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Servr_azure_gr3_2024",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "ID_PRODUCT",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TXT_PRODUCT",
-						"type": "varchar"
-					},
-					{
-						"name": "PRODUCT_CATEFGORY",
-						"type": "varchar"
-					},
-					{
-						"name": "PRODUCT_SUB_CATEGORY",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "DIM_PRODUCTO"
-				}
 			},
 			"dependsOn": []
 		}
